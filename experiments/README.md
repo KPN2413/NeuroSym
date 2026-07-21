@@ -72,3 +72,23 @@ python -m verilogic_ns_api.semantic_parsing replay --config experiments/configs/
 
 Raw candidates and per-record results remain ignored. Phase 5 contains no correction or confidence
 gate; failures reduce coverage and overall accuracy.
+
+## Phase 6 validation and correction
+
+`configs/ollama-validation-correction-pilot.yaml` reuses the exact Phase 5 parser configuration and
+58 cached raw component responses. It pins four critic/correction prompts, strict schemas, the local
+runtime, one-correction limit, 180-call development ceiling, train-only calibration manifest, and
+mandatory evidence-gate policy. The pre-development freeze is
+`manifests/phase6-freeze.v1.json`.
+
+```text
+python -m verilogic_ns_api.validation_correction plan --config experiments/configs/ollama-validation-correction-pilot.yaml
+python -m verilogic_ns_api.validation_correction calibrate --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id TRAIN_RUN
+python -m verilogic_ns_api.validation_correction run --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id DEV_RUN
+python -m verilogic_ns_api.validation_correction replay --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id REPLAY_RUN
+```
+
+P0 is exact Phase 5 replay, P1 is corrected-valid, and P2 is corrected-selective. P1/P2 share the
+same candidates and calls. Record-level data and controller traces remain ignored; aggregate metrics
+must report recovery, critic quality, AST quality, risk/coverage, proof verification, and efficiency.
+No test record, API key, paid call, or external dataset transmission is permitted.

@@ -176,6 +176,22 @@ gold labels or ProofWriter formal fields. Parser errors fail closed as `ERROR`; 
 to `UNKNOWN`. See `docs/NEURAL_SEMANTIC_PARSER.md` for the architecture, commands, security boundary,
 and frozen protocol.
 
+## Validation-guided correction and abstention
+
+```bash
+python -m verilogic_ns_api.validation_correction --help
+python -m verilogic_ns_api.validation_correction plan --config experiments/configs/ollama-validation-correction-pilot.yaml
+python -m verilogic_ns_api.validation_correction replay --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id REPLAY_ID
+```
+
+Phase 6 converts deterministic validation failures into bounded typed feedback, asks the same
+loopback-only local model for at most one complete replacement per theory/query, revalidates the
+replacement, and applies a separate structured fidelity critic. The final selective policy answers
+only when deterministic validation, critic acceptance, reasoning, and independent verification all
+pass. A valid `UNKNOWN` is a logical answer; `ABSTAIN` is a deliberate reliability decision and
+`ERROR` is an infrastructure failure. See `docs/VALIDATION_CORRECTION.md` and
+`docs/ABSTENTION_POLICY.md`.
+
 ## Docker
 
 From the repository root:

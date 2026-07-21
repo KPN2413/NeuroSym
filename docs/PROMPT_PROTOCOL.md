@@ -20,3 +20,13 @@ The query output is one ground signed literal. Both reuse the Phase 4 term vocab
 answers, proofs, rationales, and chain-of-thought, and run with Ollama `think: false`. Prompt and schema
 hashes are part of the parser cache identity. Calibration used training data only; the final identities
 were recorded in `semantic-parser-freeze.v1.json` before development inference.
+
+## Phase 6 critic and correction prompts
+
+Phase 6 has four versioned prompt contracts: theory/query fidelity critics and theory/query complete
+replacement correctors. Each receives a dedicated gold-free view wrapped as untrusted data. Critics
+return only `ACCEPT`/`REVISE` with bounded source-linked issues. Correctors receive the original
+neutral source, prior candidate, deterministic feedback, and optional critic issues, then return the
+unchanged Phase 5 strict candidate schema. No prompt requests or persists rationale or
+chain-of-thought. Prompt/schema/runtime hashes and the train-only calibration manifest are frozen in
+`experiments/manifests/phase6-freeze.v1.json` before development evaluation.

@@ -13,9 +13,14 @@ Gold-isolated local semantic-parser adapter (Phase 5)
         v
 Restricted JSON AST -> structural validator -> semantic validator
         |                                      |
-        | invalid/uncertain                    | approved limited correction (future)
+        | invalid/uncertain                    | valid raw candidate
         v                                      v
-Fail-closed INVALID/abstain             confidence gate
+Typed feedback -> one local correction     semantic critic
+        |                                      |
+        +------------> full revalidation <-----+
+                              |
+                              v
+                    evidence gate / abstain
                                                 |
                                                 v
                                deterministic forward-chaining engine
@@ -25,7 +30,7 @@ Fail-closed INVALID/abstain             confidence gate
                               + source-linked proof or explanation
 ```
 
-Phases 1-5 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, a gold-isolated local semantic parser, semantic theory validation, the symbolic solver, and proof replay. They do not implement a correction loop, confidence gate, production end-to-end API, or research dashboard.
+Phases 1-6 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, a gold-isolated local semantic parser, a bounded local critic/correction controller, semantic theory validation, the symbolic solver, and proof replay. They do not implement a production end-to-end API or research dashboard.
 
 ## Components
 
@@ -49,6 +54,15 @@ AST validator must pass before reasoning. Parser failures become typed evaluatio
 ### Validation boundary
 
 The JSON Schema provides structural validation: known fields, identifier patterns, literal shape, arity bounds, source fields, and version. Phase 4 strict Pydantic models enforce cross-object constraints such as declared-predicate arity, reference existence, variable safety, type compatibility, and source-ID integrity. Any unresolved error fails closed. Natural-language meaning preservation remains Phase 5/6 work.
+
+### Validation/correction controller
+
+`verilogic_ns_api.validation_correction` turns Phase 5 validation outcomes into stable typed feedback,
+applies a separate local fidelity critic, and permits one schema-constrained replacement per
+theory/query. Corrected candidates cross the complete validation boundary again. P1 releases every
+deterministically valid, independently verified result for diagnostic comparison; P2 additionally
+requires critic acceptance. State transitions, hashes, decisions, abstention reasons, and aggregate
+telemetry are immutable and replayable without storing chain-of-thought.
 
 ### Symbolic engine
 

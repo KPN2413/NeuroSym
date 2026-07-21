@@ -1,5 +1,11 @@
 # Prompts
 
+Phase 6 stores separate theory/query contracts under `semantic_critic/` and
+`semantic_correction/`. Critics return only a structured fidelity decision and issues; correctors
+return one complete Phase 5 candidate replacement. Both use gold-free neutral source views, explicit
+untrusted-data delimiters, strict schemas, no tools, and no rationale or chain-of-thought. Their
+contract hashes are frozen in `experiments/manifests/phase6-freeze.v1.json`.
+
 Phase 5 stores frozen, gold-isolated parser contracts in
 `semantic_parsing/theory/v1.md` and `semantic_parsing/query/v1.md`. They request
 structured AST candidates only and never request benchmark answers, proofs,

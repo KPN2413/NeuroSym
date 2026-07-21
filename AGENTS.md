@@ -72,6 +72,9 @@ python -m verilogic_ns_api.reasoning verify-proof --theory <theory.json> --proof
 python -m verilogic_ns_api.semantic_parsing --help
 python -m verilogic_ns_api.semantic_parsing plan --config experiments/configs/ollama-semantic-parser-pilot.yaml
 python -m verilogic_ns_api.semantic_parsing replay --config experiments/configs/ollama-semantic-parser-pilot.yaml --dataset pilot --run-id <unique-id>
+python -m verilogic_ns_api.validation_correction --help
+python -m verilogic_ns_api.validation_correction plan --config experiments/configs/ollama-validation-correction-pilot.yaml
+python -m verilogic_ns_api.validation_correction replay --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id <unique-id>
 ```
 
 Dataset download, extraction, preparation, samples, and evaluation outputs are local generated artifacts and must remain ignored. Track only acquisition/normalization code, schemas, documentation, safe aggregate provenance, configurations, and small explicitly synthetic fixtures.
@@ -99,6 +102,10 @@ docker compose up --build
   labels, proofs, depth, record paths, or raw dataset keys.
 - Phase 5 is a no-correction baseline. Parser failures are typed `ERROR` outcomes, never `UNKNOWN`;
   do not add repair, voting, reflection, solver feedback, or confidence gating before Phase 6.
+- Phase 6 reuses Phase 5 raw cache entries read-only, permits at most one semantic replacement per
+  theory/query, and requires typed feedback, full revalidation, and immutable controller traces.
+  The selective policy requires critic acceptance and independent reasoning verification. Preserve
+  `UNKNOWN`, `ABSTAIN`, `ERROR`, and `INCONSISTENT` as distinct meanings.
 - Reject unknown fields, unsafe identifiers, unsupported operators, missing source links, arity errors, type errors, and unsafe rules.
 - Fail closed. If parsing, validation, correction, confidence gating, or consistency checks are uncertain, return or record an abstention/invalid state rather than guessing.
 - Limit correction to typed, auditable transformations; never silently change premise meaning.

@@ -45,6 +45,8 @@ Implement natural-language-to-AST prompting through the approved provider port, 
 
 ## 6. Validation, correction and abstention
 
+**Status:** implementation and train-only calibration complete; frozen development pilot pending.
+
 Add structural/semantic meaning-preservation checks, limited solver-guided correction, confidence calibration/gating, explicit correction logs, and fail-closed abstention policies.
 
 **Gate:** adversarial and ambiguity tests demonstrate bounded correction and safe rejection; coverage/selective-risk metrics are reproducible.

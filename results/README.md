@@ -27,3 +27,10 @@ calibration, and replay runs are under ignored `results/semantic-parsing/`. Repl
 provider and must report all 58 pilot requests as cache hits with zero provider requests. The
 sanitized aggregate is documented in `docs/PHASE5_PILOT_RESULTS.md`; raw candidate ASTs, source text,
 per-record labels, local paths, and model output remain uncommitted.
+
+Phase 6 uses separate ignored cache namespaces beneath
+`results/cache/validation-correction/` for critic and correction responses. Train calibration,
+development P0/P1/P2 runs, sanitized controller traces, comparisons, and replay outputs live under
+ignored `results/validation-correction/`. Replay constructs no provider and must reproduce the same
+non-timing fingerprint with zero local inference calls. No raw source text, candidate, critic output,
+corrected AST, per-record label, absolute path, or model thinking is committed.

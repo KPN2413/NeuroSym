@@ -148,3 +148,14 @@ development pilot used in Phases 3 and 4. Its low 10% overall accuracy and 13.33
 and reported; no post-development prompt tuning is permitted.
 **Reason:** The result identifies semantic formalisation—not deterministic reasoning—as the current
 bottleneck. Negative evidence is scientifically useful and must not be hidden or tuned away.
+
+## D-024: Bound semantic correction and gate release on observable evidence
+
+**Status:** accepted before the Phase 6 development pilot  
+**Decision:** Phase 6 reuses raw Phase 5 candidates, allows at most one local neural replacement per
+theory/query, revalidates deterministically, independently verifies reasoning, and exposes an answer
+under P2 only when every mandatory evidence gate and semantic critic passes. `UNKNOWN`, `ABSTAIN`,
+and `ERROR` remain distinct.  
+**Reason:** A bounded, traceable controller measures recovery without hiding an open-ended
+self-refinement agent. Observable evidence is auditable; model self-confidence and development gold
+are not.

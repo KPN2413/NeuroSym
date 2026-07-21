@@ -79,3 +79,17 @@ Report structural validity, source coverage, exact theory/query accuracy, canoni
 closure precision/recall/F1, component/construction accuracy, complete-pipeline classification,
 coverage/selective risk, error taxonomy, tokens, latency, and cache use. Parser failures count as
 `ERROR`, never `UNKNOWN`. The frozen result may not be used to revise Phase 5 prompts.
+
+## Phase 6 validation/correction protocol
+
+Phase 6 replays the frozen Phase 5 raw cache, converts deterministic failures to bounded typed
+feedback, applies a local semantic critic, and permits one complete replacement correction per
+theory and per query. Corrected outputs re-enter the unchanged Phase 5 validators and the Phase 4
+reasoner/verifier. P0 reproduces raw Phase 5, P1 answers deterministically valid corrected outputs,
+and P2 additionally requires critic acceptance. P1/P2 share candidates and calls.
+
+Critic/correction prompt development and controlled corruptions use synthetic or training data only.
+All controller artifacts and the evidence-gate policy are hash-frozen before development evaluation.
+Gold ASTs, labels, proofs, depth, closure, and oracle results cannot enter requests or decisions.
+Evaluation against gold happens only after final component decisions. The valid logical label
+`UNKNOWN` remains distinct from deliberate `ABSTAIN` and infrastructure `ERROR`.
