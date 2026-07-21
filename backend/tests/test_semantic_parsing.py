@@ -8,6 +8,7 @@ import httpx
 import pytest
 from pydantic import ValidationError
 
+from verilogic_ns_api.reasoning.engine import ForwardChainingEngine
 from verilogic_ns_api.reasoning.models import (
     Entity,
     EntityTerm,
@@ -21,6 +22,7 @@ from verilogic_ns_api.reasoning.models import (
     VariableTerm,
     sha256_payload,
 )
+from verilogic_ns_api.reasoning.verifier import ProofVerifier
 from verilogic_ns_api.semantic_parsing.cache import ParserCacheError, ParserResponseCache
 from verilogic_ns_api.semantic_parsing.canonicalization import canonical_rule_key
 from verilogic_ns_api.semantic_parsing.converter import (
@@ -262,6 +264,11 @@ def test_converter_restores_original_sources_and_builds_valid_theory() -> None:
     assert theory.facts[0].source_id == "triple1"
     assert theory.rules[0].source_id == "rule1"
     assert theory.query.source_id == "Q1"
+
+    reasoning = ForwardChainingEngine().reason(theory)
+    verified = ProofVerifier().verify_result(theory, reasoning.result)
+    assert verified.valid is True
+    assert verified.proof_hash == reasoning.result.proof.proof_hash
 
 
 def test_converter_rejects_missing_source() -> None:

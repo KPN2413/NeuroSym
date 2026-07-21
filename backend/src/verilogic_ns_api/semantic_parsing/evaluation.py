@@ -12,6 +12,7 @@ from verilogic_ns_api.evaluation.metrics import compute_metrics
 from verilogic_ns_api.reasoning.engine import ForwardChainingEngine
 from verilogic_ns_api.reasoning.models import ReasoningStatus, Theory
 from verilogic_ns_api.reasoning.proofwriter import FormalExample, select_conformance_examples
+from verilogic_ns_api.reasoning.verifier import ProofVerifier
 from verilogic_ns_api.research.models import (
     BenchmarkExample,
     PredictionLabel,
@@ -103,6 +104,9 @@ def run_parser_evaluation(
     predictions: list[PredictionRecord] = []
     parser_errors: Counter[str] = Counter()
     engine = ForwardChainingEngine()
+    verifier = ProofVerifier()
+    proofs_attempted = 0
+    proofs_verified = 0
     for example in examples:
         key = example.theory_id or example.example_id
         theory_outcome = theory_outcomes[key]
@@ -156,6 +160,22 @@ def run_parser_evaluation(
             )
             continue
         reasoning = engine.reason(parsed)
+        proofs_attempted += 1
+        try:
+            verifier.verify_result(parsed, reasoning.result)
+            proofs_verified += 1
+        except Exception as exc:  # a proof is never trusted merely because this engine emitted it
+            parser_errors["PROOF_VERIFICATION_ERROR"] += 1
+            predictions.append(
+                _prediction(
+                    example,
+                    PredictionLabel.ERROR,
+                    f"PROOF_VERIFICATION_ERROR:{type(exc).__name__}",
+                    theory_outcome,
+                    query_outcome,
+                )
+            )
+            continue
         label = {
             ReasoningStatus.ENTAILED: PredictionLabel.ENTAILED,
             ReasoningStatus.CONTRADICTED: PredictionLabel.CONTRADICTED,
@@ -173,6 +193,8 @@ def run_parser_evaluation(
         theory_outcomes=theory_outcomes,
         query_outcomes=query_outcomes,
         parser_errors=parser_errors,
+        proofs_attempted=proofs_attempted,
+        proofs_verified=proofs_verified,
         wall_seconds=perf_counter() - started,
     )
     _atomic_json(
@@ -246,6 +268,8 @@ def _build_report(
     theory_outcomes: dict[str, ParserOutcome],
     query_outcomes: dict[str, ParserOutcome],
     parser_errors: Counter[str],
+    proofs_attempted: int,
+    proofs_verified: int,
     wall_seconds: float,
 ) -> dict[str, object]:
     statement_tp = statement_fp = statement_fn = 0
@@ -368,6 +392,12 @@ def _build_report(
         },
         "end_to_end": metric_report,
         "error_taxonomy": dict(sorted(parser_errors.items())),
+        "proof_verification": {
+            "attempted": proofs_attempted,
+            "verified": proofs_verified,
+            "failed": proofs_attempted - proofs_verified,
+            "rate": _ratio(proofs_verified, proofs_attempted),
+        },
         "efficiency": {
             "wall_seconds": wall_seconds,
             "provider_requests": sum(not item.cache_hit for item in all_outcomes),

@@ -37,7 +37,8 @@ The versioned output schemas are:
 
 Candidate terms reuse Phase 4 `EntityTerm`, `VariableTerm`, and `VariableDefinition` types. The
 deterministic converter creates Phase 4 facts, rules, declarations, source links, and parser metadata.
-No model-generated code or solver expression is executed.
+Every accepted reasoning result is independently checked by the Phase 4 proof verifier before its
+label is reported. No model-generated code or solver expression is executed.
 
 Outcomes are `PARSED`, `PROVIDER_ERROR`, `STRUCTURED_OUTPUT_ERROR`, `STRUCTURAL_INVALID`,
 `SEMANTIC_INVALID`, `SOURCE_COVERAGE_ERROR`, `RESOURCE_LIMIT`, and `TIMEOUT`. Every parser failure

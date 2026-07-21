@@ -29,6 +29,7 @@ coverage denominator.
 - Theory structured-output success: 28/28 unique theories.
 - Query structured-output success: 29/30 queries.
 - Complete ASTs accepted for reasoning: 4/30.
+- Independent proof verification: 4/4 accepted reasoning results (100%).
 - Whole-theory exact accuracy: 0/28.
 - Exact-query accuracy after the complete boundary: 1/30 (3.33%).
 - Source-aligned statement accuracy: 31/496 (6.25%).
