@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1–3 infrastructure
+## Current implementation: Phases 1-4
 
 The repository provides:
 
@@ -25,8 +25,13 @@ The repository provides:
   using strict three-label Structured Outputs;
 - frozen prompts, output schema, demonstrations, and a balanced 30-example OWA development pilot;
 - bounded retry, circuit-breaker, cost-cap, response-cache, replay, telemetry, and paired-comparison support.
+- a strict semantic validator for the typed theory contract;
+- a deterministic finite Datalog-style forward-chaining engine with explicit negation;
+- four-way `ENTAILED`, `CONTRADICTED`, `UNKNOWN`, and `INCONSISTENT` query decisions;
+- canonical source-linked proof DAGs, SHA-256 identities, and independent proof replay;
+- resource-bounded reasoning CLIs and an oracle-structure ProofWriter conformance adapter.
 
-A zero-cost local Ollama pilot has completed and was replayed from cache with the inference server stopped. Its generated records, caches, and metrics remain ignored local artifacts; no hosted provider was called and no research pilot result is committed. The hosted-provider path requires explicit paid-use, external-transfer, and cost-cap flags even when a key exists. There is no semantic parser, symbolic solver, database, authentication, or deployment. Generated smoke outputs use a fake provider, are ignored, and are not research results.
+A zero-cost local Ollama pilot has completed and was replayed from cache with the inference server stopped. Its generated records, caches, and metrics remain ignored local artifacts; no hosted provider was called and no research pilot result is committed. The hosted-provider path requires explicit paid-use, external-transfer, and cost-cap flags even when a key exists. There is no natural-language semantic parser, end-to-end neuro-symbolic pipeline, database, authentication, or deployment. Generated smoke outputs use a fake provider, are ignored, and are not research results.
 
 ## Prerequisites
 
@@ -123,6 +128,33 @@ uses a digest-pinned model through loopback-only Ollama with cloud features disa
 data stays local and API cost is USD 0.00. The optional OpenAI path remains implemented and mocked
 but operationally unverified; its paid live gate is unchanged. See `docs/LOCAL_LLM_BASELINE.md` and
 `docs/LLM_BASELINES.md` for the separate local and hosted-provider protocols.
+
+## Symbolic reasoning
+
+Run from the repository root with the backend environment active:
+
+```bash
+python -m verilogic_ns_api.reasoning --help
+python -m verilogic_ns_api.reasoning reason --input examples/theories/entailed.json --human
+python -m verilogic_ns_api.reasoning saturate --input examples/theories/binary-join.json
+python -m verilogic_ns_api.reasoning inspect-closure --input examples/theories/inconsistent.json
+```
+
+The engine consumes only validated `theory.v1` JSON. It supports unary/binary predicates,
+conjunctive rules, variables and constants, explicit positive/negative literals, multi-step
+reasoning, positive recursion, and query-specific inconsistency. It uses open-world semantics:
+missing evidence produces `UNKNOWN`, never an inferred negative. It does not use an LLM, parse
+natural language, perform contraposition, or establish that source premises are factually true.
+
+Proofs use [the versioned proof contract](docs/PROOF_FORMAT.md) and can be independently replayed.
+The implementation and formal semantics are documented in
+[the symbolic-engine guide](docs/SYMBOLIC_ENGINE.md).
+
+The observed Phase 4 oracle-structure checks were 300/300 on a balanced ProofWriter OWA development
+sample and 30/30 on the frozen Phase 3 development sample, with every proof verified. This is a
+symbolic ceiling using dataset-provided formal fields, not natural-language parsing performance or a
+final research result. Raw conformance records remain ignored locally, and the ProofWriter licence
+status remains unverified.
 
 ## Docker
 

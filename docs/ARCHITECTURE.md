@@ -18,14 +18,14 @@ Restricted JSON AST -> structural validator -> semantic validator
 Fail-closed INVALID/abstain             confidence gate
                                                 |
                                                 v
-                               deterministic forward-chaining engine (future)
+                               deterministic forward-chaining engine
                                                 |
                                                 v
-                       ENTAILED / CONTRADICTED / UNKNOWN
+                ENTAILED / CONTRADICTED / UNKNOWN / INCONSISTENT
                               + source-linked proof or explanation
 ```
 
-Phases 1–3 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, and direct/few-shot LLM baseline infrastructure. They do not implement a semantic parser, symbolic solver, semantic AST validator, correction loop, or research dashboard.
+Phases 1-4 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, semantic theory validation, the symbolic solver, and proof replay. They do not implement a natural-language semantic parser, correction loop, end-to-end neuro-symbolic pipeline, or research dashboard.
 
 ## Components
 
@@ -43,11 +43,11 @@ A future provider-independent interface will accept versioned prompts and natura
 
 ### Validation boundary
 
-The JSON Schema provides structural validation: known fields, identifier patterns, literal shape, arity bounds, source fields, and version. Future semantic validation will enforce cross-object constraints such as declared-predicate arity, reference existence, variable safety, type compatibility, and source-ID integrity. Any unresolved error fails closed.
+The JSON Schema provides structural validation: known fields, identifier patterns, literal shape, arity bounds, source fields, and version. Phase 4 strict Pydantic models enforce cross-object constraints such as declared-predicate arity, reference existence, variable safety, type compatibility, and source-ID integrity. Any unresolved error fails closed. Natural-language meaning preservation remains Phase 5/6 work.
 
 ### Symbolic engine
 
-A future Datalog-style engine will ground safe conjunctive rules and apply deterministic forward chaining to a fixed point. Positive and explicitly negative literals are separate atoms. The engine will maintain derivation provenance and detect when both polarities are derivable.
+`verilogic_ns_api.reasoning` grounds safe conjunctive rules and applies deterministic delta-based forward chaining to a fixed point. Positive and explicitly negative literals are separate signed atoms. Canonical derivations preserve source provenance; a separately implemented naive closure validates proof status. Configurable limits prevent partial computations from being mislabeled as complete.
 
 ### Experiment harness
 
@@ -68,12 +68,12 @@ Network bytes are streamed to an ignored `.part` file with configured timeouts a
 - `ENTAILED`: the query literal is derivable and its explicit opposite is not.
 - `CONTRADICTED`: the explicit opposite is derivable and the query is not.
 - `UNKNOWN`: neither polarity is derivable under open-world semantics.
-- `INCONSISTENT`: both polarities are derivable; this is an internal safety state and must not be collapsed into a supported answer.
+- `INCONSISTENT`: both polarities are derivable for the query; unrelated conflicts remain telemetry and do not cause explosion.
 - `INVALID`: the input cannot safely cross the validation boundary.
 
 ## Proof architecture
 
-Every asserted fact and rule has a `source_id`. A future proof node will identify the derived literal, the supporting fact or rule, antecedent proof nodes, and source IDs. Proof verification must replay against the normalized AST rather than trust provider prose.
+Every asserted fact and rule has a `source_id`. The versioned proof DAG contains exact source facts, grounded rule applications, antecedent roots, source text, signed conclusions, depths, and canonical hashes. The independent verifier checks graph integrity and replays the claimed status against a naive closure rather than trusting producer output or provider prose.
 
 ## Deployment boundaries
 

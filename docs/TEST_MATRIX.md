@@ -7,9 +7,10 @@ The matrix grows with the implementation. Every behavior change requires corresp
 | Backend health | Response status and typed payload | readiness/dependency failure paths | `python -m pytest` |
 | Environment settings | Construction exercised by app tests | malformed origins, production policy, precedence | `python -m pytest` |
 | JSON Schema | Schema self-check; all valid fixtures accepted; each invalid fixture rejected for intended reason | version migration and compatibility | `python -m pytest` |
-| Semantic AST validation | Not implemented | IDs, references, exact arity, types, variables, rule safety, meaning preservation | `python -m pytest` |
-| Reasoner | Not implemented | unit rules, multi-step closure, cycles, explicit negation, open world, inconsistency, determinism | `python -m pytest` |
-| Proofs | Not implemented | replay, source completeness, polarity, alternate derivations, tampering rejection | `python -m pytest` |
+| Semantic AST validation | IDs/references, arity, types, declared terms, ground facts/query, safe heads | source-meaning preservation remains Phase 5/6 | `python -m pytest` |
+| Reasoner | unary/binary, joins, constants, shared variables, conjunction, chains, cycles, explicit negation, OWA, inconsistency, no contraposition, determinism, limits | performance regression at larger final scale | `python -m pytest` |
+| Proofs | canonical selection/hashes, exact sources/rules/substitutions, independent closure replay, graph integrity, tampering and fabricated-unknown rejection | final proof metrics/dashboard integration | `python -m pytest` |
+| ProofWriter formal conformance | deterministic S-expression adapter, same-30 check, balanced 300-example OWA development ceiling, independent verification | no test split until final frozen protocol | explicit local reasoning CLI |
 | Parser boundary | Not implemented | provider mocks, malformed JSON, unknown fields, timeout, confidence gate, correction limits | `python -m pytest` |
 | Dataset acquisition | mocked success, interruption, timeout, HTTP errors, size/checksum/ZIP failure, idempotence, force, traversal, symlink, cleanup | real-source availability regression and operational monitoring | `python -m pytest` |
 | Dataset ingestion | OWA mapping, CWA refusal, malformed/missing/duplicate records, stable IDs, proof preservation, ZIP/directory streaming, official splits | further official variants and future format versions | `python -m pytest` |

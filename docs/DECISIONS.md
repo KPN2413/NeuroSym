@@ -23,7 +23,7 @@ This is a lightweight decision log. Future decisions append new entries; they do
 ## D-004: Require source-linked provenance
 
 **Status:** accepted
-**Decision:** Source IDs are mandatory on facts, rules, rule literals, and queries; future proofs must replay against these links.
+**Decision:** Source IDs are mandatory on facts, rules, rule literals, and queries; proofs replay against these links.
 **Reason:** Explainability requires auditable evidence rather than generated explanations.
 
 ## D-005: FastAPI and Next.js remain separate services
@@ -97,3 +97,27 @@ This is a lightweight decision log. Future decisions append new entries; they do
 **Status:** accepted
 **Decision:** `OPENAI_API_KEY` presence is insufficient to call a provider. Live execution requires separate paid-use and external-transfer flags plus a positive cap that covers the preflight worst case. Valid responses are atomically cached by all behavior-affecting request fields; replay has no live provider and fails on a miss.
 **Reason:** Commercial calls and benchmark transfer are consequential actions. Explicit gates, bounded retries/concurrency, a circuit breaker, and validated replay reduce unintended spend, duplicate work, and irreproducible evidence.
+
+## D-017: Use deterministic signed least-fixpoint reasoning
+
+**Status:** accepted
+**Decision:** The Phase 4 engine treats positive and explicit negative literals as separate signed atoms, applies safe conjunctive rules by deterministic forward chaining, and classifies both-polarity support as query-specific `INCONSISTENT`. It performs neither contraposition nor negation as failure.
+**Reason:** These semantics match the approved open-world fragment, terminate over a finite domain, and avoid both absence-as-falsity and explosive inference.
+
+## D-018: Make proofs canonical and independently replayable
+
+**Status:** accepted
+**Decision:** Conclusions carry a source-linked, SHA-256-addressed proof DAG selected by a documented canonical order. A separate verifier checks nodes/rules/sources/graph structure and independently recomputes the least-fixpoint status with a naive algorithm.
+**Reason:** Deterministic producer output alone is insufficient evidence. Independent replay exposes tampering, producer defects, and fabricated unknown results.
+
+## D-019: Limit ProofWriter adaptation to oracle formal fields
+
+**Status:** accepted
+**Decision:** Phase 4 may deterministically parse ProofWriter's provided formal S-expressions for OWA development conformance, but it may not infer formal logic from benchmark prose. Raw records and generated conformance results remain ignored.
+**Reason:** This measures the symbolic component's ceiling without conflating it with the unimplemented semantic parser or leaking the test split.
+
+## D-020: Record recovered local Git provenance
+
+**Status:** accepted
+**Decision:** The supplied source ZIP did not contain `.git`. The recovered workspace therefore has a new local history beginning with source snapshot `9cd76a6`; Phase 3 operational evidence is checkpointed at `7eddcac`. These hashes are local provenance and do not pretend to reconstruct omitted history.
+**Reason:** Honest provenance prevents the recovered repository from being confused with the original unseen Git history.

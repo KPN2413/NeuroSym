@@ -28,9 +28,11 @@ Implemented the provider-independent LLM port, official OpenAI Responses adapter
 
 ## 4. Symbolic reasoning engine
 
+**Status:** completed on `phase/04-symbolic-engine`; commit recorded in the Phase 4 completion report.
+
 Implement semantic AST checks needed by the engine, deterministic finite forward chaining, unary/binary predicates, explicit negation, open-world decisions, multi-step derivations, inconsistency detection, and source-linked proof construction/replay.
 
-**Gate:** unit, integration, and property-based logic/proof suites pass without any LLM dependency.
+**Gate:** passed with unit, integration, property-based, tamper, and formal ProofWriter conformance checks; no LLM participates in inference.
 
 ## 5. Neural semantic parser
 

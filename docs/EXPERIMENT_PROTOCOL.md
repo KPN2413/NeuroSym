@@ -2,7 +2,7 @@
 
 ## Status
 
-Phase 3 implements frozen direct and fixed few-shot baseline infrastructure over the Phase 2 runner. No live provider pilot has been authorized or reported. Synthetic fake-provider metrics verify engineering behavior only.
+Phase 3 completed a frozen zero-cost local direct/few-shot pilot over the Phase 2 runner; the hosted OpenAI path remains mocked but operationally unverified. Phase 4 adds deterministic symbolic oracle-structure conformance. These pilot and conformance measurements are engineering evidence, not final capstone results.
 
 ## Units and data
 
@@ -50,7 +50,17 @@ Approved perturbations must be meaning-preserving and versioned. Candidate group
 
 ## Proof evaluation
 
-Proofs are scored only after replay against the accepted AST. Planned checks include conclusion match, valid rule applications, antecedent availability, source-ID validity, polarity preservation, and source completeness. Provider-authored proof prose is never accepted as formal evidence.
+Proofs are accepted only after replay against the validated AST. Phase 4 checks conclusion/status,
+exact source facts and text, grounded rule applications, complete substitutions, antecedent
+availability/order, source-ID validity, polarity, depth, hash integrity, reachability, and
+acyclicity. A separately implemented naive closure validates even empty `UNKNOWN` proofs.
+Provider-authored proof prose is never accepted as formal evidence.
+
+The Phase 4 conformance protocol uses only ProofWriter's existing formal S-expressions, only the OWA
+development split, and no natural-language parsing. The balanced oracle-structure sample contains 20
+examples in every depth (0/1/2/3/5) by label (ENTAILED/CONTRADICTED/UNKNOWN) cell, for 300 total.
+The same-30 check reuses the exact frozen Phase 3 development IDs. Report these as symbolic-ceiling
+results, never semantic-parser or end-to-end results. Raw records and reports remain ignored locally.
 
 ## Reporting
 

@@ -15,3 +15,9 @@ weight, or record-level result is committed. Reproduce local checks with the com
 `docs/LOCAL_LLM_BASELINE.md`. A local run requires the locally acquired ProofWriter archive and the
 exact pinned Ollama model, but no paid-use flag, provider account, external-transfer approval, or API
 key. Those explicit gates still apply to the optional, operationally unverified OpenAI path.
+
+Phase 4 reasoning and ProofWriter conformance outputs are generated beneath
+`results/reasoning/` and remain ignored. The balanced 300-example and frozen same-30 reports contain
+aggregate oracle-structure results only; they are reproducible from the local archive and do not
+measure natural-language parsing. Do not commit raw theories, record-level labels, proof payloads,
+or dataset text from these runs.

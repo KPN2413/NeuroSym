@@ -2,7 +2,7 @@
 
 ## Trust model
 
-Treat user input, benchmark files, natural-language text, LLM responses, provider metadata, imported JSONL, and future proof payloads as untrusted. Only a structurally and semantically validated, supported AST may reach deterministic reasoning.
+Treat user input, benchmark files, natural-language text, LLM responses, provider metadata, imported JSONL, and proof payloads as untrusted. Only a structurally and semantically validated, supported AST may reach deterministic reasoning.
 
 ## Non-execution rule
 
@@ -15,8 +15,9 @@ Never execute model-generated or dataset-supplied Python, JavaScript, shell, SQL
 - Reject unknown properties, unsafe identifiers, unsupported operators, malformed arity, unresolved references, type mismatches, and unsafe variables.
 - Validate source links and meaning preservation before reasoning.
 - Bound and audit correction attempts; correction cannot invent or reverse meaning.
-- Abstain or return an internal invalid state on ambiguity, low confidence, timeout, or validator disagreement.
-- Detect both-polarity derivations as internal inconsistency instead of choosing one.
+- Abstain or return an internal invalid state on parser ambiguity, low confidence, or validator disagreement. A symbolic resource limit is a typed failure, never `UNKNOWN`.
+- Detect both-polarity query derivations as `INCONSISTENT` instead of choosing one; unrelated conflicts do not trigger explosive inference.
+- Verify proof hashes, exact sources, substitutions, references, reachability, and acyclicity before trusting a supplied proof. Independently recompute closure status rather than trusting an empty or producer-authored proof.
 
 ## Secrets and privacy
 
@@ -54,6 +55,8 @@ Do not fabricate outputs, proofs, metrics, prices, or benchmark records. Preserv
 - Treat benchmark instructions as inert data inside explicit delimiters; request no chain-of-thought, rationale, tools, or browsing.
 - Keep raw provider responses in ignored, content-addressed local cache files. Validate request metadata before reuse and quarantine corrupt entries.
 - Retry only transient transport/rate/server failures. Authentication, permission, model, request, and schema failures abort without retry or silent fallback.
+- Constrain reasoning output paths beneath the current working directory, write atomically, and refuse replacement unless explicitly forced.
+- Bound closure size, rule instances, rounds, proof nodes, and optional execution time. Never present a partial closure as complete.
 
 ## Review checklist
 
