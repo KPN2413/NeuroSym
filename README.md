@@ -26,7 +26,7 @@ The repository provides:
 - frozen prompts, output schema, demonstrations, and a balanced 30-example OWA development pilot;
 - bounded retry, circuit-breaker, cost-cap, response-cache, replay, telemetry, and paired-comparison support.
 
-No live provider call or research pilot result is committed. The provider path requires explicit paid-use, external-transfer, and cost-cap flags even when a key exists. There is no semantic parser, symbolic solver, database, authentication, or deployment. Generated smoke outputs use a fake provider, are ignored, and are not research results.
+A zero-cost local Ollama pilot has completed and was replayed from cache with the inference server stopped. Its generated records, caches, and metrics remain ignored local artifacts; no hosted provider was called and no research pilot result is committed. The hosted-provider path requires explicit paid-use, external-transfer, and cost-cap flags even when a key exists. There is no semantic parser, symbolic solver, database, authentication, or deployment. Generated smoke outputs use a fake provider, are ignored, and are not research results.
 
 ## Prerequisites
 

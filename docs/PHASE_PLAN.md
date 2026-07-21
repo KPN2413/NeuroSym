@@ -20,9 +20,9 @@ Add a versioned ProofWriter ingestion path, provenance/checksum manifest, normal
 
 ## 3. Direct and few-shot LLM baselines
 
-**Status:** implementation pass; live pilot not authorized.
+**Status:** completed with a zero-cost local Ollama pilot; hosted OpenAI execution remains unverified.
 
-Implemented the provider-independent LLM port, official OpenAI Responses adapter, versioned/hash-frozen prompts and selections, bounded retries/timeouts/concurrency, circuit breaking, usage/cost accounting, content-addressed replay, direct/few-shot conditions, paid/data-transfer gates, and mocked contract tests. No live request or pilot metric has been produced.
+Implemented the provider-independent LLM port, official OpenAI Responses adapter, versioned/hash-frozen prompts and selections, bounded retries/timeouts/concurrency, circuit breaking, usage/cost accounting, content-addressed replay, direct/few-shot conditions, paid/data-transfer gates, and mocked contract tests. The frozen 30-example direct and few-shot development pilot was executed locally through the digest-pinned Ollama adapter, followed by cache-only replay with the inference server stopped. Generated records and metrics remain ignored local artifacts rather than committed research results.
 
 **Gate:** baseline runs are reproducible, raw outputs and errors are recorded, and provider-free tests pass.
 
