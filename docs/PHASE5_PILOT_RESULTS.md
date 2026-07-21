@@ -28,6 +28,8 @@ coverage denominator.
 
 - Theory structured-output success: 28/28 unique theories.
 - Query structured-output success: 29/30 queries.
+- Complete structured theory/query pairs: 29/30; source coverage passed for 19/29 (65.52%).
+- Semantic validation passed for 4/19 candidates that reached that gate (21.05%).
 - Complete ASTs accepted for reasoning: 4/30.
 - Independent proof verification: 4/4 accepted reasoning results (100%).
 - Whole-theory exact accuracy: 0/28.

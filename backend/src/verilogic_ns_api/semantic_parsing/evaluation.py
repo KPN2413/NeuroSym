@@ -350,6 +350,14 @@ def _build_report(
     all_outcomes = list(theory_outcomes.values()) + list(query_outcomes.values())
     provider_usages = [item.usage for item in all_outcomes if item.usage and not item.cache_hit]
     provider_timings = [item.timing for item in all_outcomes if item.timing and not item.cache_hit]
+    structured_pairs = sum(
+        theory_outcomes[example.theory_id or example.example_id].status is ParserStatus.PARSED
+        and query_outcomes[example.example_id].status is ParserStatus.PARSED
+        for example in examples
+    )
+    source_coverage_passed = (
+        structured_pairs - parser_errors[ParserStatus.SOURCE_COVERAGE_ERROR.value]
+    )
     return {
         "schema_version": "1.0",
         "status": "complete",
@@ -365,9 +373,25 @@ def _build_report(
             "complete_valid_theories": len(parsed),
         },
         "structural_validity_rate": _ratio(len(parsed), len(examples)),
-        "source_coverage_rate": _ratio(
-            len(examples) - parser_errors[ParserStatus.SOURCE_COVERAGE_ERROR.value], len(examples)
-        ),
+        "source_coverage_rate": _ratio(source_coverage_passed, structured_pairs),
+        "semantic_validation_rate": _ratio(len(parsed), source_coverage_passed),
+        "validation_funnel": {
+            "structured_output": {
+                "attempted": len(examples),
+                "passed": structured_pairs,
+                "rate": _ratio(structured_pairs, len(examples)),
+            },
+            "source_coverage": {
+                "attempted": structured_pairs,
+                "passed": source_coverage_passed,
+                "rate": _ratio(source_coverage_passed, structured_pairs),
+            },
+            "semantic_validation": {
+                "attempted": source_coverage_passed,
+                "passed": len(parsed),
+                "rate": _ratio(len(parsed), source_coverage_passed),
+            },
+        },
         "statement_semantics": _prf(statement_tp, statement_fp, statement_fn),
         "predicate_semantics": _prf(predicate_tp, predicate_fp, predicate_fn),
         "entity_semantics": _prf(entity_tp, entity_fp, entity_fn),
