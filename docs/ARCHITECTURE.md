@@ -8,7 +8,7 @@ VeriLogic-NS has two trust domains. Natural language, dataset records, provider 
 Natural-language theory + query
         |
         v
-Provider-independent semantic-parser adapter (future)
+Gold-isolated local semantic-parser adapter (Phase 5)
         |
         v
 Restricted JSON AST -> structural validator -> semantic validator
@@ -25,7 +25,7 @@ Fail-closed INVALID/abstain             confidence gate
                               + source-linked proof or explanation
 ```
 
-Phases 1-4 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, semantic theory validation, the symbolic solver, and proof replay. They do not implement a natural-language semantic parser, correction loop, end-to-end neuro-symbolic pipeline, or research dashboard.
+Phases 1-5 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, a gold-isolated local semantic parser, semantic theory validation, the symbolic solver, and proof replay. They do not implement a correction loop, confidence gate, production end-to-end API, or research dashboard.
 
 ## Components
 
@@ -39,7 +39,12 @@ Phases 1-4 implement the contracts, service/UI shells, ProofWriter ingestion, de
 
 ### Semantic parser port
 
-A future provider-independent interface will accept versioned prompts and natural language and return untrusted JSON candidates plus allowed metadata. Provider output never reaches the reasoner directly and no generated code is executed.
+`verilogic_ns_api.semantic_parsing` accepts dedicated gold-free theory/query views and returns
+untrusted schema-constrained candidates. The Phase 5 provider is loopback-only Ollama pinned by tag,
+digest, and version. Neutral `sentN` IDs prevent ProofWriter formal keys from entering prompts;
+internal mappings restore provenance only after inference. Source coverage and the complete Phase 4
+AST validator must pass before reasoning. Parser failures become typed evaluation errors, never
+`UNKNOWN`, and no generated code is executed.
 
 ### Validation boundary
 

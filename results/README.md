@@ -21,3 +21,9 @@ Phase 4 reasoning and ProofWriter conformance outputs are generated beneath
 aggregate oracle-structure results only; they are reproducible from the local archive and do not
 measure natural-language parsing. Do not commit raw theories, record-level labels, proof payloads,
 or dataset text from these runs.
+
+Phase 5 parser responses are isolated under ignored `results/cache/semantic-parser/`; live,
+calibration, and replay runs are under ignored `results/semantic-parsing/`. Replay constructs no
+provider and must report all 58 pilot requests as cache hits with zero provider requests. The
+sanitized aggregate is documented in `docs/PHASE5_PILOT_RESULTS.md`; raw candidate ASTs, source text,
+per-record labels, local paths, and model output remain uncommitted.

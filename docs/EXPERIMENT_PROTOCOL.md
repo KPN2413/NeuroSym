@@ -2,7 +2,7 @@
 
 ## Status
 
-Phase 3 completed a frozen zero-cost local direct/few-shot pilot over the Phase 2 runner; the hosted OpenAI path remains mocked but operationally unverified. Phase 4 adds deterministic symbolic oracle-structure conformance. These pilot and conformance measurements are engineering evidence, not final capstone results.
+Phase 3 completed a frozen zero-cost local direct/few-shot pilot over the Phase 2 runner; the hosted OpenAI path remains mocked but operationally unverified. Phase 4 adds deterministic symbolic oracle-structure conformance. Phase 5 adds a frozen local natural-language-to-AST pilot with no correction. These pilot and conformance measurements are engineering evidence, not final capstone results.
 
 ## Units and data
 
@@ -65,3 +65,17 @@ results, never semantic-parser or end-to-end results. Raw records and reports re
 ## Reporting
 
 Separate confirmatory from exploratory analyses. Publish configuration and failed-run counts alongside successful results. Do not infer factual truth from logical entailment, do not hide null or negative findings, and do not claim causation beyond controlled ablations.
+
+## Phase 5 semantic-parser protocol
+
+Prompt development used synthetic inputs and six training examples only. The theory prompt, query
+prompt, output schemas, runtime, calibration manifest, and exact Phase 3 30-example development
+manifest were hash-frozen before any Phase 5 development call. The parser receives only neutral
+source IDs plus natural-language statements/query. Formal fields, labels, proofs, depth, raw keys,
+and test records are excluded. One theory request is reused across questions; query parsing is
+separate. Phase 5 permits no semantic repair, feedback, reflection, voting, or solver-guided retry.
+
+Report structural validity, source coverage, exact theory/query accuracy, canonical statement and
+closure precision/recall/F1, component/construction accuracy, complete-pipeline classification,
+coverage/selective risk, error taxonomy, tokens, latency, and cache use. Parser failures count as
+`ERROR`, never `UNKNOWN`. The frozen result may not be used to revise Phase 5 prompts.

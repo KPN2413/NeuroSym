@@ -121,3 +121,30 @@ This is a lightweight decision log. Future decisions append new entries; they do
 **Status:** accepted
 **Decision:** The supplied source ZIP did not contain `.git`. The recovered workspace therefore has a new local history beginning with source snapshot `9cd76a6`; Phase 3 operational evidence is checkpointed at `7eddcac`. These hashes are local provenance and do not pretend to reconstruct omitted history.
 **Reason:** Honest provenance prevents the recovered repository from being confused with the original unseen Git history.
+
+## D-021: Split theory and query semantic parsing
+
+**Status:** accepted
+**Decision:** Phase 5 makes one local request per unique natural-language theory and a separate request
+per query. Prompts receive only neutral `sentN` source identifiers and text; original source IDs are
+restored from an internal non-provider mapping.
+**Reason:** Theory reuse reduces inference work, while the dedicated gold-free view makes label,
+formal-representation, proof, depth, path, and raw-key leakage structurally difficult.
+
+## D-022: Keep Phase 5 correction-free and fail closed
+
+**Status:** accepted
+**Decision:** Phase 5 performs no reflection, repair prompt, voting, confidence gate, or solver
+feedback. A parser/provider/schema/source/semantic failure becomes evaluation `ERROR`, never the valid
+open-world answer `UNKNOWN`. Only an identical transient transport retry is allowed.
+**Reason:** A correction-free baseline isolates raw semantic-parser quality and prevents hidden model
+reasoning or post-result adaptation from inflating performance.
+
+## D-023: Freeze and retain the negative parser result
+
+**Status:** accepted
+**Decision:** The final train-developed prompt/schema/runtime were frozen before the same 30-example
+development pilot used in Phases 3 and 4. Its low 10% overall accuracy and 13.33% coverage are retained
+and reported; no post-development prompt tuning is permitted.
+**Reason:** The result identifies semantic formalisation—not deterministic reasoning—as the current
+bottleneck. Negative evidence is scientifically useful and must not be hidden or tuned away.

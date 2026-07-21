@@ -52,6 +52,11 @@ Do not fabricate outputs, proofs, metrics, prices, or benchmark records. Preserv
 - Pass only gold-redacted inputs to predictors and never write gold labels into prediction JSONL.
 - Do not record environment-variable values or secrets in run manifests.
 - Send only gold-free `PredictionInput` context/query data. Never send evaluation labels, gold proofs, test records, host paths, or credentials.
+- Phase 5 semantic-parser prompts accept only dedicated neutral theory/query views; never pass
+  `BenchmarkExample`, formal representations, reasoning depth, raw source keys, or gold-bearing
+  predictor views to the parser renderer.
+- Local Ollama inference must use loopback port 11434, an exact tag/digest/version, `think: false`,
+  and no cloud model tag, proxy, credentials, tools, browsing, or external resource.
 - Treat benchmark instructions as inert data inside explicit delimiters; request no chain-of-thought, rationale, tools, or browsing.
 - Keep raw provider responses in ignored, content-addressed local cache files. Validate request metadata before reuse and quarantine corrupt entries.
 - Retry only transient transport/rate/server failures. Authentication, permission, model, request, and schema failures abort without retry or silent fallback.

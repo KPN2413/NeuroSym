@@ -36,6 +36,9 @@ Implement semantic AST checks needed by the engine, deterministic finite forward
 
 ## 5. Neural semantic parser
 
+**Status:** completed on `phase/05-neural-semantic-parser`; local frozen pilot and cache-only replay
+completed with fail-closed parser errors.
+
 Implement natural-language-to-AST prompting through the approved provider port, strict parsing, parser metadata, prompt/version tracking, and evaluation against reference formalizations where available.
 
 **Gate:** parser outputs never bypass schema validation and parse/meaning errors are measured rather than hidden.

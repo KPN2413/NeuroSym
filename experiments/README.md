@@ -57,3 +57,18 @@ Local execution requires no API key, paid-use flag, or external data transfer. S
 `docs/LOCAL_LLM_BASELINE.md` for the signed installation, cloud-disable, hardware/model selection,
 canary, replay, and interpretation protocol. The existing OpenAI configurations remain optional,
 implemented, and mocked, but not operationally verified.
+
+## Phase 5 semantic parser
+
+`configs/ollama-semantic-parser-pilot.yaml` pins the local model, archive, prompts, schemas,
+train-only calibration, and exact 30-example development pilot. The recorded freeze is
+`manifests/semantic-parser-freeze.v1.json`.
+
+```text
+python -m verilogic_ns_api.semantic_parsing plan --config experiments/configs/ollama-semantic-parser-pilot.yaml
+python -m verilogic_ns_api.semantic_parsing run --config experiments/configs/ollama-semantic-parser-pilot.yaml --dataset pilot --run-id RUN_ID
+python -m verilogic_ns_api.semantic_parsing replay --config experiments/configs/ollama-semantic-parser-pilot.yaml --dataset pilot --run-id REPLAY_ID
+```
+
+Raw candidates and per-record results remain ignored. Phase 5 contains no correction or confidence
+gate; failures reduce coverage and overall accuracy.

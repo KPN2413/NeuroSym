@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-4
+## Current implementation: Phases 1-5
 
 The repository provides:
 
@@ -30,8 +30,15 @@ The repository provides:
 - four-way `ENTAILED`, `CONTRADICTED`, `UNKNOWN`, and `INCONSISTENT` query decisions;
 - canonical source-linked proof DAGs, SHA-256 identities, and independent proof replay;
 - resource-bounded reasoning CLIs and an oracle-structure ProofWriter conformance adapter.
+- a gold-isolated, loopback-only Ollama semantic parser with separate theory/query prompts;
+- strict neural fact/rule/query output schemas, neutral source IDs, and deterministic AST conversion;
+- parser-specific atomic cache/replay, typed fail-closed errors, and detailed parsing metrics.
 
-A zero-cost local Ollama pilot has completed and was replayed from cache with the inference server stopped. Its generated records, caches, and metrics remain ignored local artifacts; no hosted provider was called and no research pilot result is committed. The hosted-provider path requires explicit paid-use, external-transfer, and cost-cap flags even when a key exists. There is no natural-language semantic parser, end-to-end neuro-symbolic pipeline, database, authentication, or deployment. Generated smoke outputs use a fake provider, are ignored, and are not research results.
+A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
+were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
+no hosted provider was called. The Phase 5 aggregate result is documented honestly in
+`docs/PHASE5_PILOT_RESULTS.md`: the small local parser is the current bottleneck. There is no Phase 6
+correction/confidence system, production end-to-end API, database, authentication, or deployment.
 
 ## Prerequisites
 
@@ -155,6 +162,19 @@ sample and 30/30 on the frozen Phase 3 development sample, with every proof veri
 symbolic ceiling using dataset-provided formal fields, not natural-language parsing performance or a
 final research result. Raw conformance records remain ignored locally, and the ProofWriter licence
 status remains unverified.
+
+## Neural semantic parser
+
+```bash
+python -m verilogic_ns_api.semantic_parsing --help
+python -m verilogic_ns_api.semantic_parsing plan --config experiments/configs/ollama-semantic-parser-pilot.yaml
+python -m verilogic_ns_api.semantic_parsing replay --config experiments/configs/ollama-semantic-parser-pilot.yaml --dataset pilot --run-id REPLAY_ID
+```
+
+The parser uses the exact local model/digest from Phase 3, sends no data externally, and never sees
+gold labels or ProofWriter formal fields. Parser errors fail closed as `ERROR`; they are never changed
+to `UNKNOWN`. See `docs/NEURAL_SEMANTIC_PARSER.md` for the architecture, commands, security boundary,
+and frozen protocol.
 
 ## Docker
 
