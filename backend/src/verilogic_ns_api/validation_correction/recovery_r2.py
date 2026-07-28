@@ -61,7 +61,7 @@ EXPECTED_MODEL_DIGEST = "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac
 ORIGINAL_PARSER_CONFIG = "experiments/configs/ollama-semantic-parser-pilot.yaml"
 ORIGINAL_CORRECTION_CONFIG = "experiments/configs/ollama-validation-correction-pilot.yaml"
 ORIGINAL_BLOCKED_REPORT = "docs/PHASE6_PILOT_RESULTS.md"
-RECOVERY_FREEZE_MANIFEST = "experiments/manifests/phase6-recovery-r2-freeze.v1.json"
+RECOVERY_FREEZE_MANIFEST = "experiments/manifests/phase6-recovery-r2-1-freeze.v1.json"
 
 
 class RecoveryR2Error(RuntimeError):

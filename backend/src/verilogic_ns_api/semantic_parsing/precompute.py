@@ -54,8 +54,8 @@ def precompute_parser_cache(
         operations.append(_operation("query", example.example_id, execution.outcome))
 
     request_hashes = [str(item["request_hash"]) for item in operations]
-    if len(operations) != 58 or len(set(request_hashes)) != 58:
-        raise ParserPrecomputeError("Phase 6-R2 parser plan must contain 58 unique requests")
+    if len(operations) != 58:
+        raise ParserPrecomputeError("Phase 6-R2 parser plan must contain 58 logical requests")
     available = sum(_cache_entry_exists(parser, request_hash) for request_hash in request_hashes)
     if available != 58:
         _atomic_json(
@@ -75,6 +75,7 @@ def precompute_parser_cache(
         "theory_components": len(theory_views),
         "query_components": len(examples),
         "unique_request_hashes": len(unique),
+        "duplicate_cache_reuses": len(operations) - len(unique),
         "cache_entries_available": available,
         "cache_hits": sum(bool(item["cache_hit"]) for item in operations),
         "new_local_calls": sum(not bool(item["cache_hit"]) for item in operations),

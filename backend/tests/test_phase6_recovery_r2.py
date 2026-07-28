@@ -98,7 +98,9 @@ def test_gold_free_parser_precompute_and_cache_replay(tmp_path: Path) -> None:
         run_id="live",
     )
     assert live_report["logical_components"] == 58
-    assert live_report["new_local_calls"] == 58
+    assert live_report["unique_request_hashes"] == 57
+    assert live_report["duplicate_cache_reuses"] == 1
+    assert live_report["new_local_calls"] == 57
     assert live_report["cache_entries_available"] == 58
     assert live_report["gold_fields_accessed"] is False
 
@@ -157,6 +159,7 @@ class FakeParser:
     def _parse(self, kind: ParserKind, input_hash: str):
         request_hash = sha256_payload({"kind": kind.value, "input_hash": input_hash})
         target = self.cache.root / request_hash[:2] / f"{request_hash}.json"
+        cache_hit = self.cache_hits or target.exists()
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("{}", encoding="utf-8")
         outcome = ParserOutcome(
@@ -164,7 +167,7 @@ class FakeParser:
             input_hash=input_hash,
             request_hash=request_hash,
             status=ParserStatus.PARSED,
-            cache_hit=self.cache_hits,
+            cache_hit=cache_hit,
         )
         return SimpleNamespace(outcome=outcome, candidate=object())
 
@@ -189,7 +192,7 @@ def _examples() -> tuple[BenchmarkExample, ...]:
                 reasoning_depth=index % 6,
                 source_statements=[source],
                 context=source.text,
-                query=f"Entity {index} is kind.",
+                query=f"Entity {min(index, 28)} is kind.",
                 gold_label=GoldLabel.UNKNOWN,
                 original_raw_label="Unknown",
                 world_assumption=WorldAssumption.OPEN,
