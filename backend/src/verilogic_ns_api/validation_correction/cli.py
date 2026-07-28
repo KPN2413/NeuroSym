@@ -15,6 +15,14 @@ from verilogic_ns_api.validation_correction.evaluation import run_correction_eva
 from verilogic_ns_api.validation_correction.planning import build_correction_plan
 from verilogic_ns_api.validation_correction.provider import OllamaCorrectionProvider
 from verilogic_ns_api.validation_correction.raw import Phase5CacheMissError
+from verilogic_ns_api.validation_correction.recovery_r2 import (
+    RecoveryR2Error,
+    compare_recovery_replay,
+    evaluate_sealed_recovery,
+    prepare_recovery_r2,
+    recovery_freeze_facts,
+    seal_recovery_predictions,
+)
 from verilogic_ns_api.validation_correction.service import CorrectionTaskService
 
 
@@ -37,6 +45,18 @@ def build_parser() -> argparse.ArgumentParser:
     inspect.add_argument("--run", type=Path, required=True)
     compare = subparsers.add_parser("compare")
     compare.add_argument("--run", type=Path, required=True)
+    r2_freeze = subparsers.add_parser("r2-freeze-facts")
+    r2_freeze.add_argument("--config", type=Path, required=True)
+    for name in ("r2-run", "r2-replay"):
+        command = subparsers.add_parser(name)
+        command.add_argument("--config", type=Path, required=True)
+        command.add_argument("--run-id", required=True)
+    r2_evaluate = subparsers.add_parser("r2-evaluate")
+    r2_evaluate.add_argument("--config", type=Path, required=True)
+    r2_evaluate.add_argument("--run", type=Path, required=True)
+    r2_compare = subparsers.add_parser("r2-compare")
+    r2_compare.add_argument("--live", type=Path, required=True)
+    r2_compare.add_argument("--replay", type=Path, required=True)
     return parser
 
 
@@ -55,6 +75,69 @@ def main(argv: list[str] | None = None) -> int:
                     "correction_ablation": payload["correction_ablation"],
                 }
             print(json.dumps(payload, indent=2, sort_keys=True))
+            return 0
+        if args.command == "r2-compare":
+            print(
+                json.dumps(
+                    compare_recovery_replay(args.live, args.replay),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command == "r2-freeze-facts":
+            print(
+                json.dumps(
+                    recovery_freeze_facts(prepare_recovery_r2(args.config)),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command == "r2-evaluate":
+            print(
+                json.dumps(
+                    evaluate_sealed_recovery(
+                        prepared=prepare_recovery_r2(args.config),
+                        output_directory=args.run,
+                    ),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command in {"r2-run", "r2-replay"}:
+            prepared = prepare_recovery_r2(args.config)
+            replay = args.command == "r2-replay"
+            provider = None if replay else OllamaCorrectionProvider(prepared.config.runtime)
+            service = CorrectionTaskService(
+                config=prepared.config,
+                prompts=prepared.prompts,
+                cache=CorrectionResponseCache(
+                    resolve_repository_path(prepared.root, prepared.config.cache_directory)
+                ),
+                provider=provider,
+                replay_only=replay,
+            )
+            output_directory = (
+                resolve_repository_path(prepared.root, prepared.config.output_directory)
+                / args.run_id
+            )
+            try:
+                seal_recovery_predictions(
+                    prepared=prepared,
+                    service=service,
+                    output_directory=output_directory,
+                    run_id=args.run_id,
+                )
+                report = evaluate_sealed_recovery(
+                    prepared=prepared,
+                    output_directory=output_directory,
+                )
+            finally:
+                if provider is not None:
+                    provider.close()
+            print(json.dumps(report, indent=2, sort_keys=True))
             return 0
         prepared = prepare_correction_experiment(args.config)
         if args.command == "plan":
@@ -94,7 +177,13 @@ def main(argv: list[str] | None = None) -> int:
                 provider.close()
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
-    except (OSError, ValueError, ValidationError, Phase5CacheMissError) as error:
+    except (
+        OSError,
+        ValueError,
+        ValidationError,
+        Phase5CacheMissError,
+        RecoveryR2Error,
+    ) as error:
         print(f"validation-correction error: {error}", file=sys.stderr)
         return 2
 
