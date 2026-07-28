@@ -24,3 +24,7 @@ appearing reliable merely by answering very little.
 Missing immutable cache evidence is an operational blocker, not a benchmark `ABSTAIN` or `ERROR`
 prediction. No P1/P2 distribution may be inferred or published while the frozen 30-example run is
 incomplete.
+
+The same distinction applies to Phase 6-R2: its terminal Phase 5 structured-output cache miss
+blocked the experiment before P0/P1/P2 states existed. It is not counted as a record-level
+abstention and cannot be converted to `UNKNOWN` or `ERROR` merely to satisfy the run gate.

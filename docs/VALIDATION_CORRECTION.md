@@ -96,3 +96,13 @@ python -m verilogic_ns_api.validation_correction replay --config experiments/con
 Raw inputs, requests, model responses, traces, and record-level predictions remain ignored locally.
 All inference is loopback-only through the digest-pinned Qwen model; API cost and hosted calls are
 zero. ProofWriter's dataset licence remains unverified.
+
+## Recovery Replication v2 outcome
+
+Phase 6-R2 used isolated `phase6-r2` cache/result namespaces and froze its protocol before local
+development inference. Of 57 unique Phase 5 request hashes, 56 produced valid immutable cache
+entries. The remaining theory request reached the unchanged 4,096-token output limit on two
+executions without valid structured output. The no-repeat rule and frozen runtime prevent another
+attempt or a larger output limit. Phase 6-R2 therefore stopped at 57/58 logical replayable
+components before controller execution, prediction sealing, or metric access. This provider
+failure is an operational blocker, not an `ABSTAIN`, `UNKNOWN`, or reconstructed response.

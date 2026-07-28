@@ -45,3 +45,9 @@ Ruff lint and format checks, pytest, frontend ESLint, frontend TypeScript, and t
 
 Ignored real datasets and response caches are never prerequisites for routine pytest. Their
 preflight and replay are explicit operational gates and a missing immutable entry must fail closed.
+
+Phase 6-R2 adds routine tests for normalized configuration equivalence, isolated namespaces,
+frozen-hash enforcement, 58-logical/57-unique duplicate handling, cache-only miss rejection,
+prediction-seal verification, and replay mismatch detection. The real local run exercised the
+fail-closed cache gate: a persistent structured-output failure remained a miss and prevented Phase
+6 execution.

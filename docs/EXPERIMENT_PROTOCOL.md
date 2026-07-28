@@ -100,3 +100,10 @@ Because the protocol forbids regenerating the 58 raw Phase 5 responses, no P1/P2
 are available and none may be reconstructed. Restore the exact cache evidence from backup, require
 58 Phase 5 preflight hits, finish all 30 controller decisions, and complete zero-call replay before
 examining or reporting development aggregates.
+
+Phase 6 Recovery Replication v2 separately preregistered an isolated regeneration without changing
+the original blocked evidence. It stopped before Phase 6 inference because one frozen theory
+request exhausted the unchanged 4,096-token output limit twice. The resulting 57/58 logical
+replayable Phase 5 components fail the mandatory cache gate. No third prompt, behavior change,
+prediction seal, or gold evaluation is permitted under that protocol; see
+`PHASE6_RECOVERY_R2_RESULTS.md`.

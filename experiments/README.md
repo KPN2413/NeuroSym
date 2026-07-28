@@ -92,3 +92,11 @@ P0 is exact Phase 5 replay, P1 is corrected-valid, and P2 is corrected-selective
 same candidates and calls. Record-level data and controller traces remain ignored; aggregate metrics
 must report recovery, critic quality, AST quality, risk/coverage, proof verification, and efficiency.
 No test record, API key, paid call, or external dataset transmission is permitted.
+
+The separately frozen Recovery Replication v2 configs are
+`configs/ollama-semantic-parser-phase6-r2.yaml` and
+`configs/ollama-validation-correction-phase6-r2.yaml`. They use isolated `phase6-r2` caches and
+preserve the original model, prompts, schemas, validator, correction bound, and policy. R2 stopped
+at its Phase 5 cache gate with 57/58 logical components replayable after the same frozen theory
+request exhausted its 4,096-token limit twice. Do not resume it with altered settings or another
+until-success prompt; see `docs/PHASE6_RECOVERY_R2_RESULTS.md`.

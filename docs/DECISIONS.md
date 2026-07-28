@@ -171,3 +171,17 @@ until the exact ignored cache directories are restored from backup or version hi
 frozen Phase 5 evidence and could change correction requests, controller decisions, or development
 metrics. Reporting reconstructed results would break the preregistered comparison and conceal the
 interruption.
+
+## D-026: Retain the Phase 6-R2 terminal structured-output blocker
+
+**Status:** accepted at the Phase 6-R2 mandatory stop gate
+
+**Decision:** Preserve the 56 valid isolated Phase 5-R2 cache entries and both failed executions of
+the one missing frozen theory request. Do not issue a third identical prompt, increase the frozen
+4,096-token output limit, synthesize a response, reinterpret the failure as `UNKNOWN`, or begin
+Phase 6 inference. Phase 6-R2 is `BLOCKED` at 57/58 logical replayable components.
+
+**Reason:** Both executions exhausted the unchanged output limit without schema-valid output.
+Continuing until success would violate the no-repeat rule; altering the limit or fabricating a
+terminal response would be a behavior-affecting post-inference change. The negative operational
+result is retained without inspecting development correctness metrics.

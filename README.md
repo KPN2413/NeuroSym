@@ -41,12 +41,14 @@ were replayed from cache. Generated records, caches, and raw metrics remain igno
 no hosted provider was called. The Phase 5 aggregate result is documented honestly in
 `docs/PHASE5_PILOT_RESULTS.md`: the small local parser is the current bottleneck.
 
-The Phase 6 implementation and train-only calibration are complete, but the frozen development
-pilot is currently blocked because the ignored immutable Phase 5 response cache and most interrupted
-Phase 6 response-cache entries are absent from this workspace. Regenerating the 58 Phase 5 responses
-is prohibited by the frozen protocol. See `docs/PHASE6_PILOT_RESULTS.md` for the recovery audit and
-exact evidence that must be restored. There is no production end-to-end API, database,
-authentication, or deployment.
+The Phase 6 implementation and train-only calibration are complete, but the original frozen
+development pilot remains blocked because its ignored caches are absent. An isolated,
+preregistered Recovery Replication v2 was attempted without altering that history. It also stopped
+at its mandatory Phase 5 cache gate after one frozen theory request exhausted the 4,096-token
+output limit twice without producing a valid structured response. See
+`docs/PHASE6_PILOT_RESULTS.md` for the original recovery audit and
+`docs/PHASE6_RECOVERY_R2_RESULTS.md` for the fresh replication evidence. Phase 7 has not begun.
+There is no production end-to-end API, database, authentication, or deployment.
 
 ## Prerequisites
 

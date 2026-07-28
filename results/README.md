@@ -41,3 +41,13 @@ Restore the exact ignored `results/cache/semantic-parser/` and
 `results/cache/validation-correction/` directories from backup/version history, then rerun preflight
 and resume. Missing cache evidence is reported as a Phase 6 operational blocker, never as a model
 result.
+
+Phase 6-R2 runtime evidence is isolated under
+`results/cache/semantic-parser-phase6-r2/`,
+`results/semantic-parsing-phase6-r2/`,
+`results/cache/validation-correction-phase6-r2/`, and
+`results/validation-correction-phase6-r2/`. The preserved local state contains 56 of 57 required
+unique Phase 5 responses (57 of 58 logical components because one request is duplicated). One
+theory request failed structured output twice at the frozen output limit. Keep these partial caches
+and attempt ledgers; do not delete, synthesize the missing response, or write into the original
+cache namespaces.
