@@ -16,13 +16,17 @@ from verilogic_ns_api.research.models import (
     Split,
     WorldAssumption,
 )
+from verilogic_ns_api.semantic_parsing import cli as parser_cli
 from verilogic_ns_api.semantic_parsing.configuration import load_parser_config
 from verilogic_ns_api.semantic_parsing.models import (
     ParserKind,
     ParserOutcome,
     ParserStatus,
 )
-from verilogic_ns_api.semantic_parsing.precompute import precompute_parser_cache
+from verilogic_ns_api.semantic_parsing.precompute import (
+    ParserPrecomputeError,
+    precompute_parser_cache,
+)
 from verilogic_ns_api.validation_correction.configuration import load_correction_config
 from verilogic_ns_api.validation_correction.recovery_r2 import (
     RecoveryR2Error,
@@ -143,6 +147,33 @@ def test_recovery_replay_comparison_rejects_any_cache_miss(tmp_path: Path) -> No
     )
     with pytest.raises(RecoveryR2Error, match="replay differs"):
         compare_recovery_replay(live, replay)
+
+
+def test_precompute_error_is_reported_without_traceback(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(
+        parser_cli,
+        "prepare_parser_experiment",
+        lambda _path: (_ for _ in ()).throw(ParserPrecomputeError("cache incomplete")),
+    )
+    assert (
+        parser_cli.main(
+            [
+                "cache",
+                "--config",
+                "synthetic.yaml",
+                "--dataset",
+                "pilot",
+                "--run-id",
+                "synthetic",
+            ]
+        )
+        == 2
+    )
+    captured = capsys.readouterr()
+    assert "semantic-parser error: cache incomplete" in captured.err
+    assert "Traceback" not in captured.err
 
 
 class FakeParser:

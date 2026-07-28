@@ -19,7 +19,10 @@ from verilogic_ns_api.semantic_parsing.models import (
     QueryParseInput,
     TheoryParseInput,
 )
-from verilogic_ns_api.semantic_parsing.precompute import precompute_parser_cache
+from verilogic_ns_api.semantic_parsing.precompute import (
+    ParserPrecomputeError,
+    precompute_parser_cache,
+)
 from verilogic_ns_api.semantic_parsing.prompts import PromptRegistry
 from verilogic_ns_api.semantic_parsing.provider import OllamaStructuredProvider
 from verilogic_ns_api.semantic_parsing.service import SemanticParser
@@ -145,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             if provider is not None:
                 provider.close()
-    except (OSError, ValueError, ValidationError) as error:
+    except (OSError, ValueError, ValidationError, ParserPrecomputeError) as error:
         print(f"semantic-parser error: {error}", file=sys.stderr)
         return 2
 
