@@ -14,6 +14,7 @@ from verilogic_ns_api.validation_correction.configuration import prepare_correct
 from verilogic_ns_api.validation_correction.evaluation import run_correction_evaluation
 from verilogic_ns_api.validation_correction.planning import build_correction_plan
 from verilogic_ns_api.validation_correction.provider import OllamaCorrectionProvider
+from verilogic_ns_api.validation_correction.raw import Phase5CacheMissError
 from verilogic_ns_api.validation_correction.service import CorrectionTaskService
 
 
@@ -93,7 +94,7 @@ def main(argv: list[str] | None = None) -> int:
                 provider.close()
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
-    except (OSError, ValueError, ValidationError) as error:
+    except (OSError, ValueError, ValidationError, Phase5CacheMissError) as error:
         print(f"validation-correction error: {error}", file=sys.stderr)
         return 2
 

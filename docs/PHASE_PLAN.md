@@ -45,11 +45,18 @@ Implement natural-language-to-AST prompting through the approved provider port, 
 
 ## 6. Validation, correction and abstention
 
-**Status:** implementation and train-only calibration complete; frozen development pilot pending.
+**Status:** implementation and train-only calibration complete; frozen development pilot blocked
+pending restoration of the original ignored Phase 5/6 response caches.
 
 Add structural/semantic meaning-preservation checks, limited solver-guided correction, confidence calibration/gating, explicit correction logs, and fail-closed abstention policies.
 
 **Gate:** adversarial and ambiguity tests demonstrate bounded correction and safe rejection; coverage/selective-risk metrics are reproducible.
+
+The interruption cannot be completed from the current workspace: the required 28 theory and 30
+query Phase 5 cache entries are absent, and only one Phase 6 cache JSON survives in the intended
+repository. The frozen protocol forbids regenerating those 58 raw responses. Phase 6 therefore
+remains blocked—not failed and not complete—until the exact ignored cache evidence is restored from
+a backup or version history and the 30-example run plus zero-call replay pass.
 
 ## 7. End-to-end neuro-symbolic integration
 

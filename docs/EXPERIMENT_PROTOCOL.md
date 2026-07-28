@@ -93,3 +93,10 @@ All controller artifacts and the evidence-gate policy are hash-frozen before dev
 Gold ASTs, labels, proofs, depth, closure, and oracle results cannot enter requests or decisions.
 Evaluation against gold happens only after final component decisions. The valid logical label
 `UNKNOWN` remains distinct from deliberate `ABSTAIN` and infrastructure `ERROR`.
+
+The first development attempt was interrupted before all decisions were frozen. In the recovered
+workspace, the ignored Phase 5 response cache and almost all Phase 6 response entries are absent.
+Because the protocol forbids regenerating the 58 raw Phase 5 responses, no P1/P2 development metrics
+are available and none may be reconstructed. Restore the exact cache evidence from backup, require
+58 Phase 5 preflight hits, finish all 30 controller decisions, and complete zero-call replay before
+examining or reporting development aggregates.

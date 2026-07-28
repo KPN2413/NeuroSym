@@ -44,6 +44,8 @@ jobs:
           python -m verilogic_ns_api.evaluation --help
           python -m verilogic_ns_api.baselines --help
           python -m verilogic_ns_api.reasoning --help
+          python -m verilogic_ns_api.semantic_parsing --help
+          python -m verilogic_ns_api.validation_correction --help
 
       - name: Run synthetic dataset and evaluation smoke checks
         run: |

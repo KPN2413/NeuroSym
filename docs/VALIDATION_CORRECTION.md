@@ -25,6 +25,20 @@ The development pilot uses the same frozen 30 OWA development examples as Phases
 schemas, model/runtime, train-only calibration manifest, correction limit, and reliability policy
 are recorded in `experiments/manifests/phase6-freeze.v1.json` before the pilot. Test data is excluded.
 
+## Interrupted-pilot recovery status
+
+The committed controller is operational, but the development pilot cannot currently resume. The
+workspace contains zero of the required Phase 5 semantic-parser cache entries and only one Phase 6
+cache JSON. No incomplete Phase 6 run directory survives. The plan command therefore exits with a
+typed, sanitized missing-cache error before any model request or metric inspection.
+
+The original ignored `results/cache/semantic-parser/` directory must be restored with the exact 28
+theory and 30 query responses used by Phase 5. The original
+`results/cache/validation-correction/` critic/correction entries should also be restored so the
+interrupted work is reused. These entries must come from backup or filesystem/version history;
+regenerating Phase 5 responses would violate the frozen protocol. After restoration, plan must show
+58 Phase 5 hits before run/resume is permitted.
+
 ## Typed feedback and critic
 
 Deterministic feedback is versioned, canonically ordered, length-bounded, source-linked where
@@ -61,6 +75,12 @@ controller decisions are frozen. Aggregate results report correction recovery, p
 quality, AST quality, accuracy, coverage, answered-only accuracy, selective risk, proof verification,
 abstention reasons, tokens, local inference time, and cache use. The 30-example pilot supports no
 significance claim.
+
+Resume accounting separates new local calls in the completion invocation from reused cache hits and
+deduplicates telemetry by request hash. It reports total unique pilot requests, critic requests,
+correction requests, input/output tokens, and inference time across both the interrupted and
+completion invocations. Gold-free trace envelopes retain controller/reliability decisions and
+sanitized operation metadata without candidates, source text, gold data, or model thinking.
 
 ## Reproduction
 

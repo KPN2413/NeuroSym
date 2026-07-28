@@ -20,3 +20,7 @@ be converted to abstention merely because it lacks a positive proof.
 Report overall accuracy together with coverage, answered-only accuracy, selective risk, ABSTAIN and
 ERROR confusion columns, and the reason distribution. This prevents a conservative system from
 appearing reliable merely by answering very little.
+
+Missing immutable cache evidence is an operational blocker, not a benchmark `ABSTAIN` or `ERROR`
+prediction. No P1/P2 distribution may be inferred or published while the frozen 30-example run is
+incomplete.

@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-5
+## Current implementation: Phases 1-6
 
 The repository provides:
 
@@ -33,12 +33,20 @@ The repository provides:
 - a gold-isolated, loopback-only Ollama semantic parser with separate theory/query prompts;
 - strict neural fact/rule/query output schemas, neutral source IDs, and deterministic AST conversion;
 - parser-specific atomic cache/replay, typed fail-closed errors, and detailed parsing metrics.
+- a bounded Phase 6 validation/correction controller, structured fidelity critic, typed feedback,
+  reliability gates, explicit abstention reasons, and gold-free audit traces.
 
 A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
 were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
 no hosted provider was called. The Phase 5 aggregate result is documented honestly in
-`docs/PHASE5_PILOT_RESULTS.md`: the small local parser is the current bottleneck. There is no Phase 6
-correction/confidence system, production end-to-end API, database, authentication, or deployment.
+`docs/PHASE5_PILOT_RESULTS.md`: the small local parser is the current bottleneck.
+
+The Phase 6 implementation and train-only calibration are complete, but the frozen development
+pilot is currently blocked because the ignored immutable Phase 5 response cache and most interrupted
+Phase 6 response-cache entries are absent from this workspace. Regenerating the 58 Phase 5 responses
+is prohibited by the frozen protocol. See `docs/PHASE6_PILOT_RESULTS.md` for the recovery audit and
+exact evidence that must be restored. There is no production end-to-end API, database,
+authentication, or deployment.
 
 ## Prerequisites
 
@@ -191,6 +199,10 @@ only when deterministic validation, critic acceptance, reasoning, and independen
 pass. A valid `UNKNOWN` is a logical answer; `ABSTAIN` is a deliberate reliability decision and
 `ERROR` is an infrastructure failure. See `docs/VALIDATION_CORRECTION.md` and
 `docs/ABSTENTION_POLICY.md`.
+
+The plan/run/replay commands require the original ignored Phase 5 and Phase 6 caches. They fail
+closed when an immutable entry is missing; they do not regenerate it. Phase 6 development metrics
+must not be reported until all 30 decisions and cache-only replay are complete.
 
 ## Docker
 

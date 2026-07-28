@@ -159,3 +159,15 @@ and `ERROR` remain distinct.
 **Reason:** A bounded, traceable controller measures recovery without hiding an open-ended
 self-refinement agent. Observable evidence is auditable; model self-confidence and development gold
 are not.
+
+## D-025: Preserve missing frozen evidence instead of reconstructing it
+
+**Status:** accepted during Phase 6 recovery
+**Decision:** The recovered workspace is missing the immutable Phase 5 semantic-parser cache and
+most interrupted Phase 6 response entries. The system must fail closed and Phase 6 remains blocked
+until the exact ignored cache directories are restored from backup or version history. The 58 Phase
+5 responses will not be regenerated, substituted, or inferred from labels or aggregates.
+**Reason:** New local responses—even under nominally identical model settings—would not be the
+frozen Phase 5 evidence and could change correction requests, controller decisions, or development
+metrics. Reporting reconstructed results would break the preregistered comparison and conceal the
+interruption.

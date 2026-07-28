@@ -34,3 +34,10 @@ development P0/P1/P2 runs, sanitized controller traces, comparisons, and replay 
 ignored `results/validation-correction/`. Replay constructs no provider and must reproduce the same
 non-timing fingerprint with zero local inference calls. No raw source text, candidate, critic output,
 corrected AST, per-record label, absolute path, or model thinking is committed.
+
+The currently recovered workspace does not contain the required Phase 5 cache and retains only one
+Phase 6 cache JSON in the intended repository. Do not synthesize or regenerate that evidence.
+Restore the exact ignored `results/cache/semantic-parser/` and
+`results/cache/validation-correction/` directories from backup/version history, then rerun preflight
+and resume. Missing cache evidence is reported as a Phase 6 operational blocker, never as a model
+result.
