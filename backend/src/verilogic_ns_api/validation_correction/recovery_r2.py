@@ -52,6 +52,7 @@ from verilogic_ns_api.validation_correction.models import (
     CriticDecision,
     TaskKind,
     TaskStatus,
+    summarize_accounting,
 )
 from verilogic_ns_api.validation_correction.policy import apply_policy
 from verilogic_ns_api.validation_correction.raw import load_raw_phase5_candidates
@@ -776,6 +777,9 @@ def _request_ledger(theories, queries) -> dict[str, object]:
         }
         for value in unique.values()
     ]
+    input_tokens = summarize_accounting(item.input_tokens for item in unique.values())
+    output_tokens = summarize_accounting(item.output_tokens for item in unique.values())
+    inference_ms = summarize_accounting(item.duration_ms for item in unique.values())
     return {
         "schema_version": "1.0",
         "summary": {
@@ -796,9 +800,15 @@ def _request_ledger(theories, queries) -> dict[str, object]:
                 item.task_kind in {TaskKind.CORRECTION_THEORY, TaskKind.CORRECTION_QUERY}
                 for item in unique.values()
             ),
-            "input_tokens": sum(item.input_tokens for item in unique.values()),
-            "output_tokens": sum(item.output_tokens for item in unique.values()),
-            "inference_ms": sum(item.duration_ms for item in unique.values()),
+            "input_tokens": input_tokens[0],
+            "observed_input_tokens": input_tokens[1],
+            "input_token_accounting_unavailable": input_tokens[2],
+            "output_tokens": output_tokens[0],
+            "observed_output_tokens": output_tokens[1],
+            "output_token_accounting_unavailable": output_tokens[2],
+            "inference_ms": inference_ms[0],
+            "observed_inference_ms": inference_ms[1],
+            "inference_time_accounting_unavailable": inference_ms[2],
             "transport_retries": 0,
             "hosted_calls": 0,
             "external_transmissions": 0,

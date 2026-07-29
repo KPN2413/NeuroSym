@@ -55,9 +55,10 @@ from verilogic_ns_api.validation_correction.models import (
     TaskKind,
     TaskOutcome,
     TaskStatus,
+    summarize_accounting,
 )
 from verilogic_ns_api.validation_correction.recovery_r2 import _request_ledger
-from verilogic_ns_api.validation_correction.service import TaskExecution
+from verilogic_ns_api.validation_correction.service import TaskExecution, _terminal_execution
 
 DIGEST = "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
 HASH = "a" * 64
@@ -234,6 +235,19 @@ def test_terminal_outcome_preserves_unavailable_accounting_as_null() -> None:
     assert terminal.output_tokens is None
     assert terminal.total_duration_ms is None
     assert terminal.model_dump(mode="json")["output_tokens"] is None
+    execution = _terminal_execution(TaskKind.CORRECTION_THEORY, terminal)
+    assert execution.outcome.input_tokens is None
+    assert execution.outcome.output_tokens is None
+    assert execution.outcome.duration_ms is None
+    with pytest.raises(ValidationError, match="complete accounting"):
+        TaskOutcome(
+            task_kind=TaskKind.CORRECTION_THEORY,
+            request_hash=HASH,
+            status=TaskStatus.PROVIDER_ERROR,
+            input_tokens=None,
+        )
+    assert summarize_accounting([10, None, 4]) == (None, 14, 1)
+    assert summarize_accounting([10, 2, 4]) == (16, 16, 0)
 
 
 @pytest.mark.parametrize(

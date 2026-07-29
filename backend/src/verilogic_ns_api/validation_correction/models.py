@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from enum import StrEnum
 from typing import Literal, Self
@@ -179,9 +180,9 @@ class TaskOutcome(StrictModel):
     output: dict[str, object] | None = None
     error_type: str | None = Field(default=None, max_length=128)
     error_message: str | None = Field(default=None, max_length=500)
-    input_tokens: int = Field(default=0, ge=0)
-    output_tokens: int = Field(default=0, ge=0)
-    duration_ms: float = Field(default=0, ge=0)
+    input_tokens: int | None = Field(default=0, ge=0)
+    output_tokens: int | None = Field(default=0, ge=0)
+    duration_ms: float | None = Field(default=0, ge=0)
     terminal: bool = False
     terminal_outcome_hash: str | None = Field(default=None, pattern=SHA256_PATTERN)
 
@@ -194,7 +195,19 @@ class TaskOutcome(StrictModel):
                 raise ValueError("terminal task outcome requires its canonical hash")
         elif self.terminal_outcome_hash is not None:
             raise ValueError("non-terminal task outcome cannot reference a terminal hash")
+        elif None in (self.input_tokens, self.output_tokens, self.duration_ms):
+            raise ValueError("non-terminal task outcome requires complete accounting")
         return self
+
+
+def summarize_accounting(
+    values: Iterable[int | float | None],
+) -> tuple[int | float | None, int | float, int]:
+    """Return complete total, observed subtotal, and unavailable-value count."""
+    collected = tuple(values)
+    observed = tuple(value for value in collected if value is not None)
+    unavailable = len(collected) - len(observed)
+    return (None if unavailable else sum(observed), sum(observed), unavailable)
 
 
 class ControllerState(StrEnum):

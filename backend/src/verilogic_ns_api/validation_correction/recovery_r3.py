@@ -67,6 +67,7 @@ R3_FREEZE_MANIFEST = "experiments/manifests/phase6-r3-terminal-failure-freeze.v1
 R3_TERMINAL_SCHEMA = "schemas/terminal-provider-outcome.v1.schema.json"
 R3_1_AMENDMENT = "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.json"
 R3_2_AMENDMENT = "experiments/manifests/phase6-r3-2-terminal-replay-amendment.v1.json"
+R3_3_AMENDMENT = "experiments/manifests/phase6-r3-3-null-accounting-propagation-amendment.v1.json"
 R3_FREEZE_COMMIT = "f207515f6fab96bd9f785a0c42c4926a64b872c2"
 MISSING_THEORY_REQUEST = "dc1e6278fc2d360bec7caba8d6d3459d26de3e1251a8683711faf93f498a23d9"
 INVALID_QUERY_REQUEST = "4d6a1ff66e104bd60686e40fc4ad71fe35ef0833d8d3745016fe5f327eb2fded"
@@ -114,6 +115,7 @@ def prepare_recovery_r3(
         raise RecoveryR3Error("Phase 6-R3 model digest differs from the frozen contract")
     if verify_freeze:
         verify_r3_freeze(prepared)
+        _verify_r3_3_accounting_amendment(prepared.root)
     return prepared
 
 
@@ -620,6 +622,38 @@ def _verify_r3_2_replay_amendment(root: Path) -> None:
     }
     if any(amendment.get(key) != value for key, value in expected.items()):
         raise RecoveryR3Error("Phase 6-R3.2 replay amendment differs from preserved evidence")
+
+
+def _verify_r3_3_accounting_amendment(root: Path) -> None:
+    path = root / R3_3_AMENDMENT
+    if not path.is_file():
+        raise RecoveryR3Error("Phase 6-R3.3 accounting amendment is missing")
+    amendment = json.loads(path.read_text(encoding="utf-8"))
+    evidence = amendment["failed_resume_evidence"]
+    expected = {
+        "amends_commit": "e2c486fce2e48abf157d2558b87569139f1e3768",
+        "amends_manifest_sha256": file_sha256(root / R3_2_AMENDMENT),
+        "development_metrics_examined": False,
+        "prediction_sets_sealed": False,
+        "performance_based_change": False,
+    }
+    if any(amendment.get(key) != value for key, value in expected.items()):
+        raise RecoveryR3Error("Phase 6-R3.3 amendment differs from the frozen contract")
+    for kind in ("stderr", "stdout", "run_state"):
+        item = evidence[kind]
+        if file_sha256(root / item["path"]) != item["sha256"]:
+            raise RecoveryR3Error(f"Phase 6-R3.3 {kind} evidence hash differs")
+    terminal_path = (
+        root
+        / R3_CORRECTION_CACHE
+        / "semantic-correction-v1"
+        / "31"
+        / f"{INTERRUPTED_CORRECTION_REQUEST}.json"
+    )
+    if file_sha256(terminal_path) != evidence["terminal_cache_sha256"]:
+        raise RecoveryR3Error("Phase 6-R3.3 terminal cache evidence differs")
+    if evidence["provider_calls"] != 0 or evidence["new_cache_entries"] != 0:
+        raise RecoveryR3Error("Phase 6-R3.3 failed resume accounting is not zero-call")
 
 
 def _parser_request(

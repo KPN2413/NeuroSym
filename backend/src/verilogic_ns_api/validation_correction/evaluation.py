@@ -36,6 +36,7 @@ from verilogic_ns_api.validation_correction.models import (
     CriticDecision,
     TaskKind,
     TaskOutcome,
+    summarize_accounting,
 )
 from verilogic_ns_api.validation_correction.policy import PolicyResult, apply_policy
 from verilogic_ns_api.validation_correction.raw import load_raw_phase5_candidates
@@ -530,6 +531,12 @@ def _efficiency(
         item.correction_attempts and item.deterministic_accepted
         for item in [*theories.values(), *queries.values()]
     )
+    input_tokens = summarize_accounting(item.input_tokens for item in new)
+    output_tokens = summarize_accounting(item.output_tokens for item in new)
+    inference_ms = summarize_accounting(item.duration_ms for item in new)
+    total_input_tokens = summarize_accounting(item.input_tokens for item in unique_outcomes)
+    total_output_tokens = summarize_accounting(item.output_tokens for item in unique_outcomes)
+    total_inference_ms = summarize_accounting(item.duration_ms for item in unique_outcomes)
     return {
         "raw_phase5_cache_hits": raw_cache_hits,
         "logical_task_requests": len(outcomes),
@@ -553,12 +560,24 @@ def _efficiency(
             item.task_kind in {TaskKind.CORRECTION_THEORY, TaskKind.CORRECTION_QUERY}
             for item in unique_outcomes
         ),
-        "input_tokens": sum(item.input_tokens for item in new),
-        "output_tokens": sum(item.output_tokens for item in new),
-        "local_inference_ms": sum(item.duration_ms for item in new),
-        "total_unique_input_tokens": sum(item.input_tokens for item in unique_outcomes),
-        "total_unique_output_tokens": sum(item.output_tokens for item in unique_outcomes),
-        "total_unique_inference_ms": sum(item.duration_ms for item in unique_outcomes),
+        "input_tokens": input_tokens[0],
+        "observed_input_tokens": input_tokens[1],
+        "input_token_accounting_unavailable": input_tokens[2],
+        "output_tokens": output_tokens[0],
+        "observed_output_tokens": output_tokens[1],
+        "output_token_accounting_unavailable": output_tokens[2],
+        "local_inference_ms": inference_ms[0],
+        "observed_local_inference_ms": inference_ms[1],
+        "inference_time_accounting_unavailable": inference_ms[2],
+        "total_unique_input_tokens": total_input_tokens[0],
+        "observed_total_unique_input_tokens": total_input_tokens[1],
+        "total_unique_input_token_accounting_unavailable": total_input_tokens[2],
+        "total_unique_output_tokens": total_output_tokens[0],
+        "observed_total_unique_output_tokens": total_output_tokens[1],
+        "total_unique_output_token_accounting_unavailable": total_output_tokens[2],
+        "total_unique_inference_ms": total_inference_ms[0],
+        "observed_total_unique_inference_ms": total_inference_ms[1],
+        "total_unique_inference_time_accounting_unavailable": total_inference_ms[2],
         "mean_new_calls_per_recovered_component": _ratio(len(new), recovered),
         "api_cost_usd": 0.0,
         "hosted_provider_calls": 0,
