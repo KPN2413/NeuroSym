@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3.2 Terminal Materialization Replay Amendment",
+  "amends_commit": "67ec57e9c4aee4b2cc8e74970adb8469d8fe5891",
+  "amends_manifest": "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.json",
+  "amends_manifest_sha256": "95556ce037b4a8fe5cbf7a9f40808e488f6567124f0ae0e2705f9f7f87ac29b5",
+  "trigger": "The first zero-call materialization succeeded. Repeating the command then rejected the now four-file cache because the preregistered pre-materialization inventory contained three success files.",
+  "development_metrics_examined": false,
+  "prediction_sets_sealed": false,
+  "performance_based_change": false,
+  "terminal_request_hash": "31b97fc053418bf0c44b8cac49cc0a51a05d21870789da082253fa5d35954be8",
+  "terminal_cache_sha256": "1c5397dcf2d2ad95cd0ae55554cc5a8082db326c17204de3d4c795829a51d20c",
+  "materialization_report_sha256": "c4d421c46f3e52701fc38ddb3ded4cc8773bc7605fe08a5599ae33b92f6dd16f",
+  "behavior_change": [
+    "Reconstruct the exact interrupted request by its frozen request hash even when its terminal cache entry already exists.",
+    "Validate the three-file pre-materialization success inventory only when the terminal outcome is absent.",
+    "On an existing terminal hit, validate the R3.2 evidence binding and return the same terminal hash with zero provider calls."
+  ],
+  "forbidden": [
+    "rewriting or deleting the existing terminal artifact",
+    "another execution of the exhausted request",
+    "prompt, schema, model, runtime, policy, sample, threshold, or metric changes",
+    "using development labels or the test split"
+  ],
+  "acceptance": [
+    "the existing terminal artifact remains byte-identical",
+    "a repeated materialization returns already_materialized",
+    "the repeated operation makes zero provider calls",
+    "the same terminal outcome hash is returned",
+    "all R3 and R3.1 protocol gates remain unchanged"
+  ]
+}

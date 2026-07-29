@@ -66,6 +66,7 @@ R3_CORRECTION_OUTPUT = "results/validation-correction-phase6-r3"
 R3_FREEZE_MANIFEST = "experiments/manifests/phase6-r3-terminal-failure-freeze.v1.json"
 R3_TERMINAL_SCHEMA = "schemas/terminal-provider-outcome.v1.schema.json"
 R3_1_AMENDMENT = "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.json"
+R3_2_AMENDMENT = "experiments/manifests/phase6-r3-2-terminal-replay-amendment.v1.json"
 R3_FREEZE_COMMIT = "f207515f6fab96bd9f785a0c42c4926a64b872c2"
 MISSING_THEORY_REQUEST = "dc1e6278fc2d360bec7caba8d6d3459d26de3e1251a8683711faf93f498a23d9"
 INVALID_QUERY_REQUEST = "4d6a1ff66e104bd60686e40fc4ad71fe35ef0833d8d3745016fe5f327eb2fded"
@@ -356,18 +357,12 @@ def materialize_r3_1_interrupted_terminal(
         r3_freeze_facts(prepared),
     ):
         raise RecoveryR3Error("Phase 6-R3.1 amendment contract is invalid")
-    prior_cache = amendment["prior_phase6_cache"]
-    current_cache = _cache_file_inventory(root / R3_CORRECTION_CACHE)
-    if current_cache["records"] != prior_cache["files"]:
-        raise RecoveryR3Error("Phase 6-R3.1 prior success cache inventory differs")
-    if current_cache["inventory_sha256"] != prior_cache["canonical_inventory_sha256"]:
-        raise RecoveryR3Error("Phase 6-R3.1 prior success cache hash differs")
     evidence = amendment["interruption_evidence"]
     for item in evidence["files"]:
         if file_sha256(root / item["path"]) != item["sha256"]:
             raise RecoveryR3Error(f"R3.1 evidence hash mismatch: {item['path']}")
 
-    request = _first_missing_invalid_theory_correction(prepared)
+    request = _invalid_theory_correction_by_hash(prepared, INTERRUPTED_CORRECTION_REQUEST)
     if request.request_hash != INTERRUPTED_CORRECTION_REQUEST:
         raise RecoveryR3Error("R3.1 interrupted request identity differs")
     cache = CorrectionResponseCache(root / prepared.config.cache_directory)
@@ -378,6 +373,7 @@ def materialize_r3_1_interrupted_terminal(
             and existing.terminal_error is not None
             and existing.terminal_error.request_hash == request.request_hash
         ):
+            _verify_r3_2_replay_amendment(root)
             return {
                 "schema_version": "1.0",
                 "status": "already_materialized",
@@ -386,6 +382,13 @@ def materialize_r3_1_interrupted_terminal(
                 "provider_calls": 0,
             }
         raise RecoveryR3Error("R3.1 interrupted request unexpectedly has a success cache entry")
+
+    prior_cache = amendment["prior_phase6_cache"]
+    current_cache = _cache_file_inventory(root / R3_CORRECTION_CACHE)
+    if current_cache["records"] != prior_cache["files"]:
+        raise RecoveryR3Error("Phase 6-R3.1 prior success cache inventory differs")
+    if current_cache["inventory_sha256"] != prior_cache["canonical_inventory_sha256"]:
+        raise RecoveryR3Error("Phase 6-R3.1 prior success cache hash differs")
 
     attempts = tuple(
         AttemptEvidence(
@@ -560,11 +563,11 @@ def _phase5_requests(
     return requests
 
 
-def _first_missing_invalid_theory_correction(
+def _invalid_theory_correction_by_hash(
     prepared: PreparedCorrectionExperiment,
+    expected_request_hash: str,
 ) -> CorrectionTaskRequest:
     raw = load_raw_phase5_candidates(prepared.phase5, calibration=False)
-    cache = CorrectionResponseCache(prepared.root / prepared.config.cache_directory)
     prompt, prompt_hash = prepared.prompts[TaskKind.CORRECTION_THEORY]
     schema = CandidateTheoryOutput.model_json_schema()
     for key, view in sorted(raw.theory_views.items()):
@@ -588,9 +591,35 @@ def _first_missing_invalid_theory_correction(
             num_predict=prepared.config.limits.correction_theory_num_predict,
             config=prepared.config.runtime,
         )
-        if cache.load_outcome(request) is None:
+        if request.request_hash == expected_request_hash:
             return request
-    raise RecoveryR3Error("R3.1 could not locate the interrupted correction request")
+    raise RecoveryR3Error("R3.1 could not reconstruct the interrupted correction request")
+
+
+def _verify_r3_2_replay_amendment(root: Path) -> None:
+    path = root / R3_2_AMENDMENT
+    if not path.is_file():
+        raise RecoveryR3Error("Phase 6-R3.2 replay amendment is missing")
+    amendment = json.loads(path.read_text(encoding="utf-8"))
+    expected = {
+        "amends_commit": "67ec57e9c4aee4b2cc8e74970adb8469d8fe5891",
+        "amends_manifest_sha256": file_sha256(root / R3_1_AMENDMENT),
+        "terminal_request_hash": INTERRUPTED_CORRECTION_REQUEST,
+        "terminal_cache_sha256": file_sha256(
+            root
+            / R3_CORRECTION_CACHE
+            / "semantic-correction-v1"
+            / "31"
+            / f"{INTERRUPTED_CORRECTION_REQUEST}.json"
+        ),
+        "materialization_report_sha256": file_sha256(
+            root / R3_OUTPUT / "phase6-r3-1-terminal-materialization.json"
+        ),
+        "development_metrics_examined": False,
+        "performance_based_change": False,
+    }
+    if any(amendment.get(key) != value for key, value in expected.items()):
+        raise RecoveryR3Error("Phase 6-R3.2 replay amendment differs from preserved evidence")
 
 
 def _parser_request(
