@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3.5 Legacy Zero Accounting Interpretation Amendment",
+  "amends_commit": "54f6e7e11d03f0cec0d2454ff368e3e358843678",
+  "amends_manifest": "experiments/manifests/phase6-r3-4-report-accounting-amendment.v1.json",
+  "amends_manifest_sha256": "9cb430783d1e1aae55fb95222d20afafa060b78b25db5002ff5d15b394fd396e",
+  "trigger": "Final terminal-accounting consolidation found two sealed provider-layer parse failures recorded with zero token and duration fields even though no ParserResponse telemetry was available.",
+  "development_metrics_examined": true,
+  "prediction_sets_sealed": true,
+  "performance_based_change": false,
+  "legacy_terminal_cache_evidence": [
+    {
+      "path": "results/cache/validation-correction-phase6-r3/semantic-correction-v1/73/73f878ccdda5c02c3d8530eb145c2d644ad47a4767444beddf80f7d928696f0e.json",
+      "sha256": "13b9cba7cf1585b8e55e64a31d9704888a711857d15cf8cad8b3feab33c782b8",
+      "error_code": "INVALID_STRUCTURED_OUTPUT",
+      "finish_reason": "provider_error",
+      "legacy_zero_interpretation": "unavailable"
+    },
+    {
+      "path": "results/cache/validation-correction-phase6-r3/semantic-correction-v1/a3/a3de41973b789cfbe9f840f85ef05295a9db8810c8af450a5d62e5d08f85e01f.json",
+      "sha256": "8b62d7a6d84195e35b26d0152bacfa0638394fa6318b6c3b3e96789b439a7abe",
+      "error_code": "INVALID_STRUCTURED_OUTPUT",
+      "finish_reason": "provider_error",
+      "legacy_zero_interpretation": "unavailable"
+    }
+  ],
+  "behavior_change": [
+    "Future provider-layer failures without ParserResponse telemetry record null token and duration accounting.",
+    "The two immutable legacy cache outcomes are interpreted as unavailable accounting when propagated into TaskOutcome."
+  ],
+  "unchanged": [
+    "the two sealed legacy terminal cache files and their canonical hashes",
+    "all sealed P0, P1, and P2 predictions",
+    "all classifications, component decisions, corrections, abstentions, proofs, and metric values",
+    "all prompts, schemas, model settings, sample records, and policy thresholds"
+  ],
+  "acceptance": [
+    "the two legacy terminal outcomes contribute unavailable rather than observed-zero accounting",
+    "genuinely observed zero accounting without a provider_error finish reason remains zero",
+    "the final replay performs zero provider calls with Ollama stopped",
+    "prediction seals and report fingerprints remain identical to the sealed live run"
+  ]
+}

@@ -51,17 +51,25 @@ from verilogic_ns_api.validation_correction.controller import ValidationCorrecti
 from verilogic_ns_api.validation_correction.models import (
     ComponentDecision,
     ComponentType,
+    CorrectionExperimentConfig,
+    CorrectionTaskLimits,
     ReliabilityEvidence,
     TaskKind,
     TaskOutcome,
     TaskStatus,
     summarize_accounting,
 )
+from verilogic_ns_api.validation_correction.provider import CorrectionTaskRequest
 from verilogic_ns_api.validation_correction.recovery_r2 import (
     _comparison_table,
     _request_ledger,
 )
-from verilogic_ns_api.validation_correction.service import TaskExecution, _terminal_execution
+from verilogic_ns_api.validation_correction.service import (
+    TaskExecution,
+    _terminal_accounting,
+    _terminal_execution,
+    _terminal_from_failure,
+)
 
 DIGEST = "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
 HASH = "a" * 64
@@ -251,6 +259,126 @@ def test_terminal_outcome_preserves_unavailable_accounting_as_null() -> None:
         )
     assert summarize_accounting([10, None, 4]) == (None, 14, 1)
     assert summarize_accounting([10, 2, 4]) == (16, 16, 0)
+
+
+def test_provider_failure_terminal_uses_null_accounting_prospectively() -> None:
+    runtime = _runtime()
+    request = CorrectionTaskRequest(
+        task_kind=TaskKind.CORRECTION_THEORY,
+        instructions="Correct the theory.",
+        input_text="Untrusted input.",
+        prompt_hash=HASH,
+        input_hash="b" * 64,
+        output_schema=CandidateTheoryOutput.model_json_schema(),
+        schema_hash="c" * 64,
+        config=runtime,
+        num_predict=runtime.theory_num_predict,
+    )
+    limits = CorrectionTaskLimits(
+        critic_theory_num_predict=512,
+        critic_query_num_predict=256,
+        correction_theory_num_predict=4096,
+        correction_query_num_predict=512,
+        maximum_new_pilot_calls=90,
+        maximum_request_characters=100_000,
+        maximum_feedback_characters=10_000,
+    )
+    config = CorrectionExperimentConfig.model_construct(
+        runtime=runtime,
+        limits=limits,
+    )
+    failure = TaskOutcome(
+        task_kind=TaskKind.CORRECTION_THEORY,
+        request_hash=request.request_hash,
+        status=TaskStatus.STRUCTURED_OUTPUT_ERROR,
+        error_type="ParserStructuredOutputError",
+        error_message="correction output was not JSON",
+    )
+
+    terminal = _terminal_from_failure(request, failure, config)
+
+    assert terminal.attempts[0].finish_reason == "provider_error"
+    assert terminal.input_tokens is None
+    assert terminal.output_tokens is None
+    assert terminal.total_duration_ms is None
+
+
+def test_legacy_provider_error_zero_accounting_maps_to_unavailable() -> None:
+    request = _request()
+    attempt = AttemptEvidence(
+        attempt_number=1,
+        request_hash=request.request_hash,
+        evidence_sha256=HASH,
+        finish_reason="provider_error",
+        input_tokens=0,
+        output_tokens=0,
+        total_duration_ms=0,
+        observed_at=datetime(2026, 7, 29, tzinfo=UTC),
+    )
+    terminal = build_terminal_outcome(
+        stage=TerminalStage.THEORY_CORRECTION,
+        error_code=TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason="correction output was not JSON",
+        request_identity=request.identity(),
+        semantic_config_hash="d" * 64,
+        runtime=TerminalRuntime(
+            endpoint=request.config.endpoint,
+            provider_version=request.config.provider_version,
+            model=request.config.model,
+            model_digest=request.config.model_digest,
+            temperature=request.config.temperature,
+            seed=request.config.seed,
+            num_ctx=request.config.num_ctx,
+            num_predict=request.config.theory_num_predict,
+            think=request.config.think,
+        ),
+        permitted_attempt_count=2,
+        attempts=(attempt,),
+    )
+
+    assert _terminal_accounting(terminal) == (None, None, None)
+    execution = _terminal_execution(TaskKind.CORRECTION_THEORY, terminal)
+    assert execution.outcome.input_tokens is None
+    assert execution.outcome.output_tokens is None
+    assert execution.outcome.duration_ms is None
+
+
+def test_genuine_observed_zero_accounting_remains_zero() -> None:
+    request = _request()
+    attempt = AttemptEvidence(
+        attempt_number=1,
+        request_hash=request.request_hash,
+        evidence_sha256=HASH,
+        finish_reason="output_limit",
+        input_tokens=0,
+        output_tokens=0,
+        total_duration_ms=0,
+        observed_at=datetime(2026, 7, 29, tzinfo=UTC),
+    )
+    observed_zero = build_terminal_outcome(
+        stage=TerminalStage.THEORY_CORRECTION,
+        error_code=TerminalErrorCode.OUTPUT_LIMIT_EXHAUSTED,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason="Observed zero accounting.",
+        request_identity=request.identity(),
+        semantic_config_hash="d" * 64,
+        runtime=TerminalRuntime(
+            endpoint=request.config.endpoint,
+            provider_version=request.config.provider_version,
+            model=request.config.model,
+            model_digest=request.config.model_digest,
+            temperature=request.config.temperature,
+            seed=request.config.seed,
+            num_ctx=request.config.num_ctx,
+            num_predict=request.config.theory_num_predict,
+            think=request.config.think,
+        ),
+        permitted_attempt_count=2,
+        attempts=(attempt,),
+    )
+
+    assert _terminal_accounting(observed_zero) == (0, 0, 0)
 
 
 @pytest.mark.parametrize(
@@ -460,6 +588,35 @@ def test_terminal_outcomes_are_not_counted_as_cache_misses_or_new_calls() -> Non
     assert ledger["summary"]["new_local_calls"] == 0
     assert ledger["summary"]["input_tokens"] == 10
     assert ledger["summary"]["output_tokens"] == 4096
+
+
+def test_r3_replay_ledger_counts_three_unavailable_terminal_accounts() -> None:
+    terminal_tasks = tuple(
+        TaskOutcome(
+            task_kind=TaskKind.CORRECTION_THEORY,
+            request_hash=f"{index:064x}",
+            status=TaskStatus.STRUCTURED_OUTPUT_ERROR,
+            cache_hit=True,
+            error_type="INVALID_STRUCTURED_OUTPUT",
+            terminal=True,
+            terminal_outcome_hash=f"{index + 10:064x}",
+            input_tokens=None,
+            output_tokens=None,
+            duration_ms=None,
+        )
+        for index in range(1, 4)
+    )
+    ledger = _request_ledger(
+        {"theory": SimpleNamespace(task_outcomes=terminal_tasks)},
+        {},
+    )
+
+    assert ledger["summary"]["input_tokens"] is None
+    assert ledger["summary"]["output_tokens"] is None
+    assert ledger["summary"]["inference_ms"] is None
+    assert ledger["summary"]["input_token_accounting_unavailable"] == 3
+    assert ledger["summary"]["output_token_accounting_unavailable"] == 3
+    assert ledger["summary"]["inference_time_accounting_unavailable"] == 3
 
 
 def test_request_ledger_preserves_first_live_observation_for_duplicate_request() -> None:

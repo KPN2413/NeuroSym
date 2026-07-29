@@ -261,9 +261,9 @@ def _terminal_from_failure(
                 }
             ),
             finish_reason="provider_error",
-            input_tokens=0,
-            output_tokens=0,
-            total_duration_ms=0,
+            input_tokens=None,
+            output_tokens=None,
+            total_duration_ms=None,
             observed_at=observed_at,
         )
         for index in range(1, observed_attempts + 1)
@@ -386,6 +386,7 @@ def _terminal_execution(
         PipelineFailureStatus.TIMEOUT: TaskStatus.TIMEOUT,
         PipelineFailureStatus.PROVIDER_ERROR: TaskStatus.PROVIDER_ERROR,
     }[terminal.pipeline_status]
+    input_tokens, output_tokens, duration_ms = _terminal_accounting(terminal)
     return TaskExecution(
         outcome=TaskOutcome(
             task_kind=kind,
@@ -394,14 +395,31 @@ def _terminal_execution(
             cache_hit=cache_hit,
             error_type=terminal.error_code.value,
             error_message=terminal.reason,
-            input_tokens=terminal.input_tokens,
-            output_tokens=terminal.output_tokens,
-            duration_ms=terminal.total_duration_ms,
+            input_tokens=input_tokens,
+            output_tokens=output_tokens,
+            duration_ms=duration_ms,
             terminal=True,
             terminal_outcome_hash=terminal.terminal_outcome_sha256,
         ),
         value=None,
     )
+
+
+def _terminal_accounting(
+    terminal: TerminalProviderOutcome,
+) -> tuple[int | None, int | None, float | None]:
+    """Interpret legacy provider-error zeroes as unavailable response telemetry."""
+    aggregate_is_zero = (
+        terminal.input_tokens == 0
+        and terminal.output_tokens == 0
+        and terminal.total_duration_ms == 0
+    )
+    provider_failed_before_response = any(
+        attempt.finish_reason == "provider_error" for attempt in terminal.attempts
+    )
+    if aggregate_is_zero and provider_failed_before_response:
+        return None, None, None
+    return terminal.input_tokens, terminal.output_tokens, terminal.total_duration_ms
 
 
 def _failure(

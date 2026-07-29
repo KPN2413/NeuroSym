@@ -69,6 +69,7 @@ R3_1_AMENDMENT = "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.j
 R3_2_AMENDMENT = "experiments/manifests/phase6-r3-2-terminal-replay-amendment.v1.json"
 R3_3_AMENDMENT = "experiments/manifests/phase6-r3-3-null-accounting-propagation-amendment.v1.json"
 R3_4_AMENDMENT = "experiments/manifests/phase6-r3-4-report-accounting-amendment.v1.json"
+R3_5_AMENDMENT = "experiments/manifests/phase6-r3-5-legacy-zero-accounting-amendment.v1.json"
 R3_FREEZE_COMMIT = "f207515f6fab96bd9f785a0c42c4926a64b872c2"
 MISSING_THEORY_REQUEST = "dc1e6278fc2d360bec7caba8d6d3459d26de3e1251a8683711faf93f498a23d9"
 INVALID_QUERY_REQUEST = "4d6a1ff66e104bd60686e40fc4ad71fe35ef0833d8d3745016fe5f327eb2fded"
@@ -118,6 +119,7 @@ def prepare_recovery_r3(
         verify_r3_freeze(prepared)
         _verify_r3_3_accounting_amendment(prepared.root)
         _verify_r3_4_report_amendment(prepared.root)
+        _verify_r3_5_accounting_amendment(prepared.root)
     return prepared
 
 
@@ -678,6 +680,30 @@ def _verify_r3_4_report_amendment(root: Path) -> None:
             raise RecoveryR3Error(f"Phase 6-R3.4 {kind} evidence hash differs")
     if live["phase6_cache_files"] != 64:
         raise RecoveryR3Error("Phase 6-R3.4 live cache inventory count differs")
+
+
+def _verify_r3_5_accounting_amendment(root: Path) -> None:
+    path = root / R3_5_AMENDMENT
+    if not path.is_file():
+        raise RecoveryR3Error("Phase 6-R3.5 accounting amendment is missing")
+    amendment = json.loads(path.read_text(encoding="utf-8"))
+    expected = {
+        "amends_commit": "54f6e7e11d03f0cec0d2454ff368e3e358843678",
+        "amends_manifest_sha256": file_sha256(root / R3_4_AMENDMENT),
+        "development_metrics_examined": True,
+        "prediction_sets_sealed": True,
+        "performance_based_change": False,
+    }
+    if any(amendment.get(key) != value for key, value in expected.items()):
+        raise RecoveryR3Error("Phase 6-R3.5 amendment differs from the frozen contract")
+    evidence = amendment["legacy_terminal_cache_evidence"]
+    if len(evidence) != 2:
+        raise RecoveryR3Error("Phase 6-R3.5 must freeze exactly two legacy terminal caches")
+    for item in evidence:
+        if file_sha256(root / item["path"]) != item["sha256"]:
+            raise RecoveryR3Error("Phase 6-R3.5 terminal cache evidence hash differs")
+        if item["legacy_zero_interpretation"] != "unavailable":
+            raise RecoveryR3Error("Phase 6-R3.5 terminal interpretation differs")
 
 
 def _parser_request(
