@@ -45,6 +45,7 @@ from verilogic_ns_api.terminal_outcomes import (
     TerminalStage,
     build_terminal_outcome,
     terminal_outcome_hash,
+    validation_error_hash,
 )
 from verilogic_ns_api.validation_correction.controller import ValidationCorrectionController
 from verilogic_ns_api.validation_correction.models import (
@@ -170,6 +171,69 @@ def test_terminal_outcome_is_strict_versioned_and_canonically_hashed() -> None:
         terminal.__class__.model_validate(
             {**terminal.model_dump(mode="json"), "fabricated_ast": {}}
         )
+
+
+def test_validation_error_hash_handles_exception_context() -> None:
+    invalid = {
+        "facts": [
+            {
+                "source_id": "sent1",
+                "kind": "fact",
+                "fact": {
+                    "predicate": "red",
+                    "arity": 2,
+                    "arguments": [{"kind": "entity", "id": "dog"}],
+                    "negated": False,
+                },
+            }
+        ],
+        "rules": [],
+    }
+    with pytest.raises(ValidationError) as captured:
+        CandidateTheoryOutput.model_validate(invalid)
+    first = validation_error_hash(captured.value)
+    second = validation_error_hash(captured.value)
+    assert first == second
+    assert len(first) == 64
+
+
+def test_terminal_outcome_preserves_unavailable_accounting_as_null() -> None:
+    request = _request()
+    attempt = AttemptEvidence(
+        attempt_number=1,
+        request_hash=request.request_hash,
+        evidence_sha256=HASH,
+        finish_reason="client_interrupted",
+        input_tokens=None,
+        output_tokens=None,
+        total_duration_ms=None,
+        observed_at=datetime(2026, 7, 29, tzinfo=UTC),
+    )
+    terminal = build_terminal_outcome(
+        stage=TerminalStage.THEORY_CORRECTION,
+        error_code=TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason="The response was rejected before telemetry could be persisted.",
+        request_identity=request.identity(),
+        semantic_config_hash="d" * 64,
+        runtime=TerminalRuntime(
+            endpoint=request.config.endpoint,
+            provider_version=request.config.provider_version,
+            model=request.config.model,
+            model_digest=request.config.model_digest,
+            temperature=request.config.temperature,
+            seed=request.config.seed,
+            num_ctx=request.config.num_ctx,
+            num_predict=request.config.theory_num_predict,
+            think=request.config.think,
+        ),
+        permitted_attempt_count=2,
+        attempts=(attempt,),
+    )
+    assert terminal.input_tokens is None
+    assert terminal.output_tokens is None
+    assert terminal.total_duration_ms is None
+    assert terminal.model_dump(mode="json")["output_tokens"] is None
 
 
 @pytest.mark.parametrize(

@@ -25,6 +25,7 @@ from verilogic_ns_api.validation_correction.recovery_r2 import (
 )
 from verilogic_ns_api.validation_correction.recovery_r3 import (
     RecoveryR3Error,
+    materialize_r3_1_interrupted_terminal,
     materialize_r3_phase5,
     prepare_recovery_r3,
     r3_freeze_facts,
@@ -65,6 +66,8 @@ def build_parser() -> argparse.ArgumentParser:
     r2_compare.add_argument("--replay", type=Path, required=True)
     r3_materialize = subparsers.add_parser("r3-materialize")
     r3_materialize.add_argument("--config", type=Path, required=True)
+    r3_1_materialize = subparsers.add_parser("r3-1-materialize-terminal")
+    r3_1_materialize.add_argument("--config", type=Path, required=True)
     r3_freeze = subparsers.add_parser("r3-freeze-facts")
     r3_freeze.add_argument("--config", type=Path, required=True)
     for name in ("r3-run", "r3-replay"):
@@ -118,6 +121,15 @@ def main(argv: list[str] | None = None) -> int:
             print(
                 json.dumps(
                     materialize_r3_phase5(prepare_recovery_r3(args.config)),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command == "r3-1-materialize-terminal":
+            print(
+                json.dumps(
+                    materialize_r3_1_interrupted_terminal(prepare_recovery_r3(args.config)),
                     indent=2,
                     sort_keys=True,
                 )

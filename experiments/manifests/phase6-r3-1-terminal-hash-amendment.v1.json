@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3.1 Terminal Error Hashing Amendment",
+  "amends_freeze_commit": "f207515f6fab96bd9f785a0c42c4926a64b872c2",
+  "amends_manifest": "experiments/manifests/phase6-r3-terminal-failure-freeze.v1.json",
+  "amends_manifest_sha256": "2084266540bd6642a0a30fe294363e404912e53600e918c2abf03a8c55a61bf2",
+  "previous_terminal_outcome_schema_sha256": "a905e50cb827c245ef7dbfb531f2a6ea239e9f0993ab4d4dfe082deff563901d",
+  "amended_terminal_outcome_schema_sha256": "313fe3ee9798d0b7876f75d776938164825b4fb2faadc2f2d35d915992fc10eb",
+  "trigger": "The final permitted execution of a theory-correction request returned an invalid CandidateTheoryOutput. Terminal construction then crashed because Pydantic error context contained a ValueError that canonical_json could not serialize.",
+  "development_metrics_examined": false,
+  "prediction_sets_sealed": false,
+  "performance_based_change": false,
+  "behavior_change": [
+    "Hash ValidationError.json(include_url=false), whose Pydantic encoder stringifies exception context deterministically.",
+    "Materialize the already exhausted correction request as INVALID_STRUCTURED_OUTPUT from preserved interruption and crash evidence without another provider call.",
+    "Represent unavailable per-attempt and aggregate token/timing accounting as JSON null rather than fabricated zero values."
+  ],
+  "forbidden": [
+    "third execution of the interrupted correction request",
+    "prompt, schema, model, runtime, token-limit, correction-policy, abstention-policy, sample, or threshold changes",
+    "discarding the three prior successful correction responses",
+    "using development labels or the test split"
+  ],
+  "prior_phase6_cache": {
+    "successful_entries": 3,
+    "observed_inventory_sha256": "6512239456eb98b0d5eab1484abf802409554343ddb068d7aeb068cf340c3d55",
+    "canonical_inventory_method": "relative_path_sha256_size.v1",
+    "canonical_inventory_sha256": "c252d9e1612a3c82b14b6474ed8d8bd58e80e2cb7294a8967b5fe29c338124f0",
+    "files": [
+      {
+        "relative_path": "semantic-correction-v1/88/886876a4ab27ab681dfeec739164d073289ddee17321465a231ff624125ca50f.json",
+        "sha256": "5bc1ac153831aced86f338fe1be6b936458f349e6981ab2fd965676d60bb7d08",
+        "size": 4798
+      },
+      {
+        "relative_path": "semantic-correction-v1/8a/8a68c995340c7911edfe69f4ef25313c1ccd6bdccd442e04656ade038ae9eefd.json",
+        "sha256": "c87470f868ee59d29a6a0136c012f43dcc4079885221e675debd2fb4bd47e16b",
+        "size": 3671
+      },
+      {
+        "relative_path": "semantic-correction-v1/ad/addaf29c0e5e63cea6ddc181ea3b63a52c7ec144ae284db21936a2f6fb0b4fec.json",
+        "sha256": "8626ea0435b63f1285c8892fa7aec7d10612034c6e7ac78d069e014cec5a1590",
+        "size": 5135
+      }
+    ]
+  },
+  "interruption_evidence": {
+    "request_hash": "31b97fc053418bf0c44b8cac49cc0a51a05d21870789da082253fa5d35954be8",
+    "task_kind": "correction-theory",
+    "permitted_attempts": 2,
+    "observed_attempts": 2,
+    "files": [
+      {
+        "path": "results/phase6-r3-ops/phase6-r3-interruption-observation.json",
+        "sha256": "c5ecd64d7b36e787c2a273cd3347aa25dcb595ff55ef32865cafa05bcccc09a4"
+      },
+      {
+        "path": "results/validation-correction-phase6-r3/phase6-r3-live/run-state.json",
+        "sha256": "4bb8043ccf9d0ca4b4da53fb126be322572a086dcbc839eee9b1312708a20fc3"
+      },
+      {
+        "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-1/run-state.json",
+        "sha256": "e5f909aad3c2567b38d2087f60c1c78431ff37d04b3b5979dcbf2f20fa9d54c3"
+      },
+      {
+        "path": "results/phase6-r3-ops/phase6-r3-live-resumed-1.stderr.log",
+        "sha256": "29b3cb0c0b7bcf0a4f70ece94dccbc9bc703f6bec590c1c9945779b8f6759026"
+      },
+      {
+        "path": "results/phase6-r3-ops/phase6-r3-live-resumed-1.stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "attempts": [
+      {
+        "attempt_number": 1,
+        "finish_reason": "client_interrupted",
+        "observed_at": "2026-07-29T09:15:49Z",
+        "evidence_sha256": "c5ecd64d7b36e787c2a273cd3347aa25dcb595ff55ef32865cafa05bcccc09a4"
+      },
+      {
+        "attempt_number": 2,
+        "finish_reason": "invalid_structured_output",
+        "observed_at": "2026-07-29T09:20:09.6235082Z",
+        "evidence_sha256": "29b3cb0c0b7bcf0a4f70ece94dccbc9bc703f6bec590c1c9945779b8f6759026"
+      }
+    ],
+    "observed_validation_failures": [
+      "facts.12.fact literal arity mismatch",
+      "facts.13.fact literal arity mismatch",
+      "facts.14.fact literal arity mismatch"
+    ],
+    "response_payload_preserved": false,
+    "input_output_token_accounting": "unavailable",
+    "timing_accounting": "unavailable",
+    "reason_unavailable": "The client interruption and pre-cache hashing crash occurred before a response or terminal envelope could be atomically persisted."
+  },
+  "acceptance": [
+    "regression test proves exception context hashes without TypeError",
+    "amendment committed before further inference",
+    "terminal artifact validates against the same request contract",
+    "materialization performs zero provider calls",
+    "the request returns the same typed terminal error during replay",
+    "all original R3 gates remain unchanged"
+  ]
+}

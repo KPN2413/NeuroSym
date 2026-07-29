@@ -38,6 +38,7 @@ from verilogic_ns_api.terminal_outcomes import (
     TerminalRuntime,
     TerminalStage,
     build_terminal_outcome,
+    validation_error_hash,
 )
 
 T = TypeVar("T", bound=BaseModel)
@@ -235,7 +236,7 @@ def _invalid_response_terminal(
             "namespace": "semantic-parser-invalid-response.v1",
             "request_hash": request.request_hash,
             "response_content_sha256": sha256_payload(response.content),
-            "validation_error_sha256": sha256_payload(error.errors(include_url=False)),
+            "validation_error_sha256": validation_error_hash(error),
         }
     )
     attempt = AttemptEvidence(

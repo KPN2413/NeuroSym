@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from datetime import datetime
 from enum import StrEnum
 from typing import Literal, Self
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, ValidationError, model_validator
 
 from verilogic_ns_api.reasoning.models import sha256_payload
 from verilogic_ns_api.semantic_parsing.models import ParserResponse
@@ -62,9 +63,9 @@ class AttemptEvidence(StrictModel):
     request_hash: str = Field(pattern=SHA256_PATTERN)
     evidence_sha256: str = Field(pattern=SHA256_PATTERN)
     finish_reason: str | None = Field(default=None, max_length=128)
-    input_tokens: int = Field(ge=0)
-    output_tokens: int = Field(ge=0)
-    total_duration_ms: float = Field(ge=0)
+    input_tokens: int | None = Field(ge=0)
+    output_tokens: int | None = Field(ge=0)
+    total_duration_ms: float | None = Field(ge=0)
     observed_at: datetime
     valid_structured_result: Literal[False] = False
 
@@ -89,9 +90,9 @@ class TerminalProviderOutcome(StrictModel):
     observed_attempt_count: int = Field(ge=1, le=3)
     output_token_limit: int = Field(ge=1, le=8192)
     attempts: tuple[AttemptEvidence, ...] = Field(min_length=1, max_length=3)
-    input_tokens: int = Field(ge=0)
-    output_tokens: int = Field(ge=0)
-    total_duration_ms: float = Field(ge=0)
+    input_tokens: int | None = Field(ge=0)
+    output_tokens: int | None = Field(ge=0)
+    total_duration_ms: float | None = Field(ge=0)
     attempt_evidence_hashes: tuple[str, ...] = Field(min_length=1, max_length=3)
     first_observed_at: datetime
     last_observed_at: datetime
@@ -113,11 +114,13 @@ class TerminalProviderOutcome(StrictModel):
             raise ValueError("terminal attempt evidence hashes are inconsistent")
         if any(item.request_hash != self.request_hash for item in self.attempts):
             raise ValueError("terminal attempt evidence belongs to another request")
-        if self.input_tokens != sum(item.input_tokens for item in self.attempts):
+        if self.input_tokens != _sum_accounting(item.input_tokens for item in self.attempts):
             raise ValueError("terminal input-token accounting is inconsistent")
-        if self.output_tokens != sum(item.output_tokens for item in self.attempts):
+        if self.output_tokens != _sum_accounting(item.output_tokens for item in self.attempts):
             raise ValueError("terminal output-token accounting is inconsistent")
-        if self.total_duration_ms != sum(item.total_duration_ms for item in self.attempts):
+        if self.total_duration_ms != _sum_accounting(
+            item.total_duration_ms for item in self.attempts
+        ):
             raise ValueError("terminal duration accounting is inconsistent")
         if self.first_observed_at != min(item.observed_at for item in self.attempts):
             raise ValueError("terminal first timestamp is inconsistent")
@@ -190,6 +193,18 @@ def terminal_outcome_hash(outcome: TerminalProviderOutcome) -> str:
     return sha256_payload(outcome.model_dump(mode="json", exclude={"terminal_outcome_sha256"}))
 
 
+def validation_error_hash(error: ValidationError) -> str:
+    """Hash Pydantic errors through its JSON encoder, including stringified ctx exceptions."""
+    return sha256_payload(error.json(include_url=False))
+
+
+def _sum_accounting(values: Iterable[int | float | None]) -> int | float | None:
+    observed = tuple(values)
+    if any(value is None for value in observed):
+        return None
+    return sum(value for value in observed if value is not None)
+
+
 def build_terminal_outcome(
     *,
     stage: TerminalStage,
@@ -219,9 +234,9 @@ def build_terminal_outcome(
         "observed_attempt_count": len(attempts),
         "output_token_limit": runtime.num_predict,
         "attempts": attempts,
-        "input_tokens": sum(item.input_tokens for item in attempts),
-        "output_tokens": sum(item.output_tokens for item in attempts),
-        "total_duration_ms": sum(item.total_duration_ms for item in attempts),
+        "input_tokens": _sum_accounting(item.input_tokens for item in attempts),
+        "output_tokens": _sum_accounting(item.output_tokens for item in attempts),
+        "total_duration_ms": _sum_accounting(item.total_duration_ms for item in attempts),
         "attempt_evidence_hashes": tuple(item.evidence_sha256 for item in attempts),
         "first_observed_at": min(item.observed_at for item in attempts),
         "last_observed_at": max(item.observed_at for item in attempts),

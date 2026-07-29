@@ -78,9 +78,9 @@
       "maxItems": 3,
       "items": {"$ref": "#/$defs/attempt"}
     },
-    "input_tokens": {"type": "integer", "minimum": 0},
-    "output_tokens": {"type": "integer", "minimum": 0},
-    "total_duration_ms": {"type": "number", "minimum": 0},
+    "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+    "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+    "total_duration_ms": {"type": ["number", "null"], "minimum": 0},
     "attempt_evidence_hashes": {
       "type": "array",
       "minItems": 1,
@@ -143,9 +143,9 @@
         "request_hash": {"$ref": "#/$defs/sha256"},
         "evidence_sha256": {"$ref": "#/$defs/sha256"},
         "finish_reason": {"type": ["string", "null"], "maxLength": 128},
-        "input_tokens": {"type": "integer", "minimum": 0},
-        "output_tokens": {"type": "integer", "minimum": 0},
-        "total_duration_ms": {"type": "number", "minimum": 0},
+        "input_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "output_tokens": {"type": ["integer", "null"], "minimum": 0},
+        "total_duration_ms": {"type": ["number", "null"], "minimum": 0},
         "observed_at": {"type": "string", "format": "date-time"},
         "valid_structured_result": {"const": false}
       }

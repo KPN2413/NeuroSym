@@ -29,6 +29,7 @@ from verilogic_ns_api.terminal_outcomes import (
     TerminalRuntime,
     TerminalStage,
     build_terminal_outcome,
+    validation_error_hash,
 )
 from verilogic_ns_api.validation_correction.cache import (
     CorrectionCacheError,
@@ -327,7 +328,7 @@ def _terminal_from_invalid_response(
             "namespace": "phase6-r3-invalid-correction-response.v1",
             "request_hash": request.request_hash,
             "response_content_sha256": sha256_payload(response.content),
-            "validation_error_sha256": sha256_payload(error.errors(include_url=False)),
+            "validation_error_sha256": validation_error_hash(error),
         }
     )
     attempt = AttemptEvidence(

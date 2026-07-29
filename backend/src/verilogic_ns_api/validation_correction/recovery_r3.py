@@ -38,11 +38,17 @@ from verilogic_ns_api.terminal_outcomes import (
     TerminalStage,
     build_terminal_outcome,
 )
+from verilogic_ns_api.validation_correction.cache import CorrectionResponseCache
 from verilogic_ns_api.validation_correction.configuration import (
     PreparedCorrectionExperiment,
     load_correction_config,
     prepare_correction_experiment,
 )
+from verilogic_ns_api.validation_correction.feedback import validate_theory_candidate
+from verilogic_ns_api.validation_correction.models import TaskKind, TheoryCorrectionInput
+from verilogic_ns_api.validation_correction.prompts import render_correction_input
+from verilogic_ns_api.validation_correction.provider import CorrectionTaskRequest
+from verilogic_ns_api.validation_correction.raw import load_raw_phase5_candidates
 from verilogic_ns_api.validation_correction.recovery_r2 import (
     EXPECTED_MODEL_DIGEST,
     ORIGINAL_CORRECTION_CONFIG,
@@ -59,8 +65,11 @@ R3_CORRECTION_CACHE = "results/cache/validation-correction-phase6-r3"
 R3_CORRECTION_OUTPUT = "results/validation-correction-phase6-r3"
 R3_FREEZE_MANIFEST = "experiments/manifests/phase6-r3-terminal-failure-freeze.v1.json"
 R3_TERMINAL_SCHEMA = "schemas/terminal-provider-outcome.v1.schema.json"
+R3_1_AMENDMENT = "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.json"
+R3_FREEZE_COMMIT = "f207515f6fab96bd9f785a0c42c4926a64b872c2"
 MISSING_THEORY_REQUEST = "dc1e6278fc2d360bec7caba8d6d3459d26de3e1251a8683711faf93f498a23d9"
 INVALID_QUERY_REQUEST = "4d6a1ff66e104bd60686e40fc4ad71fe35ef0833d8d3745016fe5f327eb2fded"
+INTERRUPTED_CORRECTION_REQUEST = "31b97fc053418bf0c44b8cac49cc0a51a05d21870789da082253fa5d35954be8"
 
 R2_EVIDENCE = {
     "cumulative": "results/semantic-parsing-phase6-r2/phase6-r2-1-cumulative-accounting.json",
@@ -186,7 +195,9 @@ def verify_r3_freeze(prepared: PreparedCorrectionExperiment) -> None:
     manifest = json.loads(path.read_text(encoding="utf-8"))
     facts = r3_freeze_facts(prepared)
     frozen_facts = manifest.get("frozen_facts")
-    if frozen_facts != facts:
+    if frozen_facts != facts and not _verify_r3_1_schema_amendment(
+        prepared.root, frozen_facts, facts
+    ):
         raise RecoveryR3Error("Phase 6-R3 frozen facts differ from current artifacts")
     if manifest.get("test_split_forbidden") is not True:
         raise RecoveryR3Error("Phase 6-R3 test-split prohibition is missing")
@@ -330,8 +341,128 @@ def materialize_r3_phase5(prepared: PreparedCorrectionExperiment) -> dict[str, o
     return report
 
 
+def materialize_r3_1_interrupted_terminal(
+    prepared: PreparedCorrectionExperiment,
+) -> dict[str, object]:
+    """Seal the preregistered interrupted/invalid Phase 6 request without dispatch."""
+    root = prepared.root
+    amendment_path = root / R3_1_AMENDMENT
+    if not amendment_path.is_file():
+        raise RecoveryR3Error("Phase 6-R3.1 amendment is missing")
+    amendment = json.loads(amendment_path.read_text(encoding="utf-8"))
+    if not _verify_r3_1_schema_amendment(
+        root,
+        json.loads((root / R3_FREEZE_MANIFEST).read_text(encoding="utf-8"))["frozen_facts"],
+        r3_freeze_facts(prepared),
+    ):
+        raise RecoveryR3Error("Phase 6-R3.1 amendment contract is invalid")
+    prior_cache = amendment["prior_phase6_cache"]
+    current_cache = _cache_file_inventory(root / R3_CORRECTION_CACHE)
+    if current_cache["records"] != prior_cache["files"]:
+        raise RecoveryR3Error("Phase 6-R3.1 prior success cache inventory differs")
+    if current_cache["inventory_sha256"] != prior_cache["canonical_inventory_sha256"]:
+        raise RecoveryR3Error("Phase 6-R3.1 prior success cache hash differs")
+    evidence = amendment["interruption_evidence"]
+    for item in evidence["files"]:
+        if file_sha256(root / item["path"]) != item["sha256"]:
+            raise RecoveryR3Error(f"R3.1 evidence hash mismatch: {item['path']}")
+
+    request = _first_missing_invalid_theory_correction(prepared)
+    if request.request_hash != INTERRUPTED_CORRECTION_REQUEST:
+        raise RecoveryR3Error("R3.1 interrupted request identity differs")
+    cache = CorrectionResponseCache(root / prepared.config.cache_directory)
+    existing = cache.load_outcome(request)
+    if existing is not None:
+        if (
+            existing.outcome_type is CachedOutcomeType.TERMINAL_ERROR
+            and existing.terminal_error is not None
+            and existing.terminal_error.request_hash == request.request_hash
+        ):
+            return {
+                "schema_version": "1.0",
+                "status": "already_materialized",
+                "request_hash": request.request_hash,
+                "terminal_outcome_sha256": (existing.terminal_error.terminal_outcome_sha256),
+                "provider_calls": 0,
+            }
+        raise RecoveryR3Error("R3.1 interrupted request unexpectedly has a success cache entry")
+
+    attempts = tuple(
+        AttemptEvidence(
+            attempt_number=item["attempt_number"],
+            request_hash=request.request_hash,
+            evidence_sha256=sha256_payload(
+                {
+                    "namespace": "phase6-r3-1-interrupted-attempt.v1",
+                    "request_hash": request.request_hash,
+                    "attempt_number": item["attempt_number"],
+                    "finish_reason": item["finish_reason"],
+                    "evidence_sha256": item["evidence_sha256"],
+                }
+            ),
+            finish_reason=item["finish_reason"],
+            input_tokens=None,
+            output_tokens=None,
+            total_duration_ms=None,
+            observed_at=datetime.fromisoformat(item["observed_at"].replace("Z", "+00:00")),
+        )
+        for item in evidence["attempts"]
+    )
+    runtime = prepared.config.runtime
+    terminal = build_terminal_outcome(
+        stage=TerminalStage.THEORY_CORRECTION,
+        error_code=TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason=(
+            "The first execution was interrupted and the final permitted execution returned "
+            "a theory that failed the frozen structured-output schema."
+        ),
+        request_identity=request.identity(),
+        semantic_config_hash=sha256_payload(
+            {
+                "runtime": runtime.model_dump(mode="json"),
+                "limits": prepared.config.limits.model_dump(mode="json"),
+            }
+        ),
+        runtime=TerminalRuntime(
+            endpoint=runtime.endpoint,
+            provider_version=runtime.provider_version,
+            model=runtime.model,
+            model_digest=runtime.model_digest,
+            temperature=runtime.temperature,
+            seed=runtime.seed,
+            num_ctx=runtime.num_ctx,
+            num_predict=request.num_predict,
+            think=runtime.think,
+        ),
+        permitted_attempt_count=runtime.max_attempts,
+        attempts=attempts,
+    )
+    cache.store_terminal(request, terminal)
+    report = {
+        "schema_version": "1.0",
+        "status": "complete",
+        "request_hash": request.request_hash,
+        "stage": terminal.stage,
+        "error_code": terminal.error_code,
+        "pipeline_status": terminal.pipeline_status,
+        "observed_attempts": terminal.observed_attempt_count,
+        "terminal_outcome_sha256": terminal.terminal_outcome_sha256,
+        "token_accounting": "unavailable_after_client_interruption_and_pre-cache_crash",
+        "provider_calls": 0,
+        "hosted_provider_calls": 0,
+        "external_transmissions": 0,
+        "api_cost_usd": 0.0,
+    }
+    _atomic_json(root / R3_OUTPUT / "phase6-r3-1-terminal-materialization.json", report)
+    return report
+
+
 def r2_cache_inventory(root: Path) -> dict[str, object]:
-    cache_root = root / R2_CACHE
+    return _cache_file_inventory(root / R2_CACHE)
+
+
+def _cache_file_inventory(cache_root: Path) -> dict[str, object]:
     records = [
         {
             "relative_path": path.relative_to(cache_root).as_posix(),
@@ -345,6 +476,38 @@ def r2_cache_inventory(root: Path) -> dict[str, object]:
         "inventory_sha256": sha256_payload(records),
         "records": records,
     }
+
+
+def _verify_r3_1_schema_amendment(
+    root: Path,
+    frozen_facts: object,
+    current_facts: object,
+) -> bool:
+    if not isinstance(frozen_facts, dict) or not isinstance(current_facts, dict):
+        return False
+    amendment_path = root / R3_1_AMENDMENT
+    if not amendment_path.is_file():
+        return False
+    try:
+        amendment = json.loads(amendment_path.read_text(encoding="utf-8"))
+        frozen_copy = json.loads(json.dumps(frozen_facts))
+        current_copy = json.loads(json.dumps(current_facts))
+        frozen_schema = frozen_copy["schema_hashes"]["terminal_outcome_file_sha256"]
+        current_schema = current_copy["schema_hashes"]["terminal_outcome_file_sha256"]
+        current_copy["schema_hashes"]["terminal_outcome_file_sha256"] = frozen_schema
+        return (
+            current_copy == frozen_copy
+            and amendment["amends_freeze_commit"] == R3_FREEZE_COMMIT
+            and amendment["amends_manifest"] == R3_FREEZE_MANIFEST
+            and amendment["amends_manifest_sha256"] == file_sha256(root / R3_FREEZE_MANIFEST)
+            and amendment["previous_terminal_outcome_schema_sha256"] == frozen_schema
+            and amendment["amended_terminal_outcome_schema_sha256"] == current_schema
+            and amendment["development_metrics_examined"] is False
+            and amendment["prediction_sets_sealed"] is False
+            and amendment["performance_based_change"] is False
+        )
+    except (KeyError, TypeError, ValueError, OSError):
+        return False
 
 
 def semantic_config_hash(prepared: PreparedParserExperiment) -> str:
@@ -395,6 +558,39 @@ def _phase5_requests(
         for example in prepared.pilot_examples
     )
     return requests
+
+
+def _first_missing_invalid_theory_correction(
+    prepared: PreparedCorrectionExperiment,
+) -> CorrectionTaskRequest:
+    raw = load_raw_phase5_candidates(prepared.phase5, calibration=False)
+    cache = CorrectionResponseCache(prepared.root / prepared.config.cache_directory)
+    prompt, prompt_hash = prepared.prompts[TaskKind.CORRECTION_THEORY]
+    schema = CandidateTheoryOutput.model_json_schema()
+    for key, view in sorted(raw.theory_views.items()):
+        validation = validate_theory_candidate(raw.theories[key], view, theory_id=key)
+        if validation.valid:
+            continue
+        value = TheoryCorrectionInput(
+            source=view.public,
+            previous_candidate=(raw.theories[key] if isinstance(raw.theories[key], dict) else {}),
+            validator_feedback=validation.feedback,
+            critic_report=None,
+        )
+        request = CorrectionTaskRequest(
+            task_kind=TaskKind.CORRECTION_THEORY,
+            instructions=prompt,
+            input_text=render_correction_input(value),
+            prompt_hash=prompt_hash,
+            input_hash=sha256_payload(value.model_dump(mode="json")),
+            output_schema=schema,
+            schema_hash=sha256_payload(schema),
+            num_predict=prepared.config.limits.correction_theory_num_predict,
+            config=prepared.config.runtime,
+        )
+        if cache.load_outcome(request) is None:
+            return request
+    raise RecoveryR3Error("R3.1 could not locate the interrupted correction request")
 
 
 def _parser_request(
