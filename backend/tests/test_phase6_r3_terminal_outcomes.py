@@ -57,7 +57,10 @@ from verilogic_ns_api.validation_correction.models import (
     TaskStatus,
     summarize_accounting,
 )
-from verilogic_ns_api.validation_correction.recovery_r2 import _request_ledger
+from verilogic_ns_api.validation_correction.recovery_r2 import (
+    _comparison_table,
+    _request_ledger,
+)
 from verilogic_ns_api.validation_correction.service import TaskExecution, _terminal_execution
 
 DIGEST = "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
@@ -457,6 +460,38 @@ def test_terminal_outcomes_are_not_counted_as_cache_misses_or_new_calls() -> Non
     assert ledger["summary"]["new_local_calls"] == 0
     assert ledger["summary"]["input_tokens"] == 10
     assert ledger["summary"]["output_tokens"] == 4096
+
+
+def test_request_ledger_preserves_first_live_observation_for_duplicate_request() -> None:
+    live = TaskOutcome(
+        task_kind=TaskKind.CRITIC_QUERY,
+        request_hash=HASH,
+        status=TaskStatus.SUCCESS,
+        cache_hit=False,
+    )
+    repeated = live.model_copy(update={"cache_hit": True})
+    decision = SimpleNamespace(task_outcomes=(live, repeated))
+    ledger = _request_ledger({"theory": decision}, {})
+    assert ledger["summary"]["unique_requests"] == 1
+    assert ledger["summary"]["new_local_calls"] == 1
+    assert ledger["summary"]["cache_hits"] == 1
+
+
+def test_r3_comparison_rows_use_r3_labels() -> None:
+    metrics = {
+        "accuracy": 0.0,
+        "coverage": 0.0,
+        "answered_only_accuracy": None,
+        "macro_f1": 0.0,
+        "abstained_examples": 0,
+        "errored_examples": 30,
+    }
+    rows = _comparison_table(metrics, metrics, metrics, experiment_version="r3")
+    assert [row["system"] for row in rows[3:6]] == [
+        "Phase 6-R3 P0",
+        "Phase 6-R3 P1",
+        "Phase 6-R3 P2",
+    ]
 
 
 def test_terminal_task_model_cannot_fabricate_success() -> None:

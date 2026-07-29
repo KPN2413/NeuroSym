@@ -384,7 +384,9 @@ def evaluate_sealed_recovery(
         "reasoning_metrics": reasoning,
         "efficiency": efficiency,
         "request_ledger": request_ledger["summary"],
-        "comparison_table": _comparison_table(p0_metrics, p1_metrics, p2_metrics),
+        "comparison_table": _comparison_table(
+            p0_metrics, p1_metrics, p2_metrics, experiment_version=experiment_version
+        ),
         "historical_phase5_p0": {
             "correct": 3,
             "accuracy": 0.1,
@@ -761,7 +763,9 @@ def _request_ledger(theories, queries) -> dict[str, object]:
         for decision in [*theories.values(), *queries.values()]
         for value in decision.task_outcomes
     ]
-    unique = {value.request_hash: value for value in outcomes}
+    unique = {}
+    for value in outcomes:
+        unique.setdefault(value.request_hash, value)
     operations = [
         {
             "task_kind": value.task_kind,
@@ -960,7 +964,13 @@ def _transition_matrix(left, right) -> dict[str, dict[str, int]]:
     return matrix
 
 
-def _comparison_table(p0, p1, p2) -> list[dict[str, object]]:
+def _comparison_table(
+    p0,
+    p1,
+    p2,
+    *,
+    experiment_version: str = "r2",
+) -> list[dict[str, object]]:
     def row(name, metrics):
         return {
             "system": name,
@@ -985,9 +995,9 @@ def _comparison_table(p0, p1, p2) -> list[dict[str, object]]:
             "macro_f1": 0.16317016317016317,
             "error": 26,
         },
-        row("Phase 6-R2 P0", p0),
-        row("Phase 6-R2 P1", p1),
-        row("Phase 6-R2 P2", p2),
+        row(f"Phase 6-{experiment_version.upper()} P0", p0),
+        row(f"Phase 6-{experiment_version.upper()} P1", p1),
+        row(f"Phase 6-{experiment_version.upper()} P2", p2),
         {
             "system": "Phase 4 oracle-AST symbolic ceiling",
             "correct": 30,

@@ -68,6 +68,7 @@ R3_TERMINAL_SCHEMA = "schemas/terminal-provider-outcome.v1.schema.json"
 R3_1_AMENDMENT = "experiments/manifests/phase6-r3-1-terminal-hash-amendment.v1.json"
 R3_2_AMENDMENT = "experiments/manifests/phase6-r3-2-terminal-replay-amendment.v1.json"
 R3_3_AMENDMENT = "experiments/manifests/phase6-r3-3-null-accounting-propagation-amendment.v1.json"
+R3_4_AMENDMENT = "experiments/manifests/phase6-r3-4-report-accounting-amendment.v1.json"
 R3_FREEZE_COMMIT = "f207515f6fab96bd9f785a0c42c4926a64b872c2"
 MISSING_THEORY_REQUEST = "dc1e6278fc2d360bec7caba8d6d3459d26de3e1251a8683711faf93f498a23d9"
 INVALID_QUERY_REQUEST = "4d6a1ff66e104bd60686e40fc4ad71fe35ef0833d8d3745016fe5f327eb2fded"
@@ -116,6 +117,7 @@ def prepare_recovery_r3(
     if verify_freeze:
         verify_r3_freeze(prepared)
         _verify_r3_3_accounting_amendment(prepared.root)
+        _verify_r3_4_report_amendment(prepared.root)
     return prepared
 
 
@@ -654,6 +656,28 @@ def _verify_r3_3_accounting_amendment(root: Path) -> None:
         raise RecoveryR3Error("Phase 6-R3.3 terminal cache evidence differs")
     if evidence["provider_calls"] != 0 or evidence["new_cache_entries"] != 0:
         raise RecoveryR3Error("Phase 6-R3.3 failed resume accounting is not zero-call")
+
+
+def _verify_r3_4_report_amendment(root: Path) -> None:
+    path = root / R3_4_AMENDMENT
+    if not path.is_file():
+        raise RecoveryR3Error("Phase 6-R3.4 report amendment is missing")
+    amendment = json.loads(path.read_text(encoding="utf-8"))
+    live = amendment["sealed_live_evidence"]
+    expected = {
+        "amends_commit": "acb9e4fd3226fa6aa2e1a350288598535a247129",
+        "amends_manifest_sha256": file_sha256(root / R3_3_AMENDMENT),
+        "development_metrics_examined": True,
+        "performance_based_change": False,
+    }
+    if any(amendment.get(key) != value for key, value in expected.items()):
+        raise RecoveryR3Error("Phase 6-R3.4 amendment differs from the frozen contract")
+    for kind in ("prediction_seal", "report", "request_ledger", "run_state"):
+        item = live[kind]
+        if file_sha256(root / item["path"]) != item["sha256"]:
+            raise RecoveryR3Error(f"Phase 6-R3.4 {kind} evidence hash differs")
+    if live["phase6_cache_files"] != 64:
+        raise RecoveryR3Error("Phase 6-R3.4 live cache inventory count differs")
 
 
 def _parser_request(
