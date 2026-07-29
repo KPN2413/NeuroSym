@@ -80,6 +80,17 @@ def precompute_parser_cache(
         "cache_hits": sum(bool(item["cache_hit"]) for item in operations),
         "new_local_calls": sum(not bool(item["cache_hit"]) for item in operations),
         "structured_output_successes": sum(item["status"] == "PARSED" for item in operations),
+        "terminal_outcomes": sum(
+            item["error_type"]
+            in {
+                "OUTPUT_LIMIT_EXHAUSTED",
+                "INVALID_STRUCTURED_OUTPUT",
+                "TIMEOUT_EXHAUSTED",
+                "TRANSIENT_RETRY_EXHAUSTED",
+                "PROVIDER_FAILURE",
+            }
+            for item in operations
+        ),
         "failures": sum(item["status"] != "PARSED" for item in operations),
         "input_tokens": sum(int(item["input_tokens"]) for item in operations),
         "output_tokens": sum(int(item["output_tokens"]) for item in operations),

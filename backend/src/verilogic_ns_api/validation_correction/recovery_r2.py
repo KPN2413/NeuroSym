@@ -128,6 +128,7 @@ def seal_recovery_predictions(
     service: CorrectionTaskService,
     output_directory: Path,
     run_id: str,
+    experiment_version: str = "r2",
 ) -> dict[str, object]:
     """Execute gold-free decisions and durably seal them before evaluation."""
     if output_directory.exists():
@@ -164,7 +165,7 @@ def seal_recovery_predictions(
     if service.new_call_count > prepared.config.limits.maximum_new_pilot_calls:
         raise RecoveryR2Error("Phase 6-R2 local-call budget was exceeded")
 
-    p0, p0_proof = _raw_policy(examples, raw)
+    p0, p0_proof = _raw_policy(examples, raw, experiment_version=experiment_version)
     p1 = apply_policy(
         examples=examples,
         theory_views=raw.theory_views,
@@ -222,6 +223,7 @@ def seal_recovery_predictions(
     seal = {
         "schema_version": "1.0",
         "status": "sealed",
+        "experiment_version": experiment_version,
         "run_id": run_id,
         "sealed_at": datetime.now(UTC).isoformat(),
         "examples": 30,
@@ -260,6 +262,7 @@ def evaluate_sealed_recovery(
     *,
     prepared: PreparedCorrectionExperiment,
     output_directory: Path,
+    experiment_version: str = "r2",
 ) -> dict[str, object]:
     """Evaluate only after verifying the durable gold-free prediction seal."""
     seal = _read_json(output_directory / "prediction-seal.json")
@@ -346,12 +349,16 @@ def evaluate_sealed_recovery(
     report = {
         "schema_version": "2.0",
         "status": "complete",
-        "experiment": "Phase 6 Recovery Replication v2",
+        "experiment": (
+            "Phase 6 R3 Terminal-Failure Evaluation"
+            if experiment_version == "r3"
+            else "Phase 6 Recovery Replication v2"
+        ),
         "run_id": seal["run_id"],
         "prediction_seal_fingerprint": seal["seal_fingerprint"],
         "report_fingerprint": report_fingerprint,
-        "p0_r2": {"metrics": p0_metrics, "parser": p0_report},
-        "p1_r2": {
+        f"p0_{experiment_version}": {"metrics": p0_metrics, "parser": p0_report},
+        f"p1_{experiment_version}": {
             "metrics": p1_metrics,
             "proof_verification": {
                 "attempted": p1["proof_attempted"],
@@ -360,7 +367,7 @@ def evaluate_sealed_recovery(
             },
             "abstention_reasons": p1["abstention_reasons"],
         },
-        "p2_r2": {
+        f"p2_{experiment_version}": {
             "metrics": p2_metrics,
             "proof_verification": {
                 "attempted": p2["proof_attempted"],
@@ -498,7 +505,12 @@ def verify_recovery_freeze(prepared: PreparedCorrectionExperiment) -> None:
         raise RecoveryR2Error("Phase 6-R2 freeze does not preserve the development-only boundary")
 
 
-def _raw_policy(examples, raw) -> tuple[tuple[PredictionRecord, ...], tuple[int, int]]:
+def _raw_policy(
+    examples,
+    raw,
+    *,
+    experiment_version: str = "r2",
+) -> tuple[tuple[PredictionRecord, ...], tuple[int, int]]:
     engine = ForwardChainingEngine()
     verifier = ProofVerifier()
     predictions: list[PredictionRecord] = []
@@ -512,7 +524,19 @@ def _raw_policy(examples, raw) -> tuple[tuple[PredictionRecord, ...], tuple[int,
         key = example.theory_id or example.example_id
         body = bodies.get(key)
         if body is None:
-            predictions.append(_prediction(example, PredictionLabel.ERROR, "RAW_THEORY_INVALID"))
+            error_type = (
+                raw.theory_terminal_errors[key].error_type
+                if key in raw.theory_terminal_errors
+                else "RAW_THEORY_INVALID"
+            )
+            predictions.append(
+                _prediction(
+                    example,
+                    PredictionLabel.ERROR,
+                    error_type,
+                    experiment_version=experiment_version,
+                )
+            )
             continue
         query = validate_query_candidate(
             raw.queries[example.example_id],
@@ -520,11 +544,30 @@ def _raw_policy(examples, raw) -> tuple[tuple[PredictionRecord, ...], tuple[int,
             body=body,
         )
         if not query.valid or query.theory is None:
-            predictions.append(_prediction(example, PredictionLabel.ERROR, "RAW_QUERY_INVALID"))
+            error_type = (
+                raw.query_terminal_errors[example.example_id].error_type
+                if example.example_id in raw.query_terminal_errors
+                else "RAW_QUERY_INVALID"
+            )
+            predictions.append(
+                _prediction(
+                    example,
+                    PredictionLabel.ERROR,
+                    error_type,
+                    experiment_version=experiment_version,
+                )
+            )
             continue
         reasoning = engine.reason(query.theory)
         if reasoning.result.status is ReasoningStatus.INCONSISTENT:
-            predictions.append(_prediction(example, PredictionLabel.ERROR, "INCONSISTENT"))
+            predictions.append(
+                _prediction(
+                    example,
+                    PredictionLabel.ERROR,
+                    "INCONSISTENT",
+                    experiment_version=experiment_version,
+                )
+            )
             continue
         attempted += 1
         try:
@@ -536,6 +579,7 @@ def _raw_policy(examples, raw) -> tuple[tuple[PredictionRecord, ...], tuple[int,
                     example,
                     PredictionLabel.ERROR,
                     f"PROOF_VERIFICATION_ERROR:{type(error).__name__}",
+                    experiment_version=experiment_version,
                 )
             )
             continue
@@ -544,7 +588,7 @@ def _raw_policy(examples, raw) -> tuple[tuple[PredictionRecord, ...], tuple[int,
             ReasoningStatus.CONTRADICTED: PredictionLabel.CONTRADICTED,
             ReasoningStatus.UNKNOWN: PredictionLabel.UNKNOWN,
         }[reasoning.result.status]
-        predictions.append(_prediction(example, label))
+        predictions.append(_prediction(example, label, experiment_version=experiment_version))
     return tuple(predictions), (attempted, verified)
 
 
@@ -552,9 +596,11 @@ def _prediction(
     example: BenchmarkExample,
     label: PredictionLabel,
     error_type: str | None = None,
+    *,
+    experiment_version: str = "r2",
 ) -> PredictionRecord:
     return PredictionRecord(
-        run_id="phase6-r2-sealed",
+        run_id=f"phase6-{experiment_version}-sealed",
         example_id=example.example_id,
         predicted_label=label,
         error_type=error_type,
@@ -566,8 +612,8 @@ def _prediction(
         model_digest=EXPECTED_MODEL_DIGEST,
         execution_device="cpu",
         estimated_cost_usd=0,
-        predictor_name="phase6-r2-raw",
-        predictor_version="2.0",
+        predictor_name=f"phase6-{experiment_version}-raw",
+        predictor_version="3.0" if experiment_version == "r3" else "2.0",
         timestamp=datetime.now(UTC),
     )
 
@@ -644,6 +690,8 @@ def _canonical_decisions(theories, queries) -> dict[str, object]:
                     "request_hash": value.request_hash,
                     "status": value.status,
                     "error_type": value.error_type,
+                    "terminal": value.terminal,
+                    "terminal_outcome_hash": value.terminal_outcome_hash,
                 }
                 for value in item.task_outcomes
             ],
@@ -696,6 +744,11 @@ def _audit_records(examples, theories, queries, p0, p1, p2) -> list[dict[str, ob
                 "request_hashes": [
                     value.request_hash for value in (*theory.task_outcomes, *query.task_outcomes)
                 ],
+                "terminal_outcome_hashes": [
+                    value.terminal_outcome_hash
+                    for value in (*theory.task_outcomes, *query.task_outcomes)
+                    if value.terminal_outcome_hash is not None
+                ],
             }
         )
     return records
@@ -718,6 +771,8 @@ def _request_ledger(theories, queries) -> dict[str, object]:
             "output_tokens": value.output_tokens,
             "duration_ms": value.duration_ms,
             "error_type": value.error_type,
+            "terminal": value.terminal,
+            "terminal_outcome_hash": value.terminal_outcome_hash,
         }
         for value in unique.values()
     ]
@@ -729,9 +784,10 @@ def _request_ledger(theories, queries) -> dict[str, object]:
             "new_local_calls": sum(not item.cache_hit for item in unique.values()),
             "cache_hits": sum(item.cache_hit for item in outcomes),
             "cache_misses": sum(
-                item.status is not TaskStatus.SUCCESS and not item.cache_hit
+                item.status is not TaskStatus.SUCCESS and not item.cache_hit and not item.terminal
                 for item in unique.values()
             ),
+            "terminal_outcomes": sum(item.terminal for item in unique.values()),
             "critic_calls": sum(
                 item.task_kind in {TaskKind.CRITIC_THEORY, TaskKind.CRITIC_QUERY}
                 for item in unique.values()
@@ -755,6 +811,8 @@ def _request_ledger(theories, queries) -> dict[str, object]:
                     "request_hash": item["request_hash"],
                     "status": item["status"],
                     "error_type": item["error_type"],
+                    "terminal": item["terminal"],
+                    "terminal_outcome_hash": item["terminal_outcome_hash"],
                 }
                 for item in operations
             ]

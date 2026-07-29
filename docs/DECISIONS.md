@@ -185,3 +185,21 @@ Phase 6 inference. Phase 6-R2 is `BLOCKED` at 57/58 logical replayable component
 Continuing until success would violate the no-repeat rule; altering the limit or fabricating a
 terminal response would be a behavior-affecting post-inference change. The negative operational
 result is retained without inspecting development correctness metrics.
+
+## D-027: Treat exhausted provider work as a replayable typed error
+
+**Status:** accepted and preregistered for Phase 6-R3
+
+**Decision:** Introduce strict `SUCCESS` and `TERMINAL_ERROR` cache outcomes. A terminal outcome is
+an experimental `ERROR`, never a recovered AST, `UNKNOWN`, or `ABSTAIN`; it prevents another
+provider call and carries canonical request-bound attempt provenance. R3 reuses only schema-valid
+R2 responses byte-for-byte.
+
+Machine validation found 55 schema-valid R2 responses and two terminal failures across 57 unique
+requests: the already exhausted theory and one preserved query response that fails the frozen
+query schema. R3 records the verified 55/2 inventory rather than forcing the anticipated 56/1
+split. The original and R2 experiments remain `BLOCKED` and unchanged.
+
+**Reason:** Batch completion and neural success are different concepts. Keeping permanent failures
+typed, measurable, and replayable permits unrelated examples to finish without concealing failed
+work or selecting generations until one succeeds.

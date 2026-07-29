@@ -6,7 +6,13 @@ from verilogic_ns_api.baselines.configuration import resolve_repository_path
 from verilogic_ns_api.reasoning.models import sha256_payload
 from verilogic_ns_api.semantic_parsing.cache import ParserResponseCache
 from verilogic_ns_api.semantic_parsing.configuration import PreparedParserExperiment
-from verilogic_ns_api.semantic_parsing.models import CandidateQueryOutput, CandidateTheoryOutput
+from verilogic_ns_api.semantic_parsing.models import (
+    CandidateQueryOutput,
+    CandidateTheoryOutput,
+    ParserKind,
+    ParserOutcome,
+    ParserStatus,
+)
 from verilogic_ns_api.semantic_parsing.prompts import render_query_input, render_theory_input
 from verilogic_ns_api.semantic_parsing.provider import StructuredRequest
 from verilogic_ns_api.semantic_parsing.views import (
@@ -15,6 +21,7 @@ from verilogic_ns_api.semantic_parsing.views import (
     prepare_query_view,
     prepare_theory_view,
 )
+from verilogic_ns_api.terminal_outcomes import CachedOutcomeType
 
 
 class Phase5CacheMissError(RuntimeError):
@@ -24,8 +31,10 @@ class Phase5CacheMissError(RuntimeError):
 @dataclass(frozen=True)
 class RawPhase5Candidates:
     theory_views: dict[str, PreparedTheoryView]
-    theories: dict[str, dict[str, object]]
-    queries: dict[str, dict[str, object]]
+    theories: dict[str, object]
+    queries: dict[str, object]
+    theory_terminal_errors: dict[str, ParserOutcome]
+    query_terminal_errors: dict[str, ParserOutcome]
     cache_hits: int
 
 
@@ -47,7 +56,8 @@ def load_raw_phase5_candidates(
         else:
             theory_views[key] = view
 
-    theories: dict[str, dict[str, object]] = {}
+    theories: dict[str, object] = {}
+    theory_terminal_errors: dict[str, ParserOutcome] = {}
     for key, view in sorted(theory_views.items()):
         request = StructuredRequest(
             kind="theory",
@@ -59,12 +69,28 @@ def load_raw_phase5_candidates(
             schema_hash=sha256_payload(CandidateTheoryOutput.model_json_schema()),
             config=prepared.config.runtime,
         )
-        response = cache.load(request)
-        if response is None:
+        outcome = cache.load_outcome(request)
+        if outcome is None:
             raise Phase5CacheMissError(f"missing frozen Phase 5 theory cache entry for {key}")
-        theories[key] = response.content
+        if outcome.outcome_type is CachedOutcomeType.TERMINAL_ERROR:
+            assert outcome.terminal_error is not None
+            terminal = outcome.terminal_error
+            theories[key] = None
+            theory_terminal_errors[key] = ParserOutcome(
+                parser_kind=ParserKind.THEORY,
+                input_hash=view.public.input_hash,
+                request_hash=terminal.request_hash,
+                status=ParserStatus(terminal.pipeline_status.value),
+                cache_hit=True,
+                error_type=terminal.error_code.value,
+                error_message=terminal.reason,
+            )
+        else:
+            assert outcome.response is not None
+            theories[key] = outcome.response.content
 
-    queries: dict[str, dict[str, object]] = {}
+    queries: dict[str, object] = {}
+    query_terminal_errors: dict[str, ParserOutcome] = {}
     for example in examples:
         view = prepare_query_view(example)
         request = StructuredRequest(
@@ -77,15 +103,32 @@ def load_raw_phase5_candidates(
             schema_hash=sha256_payload(CandidateQueryOutput.model_json_schema()),
             config=prepared.config.runtime,
         )
-        response = cache.load(request)
-        if response is None:
+        outcome = cache.load_outcome(request)
+        if outcome is None:
             raise Phase5CacheMissError(
                 f"missing frozen Phase 5 query cache entry for {example.example_id}"
             )
-        queries[example.example_id] = response.content
+        if outcome.outcome_type is CachedOutcomeType.TERMINAL_ERROR:
+            assert outcome.terminal_error is not None
+            terminal = outcome.terminal_error
+            queries[example.example_id] = None
+            query_terminal_errors[example.example_id] = ParserOutcome(
+                parser_kind=ParserKind.QUERY,
+                input_hash=view.public.input_hash,
+                request_hash=terminal.request_hash,
+                status=ParserStatus(terminal.pipeline_status.value),
+                cache_hit=True,
+                error_type=terminal.error_code.value,
+                error_message=terminal.reason,
+            )
+        else:
+            assert outcome.response is not None
+            queries[example.example_id] = outcome.response.content
     return RawPhase5Candidates(
         theory_views=theory_views,
         theories=theories,
         queries=queries,
+        theory_terminal_errors=theory_terminal_errors,
+        query_terminal_errors=query_terminal_errors,
         cache_hits=len(theories) + len(queries),
     )

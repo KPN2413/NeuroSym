@@ -106,6 +106,9 @@ docker compose up --build
   theory/query, and requires typed feedback, full revalidation, and immutable controller traces.
   The selective policy requires critic acceptance and independent reasoning verification. Preserve
   `UNKNOWN`, `ABSTAIN`, `ERROR`, and `INCONSISTENT` as distinct meanings.
+- An exhausted local provider request is a strict terminal `ERROR`, not a cache miss, AST,
+  `UNKNOWN`, or `ABSTAIN`. A validated terminal cache hit forbids another provider dispatch and
+  must retain request-bound attempt, token, timing, model-digest, and canonical-hash provenance.
 - Reject unknown fields, unsafe identifiers, unsupported operators, missing source links, arity errors, type errors, and unsafe rules.
 - Fail closed. If parsing, validation, correction, confidence gating, or consistency checks are uncertain, return or record an abstention/invalid state rather than guessing.
 - Limit correction to typed, auditable transformations; never silently change premise meaning.

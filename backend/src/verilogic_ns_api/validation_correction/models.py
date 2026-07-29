@@ -182,6 +182,19 @@ class TaskOutcome(StrictModel):
     input_tokens: int = Field(default=0, ge=0)
     output_tokens: int = Field(default=0, ge=0)
     duration_ms: float = Field(default=0, ge=0)
+    terminal: bool = False
+    terminal_outcome_hash: str | None = Field(default=None, pattern=SHA256_PATTERN)
+
+    @model_validator(mode="after")
+    def validate_terminal_state(self) -> Self:
+        if self.terminal:
+            if self.status is TaskStatus.SUCCESS:
+                raise ValueError("terminal task outcome cannot be successful")
+            if self.terminal_outcome_hash is None:
+                raise ValueError("terminal task outcome requires its canonical hash")
+        elif self.terminal_outcome_hash is not None:
+            raise ValueError("non-terminal task outcome cannot reference a terminal hash")
+        return self
 
 
 class ControllerState(StrEnum):

@@ -60,6 +60,11 @@ Only 57 of 58 logical components can replay, so the mandatory gate failed before
 prediction sealing, or metric access. Phase 6 remains blocked—not failed and not complete. See
 `PHASE6_RECOVERY_R2_RESULTS.md`.
 
+Phase 6-R3 is separately preregistered to treat exhausted local generations as typed replayable
+errors. It preserves the same prompts, limits, ordered development sample, model digest, correction
+policy, and abstention policy; it neither retries nor recovers the missing Phase 5 AST. R3 must
+complete and replay the full batch before Phase 6 can be marked complete.
+
 ## 7. End-to-end neuro-symbolic integration
 
 Connect ingestion, parser, validators, correction/gating, reasoner, proofs, and experiment records behind stable backend services and APIs.

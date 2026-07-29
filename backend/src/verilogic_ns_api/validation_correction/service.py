@@ -2,18 +2,33 @@ from __future__ import annotations
 
 import time
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import Generic, TypeVar
 
 from pydantic import BaseModel, ValidationError
 
 from verilogic_ns_api.reasoning.models import sha256_payload
-from verilogic_ns_api.semantic_parsing.models import CandidateQueryOutput, CandidateTheoryOutput
+from verilogic_ns_api.semantic_parsing.models import (
+    CandidateQueryOutput,
+    CandidateTheoryOutput,
+    ParserResponse,
+)
 from verilogic_ns_api.semantic_parsing.provider import (
     ParserConfigurationError,
     ParserProviderError,
     ParserStructuredOutputError,
     ParserTimeoutError,
     ParserTransientError,
+)
+from verilogic_ns_api.terminal_outcomes import (
+    AttemptEvidence,
+    CachedOutcomeType,
+    PipelineFailureStatus,
+    TerminalErrorCode,
+    TerminalProviderOutcome,
+    TerminalRuntime,
+    TerminalStage,
+    build_terminal_outcome,
 )
 from verilogic_ns_api.validation_correction.cache import (
     CorrectionCacheError,
@@ -124,11 +139,15 @@ class CorrectionTaskService:
             config=self.config.runtime,
         )
         try:
-            response = self.cache.load(request)
+            cached = self.cache.load_outcome(request)
         except CorrectionCacheError as error:
             return _failure(kind, request.request_hash, TaskStatus.PROVIDER_ERROR, error)
-        cache_hit = response is not None
-        if response is None:
+        if cached is not None and cached.outcome_type is CachedOutcomeType.TERMINAL_ERROR:
+            assert cached.terminal_error is not None
+            return _terminal_execution(kind, cached.terminal_error)
+        response = cached.response if cached is not None else None
+        cache_hit = cached is not None
+        if cached is None:
             if self.replay_only or self.provider is None:
                 return _failure(
                     kind,
@@ -146,19 +165,24 @@ class CorrectionTaskService:
             self.new_call_count += 1
             dispatched = self._dispatch(request)
             if isinstance(dispatched, TaskExecution):
-                return dispatched
+                terminal = _terminal_from_failure(request, dispatched.outcome, self.config)
+                self.cache.store_terminal(request, terminal)
+                return _terminal_execution(kind, terminal, cache_hit=False)
             response = dispatched
-            self.cache.store(request, response)
         try:
             parsed = output_model.model_validate(response.content)
         except ValidationError as error:
-            return _failure(
-                kind,
-                request.request_hash,
-                TaskStatus.STRUCTURED_OUTPUT_ERROR,
+            terminal = _terminal_from_invalid_response(
+                request,
+                response,
+                self.config,
                 error,
-                cache_hit=cache_hit,
             )
+            if cached is None:
+                self.cache.store_terminal(request, terminal)
+            return _terminal_execution(kind, terminal, cache_hit=cache_hit)
+        if cached is None:
+            self.cache.store(request, response)
         return TaskExecution(
             outcome=TaskOutcome(
                 task_kind=kind,
@@ -210,6 +234,173 @@ class CorrectionTaskService:
             TaskKind.CORRECTION_THEORY: limits.correction_theory_num_predict,
             TaskKind.CORRECTION_QUERY: limits.correction_query_num_predict,
         }[kind]
+
+
+def _terminal_from_failure(
+    request: CorrectionTaskRequest,
+    outcome: TaskOutcome,
+    config: CorrectionExperimentConfig,
+) -> TerminalProviderOutcome:
+    observed_attempts = (
+        1 if outcome.status is TaskStatus.STRUCTURED_OUTPUT_ERROR else config.runtime.max_attempts
+    )
+    observed_at = datetime.now(UTC)
+    attempts = tuple(
+        AttemptEvidence(
+            attempt_number=index,
+            request_hash=request.request_hash,
+            evidence_sha256=sha256_payload(
+                {
+                    "namespace": "phase6-r3-live-terminal-attempt.v1",
+                    "request_hash": request.request_hash,
+                    "attempt": index,
+                    "status": outcome.status,
+                    "error_type": outcome.error_type,
+                    "error_message": outcome.error_message,
+                }
+            ),
+            finish_reason="provider_error",
+            input_tokens=0,
+            output_tokens=0,
+            total_duration_ms=0,
+            observed_at=observed_at,
+        )
+        for index in range(1, observed_attempts + 1)
+    )
+    stage = {
+        TaskKind.CRITIC_THEORY: TerminalStage.THEORY_CRITIC,
+        TaskKind.CRITIC_QUERY: TerminalStage.QUERY_CRITIC,
+        TaskKind.CORRECTION_THEORY: TerminalStage.THEORY_CORRECTION,
+        TaskKind.CORRECTION_QUERY: TerminalStage.QUERY_CORRECTION,
+    }[request.task_kind]
+    error_code = {
+        TaskStatus.STRUCTURED_OUTPUT_ERROR: TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        TaskStatus.TIMEOUT: TerminalErrorCode.TIMEOUT_EXHAUSTED,
+        TaskStatus.PROVIDER_ERROR: TerminalErrorCode.PROVIDER_FAILURE,
+        TaskStatus.RESOURCE_LIMIT: TerminalErrorCode.PROVIDER_FAILURE,
+        TaskStatus.SUCCESS: TerminalErrorCode.PROVIDER_FAILURE,
+    }[outcome.status]
+    pipeline_status = {
+        TaskStatus.STRUCTURED_OUTPUT_ERROR: PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        TaskStatus.TIMEOUT: PipelineFailureStatus.TIMEOUT,
+        TaskStatus.PROVIDER_ERROR: PipelineFailureStatus.PROVIDER_ERROR,
+        TaskStatus.RESOURCE_LIMIT: PipelineFailureStatus.PROVIDER_ERROR,
+        TaskStatus.SUCCESS: PipelineFailureStatus.PROVIDER_ERROR,
+    }[outcome.status]
+    runtime = TerminalRuntime(
+        endpoint=config.runtime.endpoint,
+        provider_version=config.runtime.provider_version,
+        model=config.runtime.model,
+        model_digest=config.runtime.model_digest,
+        temperature=config.runtime.temperature,
+        seed=config.runtime.seed,
+        num_ctx=config.runtime.num_ctx,
+        num_predict=request.num_predict,
+        think=config.runtime.think,
+    )
+    return build_terminal_outcome(
+        stage=stage,
+        error_code=error_code,
+        pipeline_status=pipeline_status,
+        reason=(outcome.error_message or outcome.error_type or "terminal provider failure")[:500],
+        request_identity=request.identity(),
+        semantic_config_hash=sha256_payload(
+            {
+                "runtime": config.runtime.model_dump(mode="json"),
+                "limits": config.limits.model_dump(mode="json"),
+            }
+        ),
+        runtime=runtime,
+        permitted_attempt_count=config.runtime.max_attempts,
+        attempts=attempts,
+    )
+
+
+def _terminal_from_invalid_response(
+    request: CorrectionTaskRequest,
+    response: ParserResponse,
+    config: CorrectionExperimentConfig,
+    error: ValidationError,
+) -> TerminalProviderOutcome:
+    evidence = sha256_payload(
+        {
+            "namespace": "phase6-r3-invalid-correction-response.v1",
+            "request_hash": request.request_hash,
+            "response_content_sha256": sha256_payload(response.content),
+            "validation_error_sha256": sha256_payload(error.errors(include_url=False)),
+        }
+    )
+    attempt = AttemptEvidence(
+        attempt_number=1,
+        request_hash=request.request_hash,
+        evidence_sha256=evidence,
+        finish_reason="invalid_structured_output",
+        input_tokens=response.usage.input_tokens,
+        output_tokens=response.usage.output_tokens,
+        total_duration_ms=response.timing.total_duration_ms,
+        observed_at=response.completed_at,
+    )
+    stage = {
+        TaskKind.CRITIC_THEORY: TerminalStage.THEORY_CRITIC,
+        TaskKind.CRITIC_QUERY: TerminalStage.QUERY_CRITIC,
+        TaskKind.CORRECTION_THEORY: TerminalStage.THEORY_CORRECTION,
+        TaskKind.CORRECTION_QUERY: TerminalStage.QUERY_CORRECTION,
+    }[request.task_kind]
+    return build_terminal_outcome(
+        stage=stage,
+        error_code=TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason="Provider response failed the frozen task output schema.",
+        request_identity=request.identity(),
+        semantic_config_hash=sha256_payload(
+            {
+                "runtime": config.runtime.model_dump(mode="json"),
+                "limits": config.limits.model_dump(mode="json"),
+            }
+        ),
+        runtime=TerminalRuntime(
+            endpoint=config.runtime.endpoint,
+            provider_version=config.runtime.provider_version,
+            model=config.runtime.model,
+            model_digest=config.runtime.model_digest,
+            temperature=config.runtime.temperature,
+            seed=config.runtime.seed,
+            num_ctx=config.runtime.num_ctx,
+            num_predict=request.num_predict,
+            think=config.runtime.think,
+        ),
+        permitted_attempt_count=config.runtime.max_attempts,
+        attempts=(attempt,),
+    )
+
+
+def _terminal_execution(
+    kind: TaskKind,
+    terminal: TerminalProviderOutcome,
+    *,
+    cache_hit: bool = True,
+) -> TaskExecution:
+    status = {
+        PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR: TaskStatus.STRUCTURED_OUTPUT_ERROR,
+        PipelineFailureStatus.TIMEOUT: TaskStatus.TIMEOUT,
+        PipelineFailureStatus.PROVIDER_ERROR: TaskStatus.PROVIDER_ERROR,
+    }[terminal.pipeline_status]
+    return TaskExecution(
+        outcome=TaskOutcome(
+            task_kind=kind,
+            request_hash=terminal.request_hash,
+            status=status,
+            cache_hit=cache_hit,
+            error_type=terminal.error_code.value,
+            error_message=terminal.reason,
+            input_tokens=terminal.input_tokens,
+            output_tokens=terminal.output_tokens,
+            duration_ms=terminal.total_duration_ms,
+            terminal=True,
+            terminal_outcome_hash=terminal.terminal_outcome_sha256,
+        ),
+        value=None,
+    )
 
 
 def _failure(

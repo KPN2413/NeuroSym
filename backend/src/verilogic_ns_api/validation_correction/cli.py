@@ -23,6 +23,12 @@ from verilogic_ns_api.validation_correction.recovery_r2 import (
     recovery_freeze_facts,
     seal_recovery_predictions,
 )
+from verilogic_ns_api.validation_correction.recovery_r3 import (
+    RecoveryR3Error,
+    materialize_r3_phase5,
+    prepare_recovery_r3,
+    r3_freeze_facts,
+)
 from verilogic_ns_api.validation_correction.service import CorrectionTaskService
 
 
@@ -57,6 +63,20 @@ def build_parser() -> argparse.ArgumentParser:
     r2_compare = subparsers.add_parser("r2-compare")
     r2_compare.add_argument("--live", type=Path, required=True)
     r2_compare.add_argument("--replay", type=Path, required=True)
+    r3_materialize = subparsers.add_parser("r3-materialize")
+    r3_materialize.add_argument("--config", type=Path, required=True)
+    r3_freeze = subparsers.add_parser("r3-freeze-facts")
+    r3_freeze.add_argument("--config", type=Path, required=True)
+    for name in ("r3-run", "r3-replay"):
+        command = subparsers.add_parser(name)
+        command.add_argument("--config", type=Path, required=True)
+        command.add_argument("--run-id", required=True)
+    r3_evaluate = subparsers.add_parser("r3-evaluate")
+    r3_evaluate.add_argument("--config", type=Path, required=True)
+    r3_evaluate.add_argument("--run", type=Path, required=True)
+    r3_compare = subparsers.add_parser("r3-compare")
+    r3_compare.add_argument("--live", type=Path, required=True)
+    r3_compare.add_argument("--replay", type=Path, required=True)
     return parser
 
 
@@ -76,10 +96,28 @@ def main(argv: list[str] | None = None) -> int:
                 }
             print(json.dumps(payload, indent=2, sort_keys=True))
             return 0
-        if args.command == "r2-compare":
+        if args.command in {"r2-compare", "r3-compare"}:
             print(
                 json.dumps(
                     compare_recovery_replay(args.live, args.replay),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command == "r3-freeze-facts":
+            print(
+                json.dumps(
+                    r3_freeze_facts(prepare_recovery_r3(args.config, verify_freeze=False)),
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 0
+        if args.command == "r3-materialize":
+            print(
+                json.dumps(
+                    materialize_r3_phase5(prepare_recovery_r3(args.config)),
                     indent=2,
                     sort_keys=True,
                 )
@@ -94,21 +132,28 @@ def main(argv: list[str] | None = None) -> int:
                 )
             )
             return 0
-        if args.command == "r2-evaluate":
+        if args.command in {"r2-evaluate", "r3-evaluate"}:
+            r3 = args.command == "r3-evaluate"
             print(
                 json.dumps(
                     evaluate_sealed_recovery(
-                        prepared=prepare_recovery_r2(args.config),
+                        prepared=(
+                            prepare_recovery_r3(args.config)
+                            if r3
+                            else prepare_recovery_r2(args.config)
+                        ),
                         output_directory=args.run,
+                        experiment_version="r3" if r3 else "r2",
                     ),
                     indent=2,
                     sort_keys=True,
                 )
             )
             return 0
-        if args.command in {"r2-run", "r2-replay"}:
-            prepared = prepare_recovery_r2(args.config)
-            replay = args.command == "r2-replay"
+        if args.command in {"r2-run", "r2-replay", "r3-run", "r3-replay"}:
+            r3 = args.command.startswith("r3-")
+            prepared = prepare_recovery_r3(args.config) if r3 else prepare_recovery_r2(args.config)
+            replay = args.command.endswith("-replay")
             provider = None if replay else OllamaCorrectionProvider(prepared.config.runtime)
             service = CorrectionTaskService(
                 config=prepared.config,
@@ -129,10 +174,12 @@ def main(argv: list[str] | None = None) -> int:
                     service=service,
                     output_directory=output_directory,
                     run_id=args.run_id,
+                    experiment_version="r3" if r3 else "r2",
                 )
                 report = evaluate_sealed_recovery(
                     prepared=prepared,
                     output_directory=output_directory,
+                    experiment_version="r3" if r3 else "r2",
                 )
             finally:
                 if provider is not None:
@@ -183,6 +230,7 @@ def main(argv: list[str] | None = None) -> int:
         ValidationError,
         Phase5CacheMissError,
         RecoveryR2Error,
+        RecoveryR3Error,
     ) as error:
         print(f"validation-correction error: {error}", file=sys.stderr)
         return 2
