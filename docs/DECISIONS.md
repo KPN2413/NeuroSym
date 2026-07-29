@@ -164,9 +164,10 @@ are not.
 
 **Status:** accepted during Phase 6 recovery
 **Decision:** The recovered workspace is missing the immutable Phase 5 semantic-parser cache and
-most interrupted Phase 6 response entries. The system must fail closed and Phase 6 remains blocked
-until the exact ignored cache directories are restored from backup or version history. The 58 Phase
-5 responses will not be regenerated, substituted, or inferred from labels or aggregates.
+most interrupted Phase 6 response entries. The system must fail closed and that original Phase 6
+run remains blocked until the exact ignored cache directories are restored from backup or version
+history. The 58 Phase 5 responses will not be regenerated, substituted, or inferred from labels or
+aggregates.
 **Reason:** New local responses—even under nominally identical model settings—would not be the
 frozen Phase 5 evidence and could change correction requests, controller decisions, or development
 metrics. Reporting reconstructed results would break the preregistered comparison and conceal the
@@ -203,3 +204,29 @@ split. The original and R2 experiments remain `BLOCKED` and unchanged.
 **Reason:** Batch completion and neural success are different concepts. Keeping permanent failures
 typed, measurable, and replayable permits unrelated examples to finish without concealing failed
 work or selecting generations until one succeeds.
+
+## D-028: Preserve unavailable provider accounting as null
+
+**Status:** accepted after predictions were sealed; reporting-only
+
+**Decision:** Terminal provider failures record null token/duration accounting when no
+`ParserResponse` telemetry exists. Two immutable legacy R3 cache entries that used zeroes at this
+boundary remain byte-for-byte unchanged but are interpreted downstream as unavailable when all
+three accounting fields are zero and an attempt has `finish_reason=provider_error`.
+
+**Reason:** Zero is an observed measurement, while these provider-layer parse failures supplied no
+measurement. Preserving the cache hashes and applying a narrowly frozen interpretation avoids both
+fabricating usage and mutating sealed experimental evidence.
+
+## D-029: Retain the completed negative Phase 6-R3 result
+
+**Status:** accepted
+
+**Decision:** Mark Phase 6 engineering and development evaluation complete after the 30-example
+R3 batch, independent verification, and zero-call replay. Retain P0 at 2/30 correct with 6.67%
+coverage and P1/P2 at zero answered, 22 abstentions, and eight errors each. Do not tune prompts,
+policies, thresholds, examples, or runtime in response to these development metrics.
+
+**Reason:** Phase completion is an operational/reproducibility gate, not a performance threshold.
+The result shows that bounded correction recovered some component validity but did not recover an
+answerable end-to-end record under the frozen gates.

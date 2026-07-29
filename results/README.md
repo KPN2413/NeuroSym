@@ -35,12 +35,10 @@ ignored `results/validation-correction/`. Replay constructs no provider and must
 non-timing fingerprint with zero local inference calls. No raw source text, candidate, critic output,
 corrected AST, per-record label, absolute path, or model thinking is committed.
 
-The currently recovered workspace does not contain the required Phase 5 cache and retains only one
-Phase 6 cache JSON in the intended repository. Do not synthesize or regenerate that evidence.
-Restore the exact ignored `results/cache/semantic-parser/` and
-`results/cache/validation-correction/` directories from backup/version history, then rerun preflight
-and resume. Missing cache evidence is reported as a Phase 6 operational blocker, never as a model
-result.
+The original interrupted Phase 5/6 cache namespaces remain incomplete historical evidence and must
+not be synthesized or rewritten. The separately preregistered R3 experiment completed in isolated
+`phase6-r3` namespaces using typed terminal outcomes. This does not retroactively complete or
+change the original interrupted experiment.
 
 Phase 6-R2 runtime evidence is isolated under
 `results/cache/semantic-parser-phase6-r2/`,
@@ -51,3 +49,13 @@ unique Phase 5 responses (57 of 58 logical components because one request is dup
 theory request failed structured output twice at the frozen output limit. Keep these partial caches
 and attempt ledgers; do not delete, synthesize the missing response, or write into the original
 cache namespaces.
+
+Phase 6-R3 evidence is isolated under
+`results/cache/semantic-parser-phase6-r3/`,
+`results/semantic-parsing-phase6-r3/`,
+`results/cache/validation-correction-phase6-r3/`, and
+`results/validation-correction-phase6-r3/`. The final replay directory is
+`phase6-r3-replay-final-r5`: it records 67 logical cache hits over 64 unique Phase 6 outcomes,
+seven typed terminal errors, zero misses/calls, and three unavailable telemetry records. These
+ignored artifacts reproduce the sealed live predictions and report fingerprint; the sanitized
+aggregate is committed in `docs/PHASE6_R3_RESULTS.md`.

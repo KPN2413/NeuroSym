@@ -28,3 +28,10 @@ incomplete.
 The same distinction applies to Phase 6-R2: its terminal Phase 5 structured-output cache miss
 blocked the experiment before P0/P1/P2 states existed. It is not counted as a record-level
 abstention and cannot be converted to `UNKNOWN` or `ERROR` merely to satisfy the run gate.
+
+Phase 6-R3 is different because its terminal-error semantics were frozen before the recovery batch:
+terminal parser/correction outcomes are record-level `ERROR` results with request-bound evidence.
+Under the completed R3 pilot, P1 and P2 each produced 22 `ABSTAIN` and eight `ERROR` outcomes.
+Neither policy answered a record, so answered-only accuracy and selective risk are null—not zero.
+P2 abstention reasons were incomplete source coverage (10), invalid theory (8), no correction
+progress (3), and critic rejection (1). These results do not justify relaxing an evidence gate.

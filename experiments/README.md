@@ -100,3 +100,17 @@ preserve the original model, prompts, schemas, validator, correction bound, and 
 at its Phase 5 cache gate with 57/58 logical components replayable after the same frozen theory
 request exhausted its 4,096-token limit twice. Do not resume it with altered settings or another
 until-success prompt; see `docs/PHASE6_RECOVERY_R2_RESULTS.md`.
+
+Phase 6-R3 uses `configs/ollama-semantic-parser-phase6-r3.yaml` and
+`configs/ollama-validation-correction-phase6-r3.yaml`. It preserves R2 behavior while adding typed
+terminal outcomes in isolated `phase6-r3` cache/result namespaces. The final authoritative
+verification is cache-only:
+
+```text
+python -m verilogic_ns_api.validation_correction r3-replay --config experiments/configs/ollama-validation-correction-phase6-r3.yaml --run-id phase6-r3-replay-final-r5
+python -m verilogic_ns_api.validation_correction r3-compare --live results/validation-correction-phase6-r3/phase6-r3-live-resumed-3 --replay results/validation-correction-phase6-r3/phase6-r3-replay-final-r5
+```
+
+It completed 67 logical cache hits with zero misses/provider calls and reproduced the live
+prediction/report fingerprints. The committed aggregate report is
+`docs/PHASE6_R3_RESULTS.md`; raw records, caches, and controller traces remain ignored.

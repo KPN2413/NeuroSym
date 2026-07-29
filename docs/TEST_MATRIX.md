@@ -52,3 +52,10 @@ frozen-hash enforcement, 58-logical/57-unique duplicate handling, cache-only mis
 prediction-seal verification, and replay mismatch detection. The real local run exercised the
 fail-closed cache gate: a persistent structured-output failure remained a miss and prevented Phase
 6 execution.
+
+Phase 6-R3 adds typed terminal-envelope provenance/hash/tamper tests, success/terminal/miss cache
+discrimination, terminal propagation as `ERROR`, idempotent materialization, duplicate-request
+accounting, unavailable telemetry propagation, and prospective null accounting for provider-layer
+failures. The operational replay additionally verifies 67 cache hits, zero misses/calls, seven
+terminal outcomes, three unavailable accounting records, and exact prediction/report fingerprint
+equality with Ollama stopped.

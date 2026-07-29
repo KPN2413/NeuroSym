@@ -106,3 +106,20 @@ executions without valid structured output. The no-repeat rule and frozen runtim
 attempt or a larger output limit. Phase 6-R2 therefore stopped at 57/58 logical replayable
 components before controller execution, prediction sealing, or metric access. This provider
 failure is an operational blocker, not an `ABSTAIN`, `UNKNOWN`, or reconstructed response.
+
+## Phase 6-R3 completed outcome
+
+R3 introduced strict, request-bound `SUCCESS` and `TERMINAL_ERROR` cache envelopes without changing
+the parser, correction, critic, policy, model, runtime, or development sample. Provider failures
+are final `ERROR` results for their affected records and replay without another model call.
+
+The full 30-example run completed and was sealed. P0 reached the reasoner for two examples; both
+results and proofs verified. Bounded correction made 25 structurally invalid components valid and
+recovered source coverage/semantic validation for four components, but introduced three
+regressions and made no previously unanswerable record answerable. P1 and P2 therefore answered
+zero records. P1 abstained on 22 and errored on eight; P2 preserved those totals, with one critic
+rejection replacing one no-progress abstention reason.
+
+The final R5 replay ran with Ollama stopped, resolved 67 logical task references using 64 unique
+cached Phase 6 outcomes, made zero provider calls, and matched the live prediction seal and report
+fingerprint. Complete metrics and operational history are in `PHASE6_R3_RESULTS.md`.

@@ -41,13 +41,11 @@ were replayed from cache. Generated records, caches, and raw metrics remain igno
 no hosted provider was called. The Phase 5 aggregate result is documented honestly in
 `docs/PHASE5_PILOT_RESULTS.md`: the small local parser is the current bottleneck.
 
-The Phase 6 implementation and train-only calibration are complete, but the original frozen
-development pilot remains blocked because its ignored caches are absent. An isolated,
-preregistered Recovery Replication v2 was attempted without altering that history. It also stopped
-at its mandatory Phase 5 cache gate after one frozen theory request exhausted the 4,096-token
-output limit twice without producing a valid structured response. See
-`docs/PHASE6_PILOT_RESULTS.md` for the original recovery audit and
-`docs/PHASE6_RECOVERY_R2_RESULTS.md` for the fresh replication evidence. Phase 7 has not begun.
+Phase 6 is complete through the separately preregistered R3 terminal-failure experiment. The
+original interrupted pilot and R2 replication remain blocked historical evidence; R3 preserves
+that history and represents permanent provider failures as typed replayable `ERROR` outcomes.
+See `docs/PHASE6_PILOT_RESULTS.md`, `docs/PHASE6_RECOVERY_R2_RESULTS.md`, and
+`docs/PHASE6_R3_RESULTS.md`. Phase 7 has not begun.
 There is no production end-to-end API, database, authentication, or deployment.
 
 ## Prerequisites
@@ -205,6 +203,13 @@ pass. A valid `UNKNOWN` is a logical answer; `ABSTAIN` is a deliberate reliabili
 The plan/run/replay commands require the original ignored Phase 5 and Phase 6 caches. They fail
 closed when an immutable entry is missing; they do not regenerate it. Phase 6 development metrics
 must not be reported until all 30 decisions and cache-only replay are complete.
+
+Phase 6-R3 has now completed that gate in isolated recovery namespaces. Terminal provider failures
+are replayable typed `ERROR` outcomes, not fabricated ASTs or logical `UNKNOWN` answers. The frozen
+30-example development result is negative: P0 answered 2/30 correctly (6.67% coverage), while P1
+and P2 answered none; both produced 22 abstentions and eight errors. The final replay used 67/67
+logical cache hits, made zero inference calls with Ollama stopped, and reproduced the sealed
+prediction/report fingerprints. See `docs/PHASE6_R3_RESULTS.md`.
 
 ## Docker
 

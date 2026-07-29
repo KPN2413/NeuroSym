@@ -107,3 +107,16 @@ request exhausted the unchanged 4,096-token output limit twice. The resulting 57
 replayable Phase 5 components fail the mandatory cache gate. No third prompt, behavior change,
 prediction seal, or gold evaluation is permitted under that protocol; see
 `PHASE6_RECOVERY_R2_RESULTS.md`.
+
+Phase 6-R3 separately froze typed terminal outcomes before continuing. It reused 55 schema-valid
+unique R2 responses byte-for-byte and represented two unique terminal parser outcomes explicitly;
+one successful response is shared by two logical components. Terminal outcomes propagate as
+evaluation `ERROR` and never as an AST, `UNKNOWN`, or `ABSTAIN`. R3 subsequently completed all
+controller work, sealed predictions before evaluation, and reproduced them through cache-only
+replay.
+
+Post-seal amendments R3.4 and R3.5 are reporting-only: R3.4 corrects experiment labels and
+first-observation request accounting; R3.5 treats unavailable provider-layer telemetry as null.
+They preserve prediction and report fingerprints and cannot trigger another inference call. The
+completed development result is reported in `PHASE6_R3_RESULTS.md` and may not be used to tune the
+frozen Phase 6 protocol.

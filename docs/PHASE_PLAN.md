@@ -45,25 +45,27 @@ Implement natural-language-to-AST prompting through the approved provider port, 
 
 ## 6. Validation, correction and abstention
 
-**Status:** implementation and train-only calibration complete; original development pilot remains
-blocked, and the separately preregistered Recovery Replication v2 is also blocked at its Phase 5
-cache-completeness gate.
+**Status:** completed through the separately preregistered Phase 6-R3 terminal-failure protocol.
+The original interrupted pilot and R2 replication remain blocked historical experiments.
 
 Add structural/semantic meaning-preservation checks, limited solver-guided correction, confidence calibration/gating, explicit correction logs, and fail-closed abstention policies.
 
-**Gate:** adversarial and ambiguity tests demonstrate bounded correction and safe rejection; coverage/selective-risk metrics are reproducible.
+**Gate:** passed operationally with a complete 30-example prediction seal, independent proof
+verification, reproducible risk/coverage metrics, and strict zero-call replay.
 
 The original interruption cannot be completed from the current workspace. Phase 6-R2 used new,
 isolated caches under a separately frozen protocol, but one of 57 unique Phase 5 requests
 repeatedly exhausted its unchanged 4,096-token output limit without a schema-valid response.
 Only 57 of 58 logical components can replay, so the mandatory gate failed before Phase 6 inference,
-prediction sealing, or metric access. Phase 6 remains blocked—not failed and not complete. See
+prediction sealing, or metric access. This R2 experiment remains blocked—not failed. See
 `PHASE6_RECOVERY_R2_RESULTS.md`.
 
 Phase 6-R3 is separately preregistered to treat exhausted local generations as typed replayable
 errors. It preserves the same prompts, limits, ordered development sample, model digest, correction
-policy, and abstention policy; it neither retries nor recovers the missing Phase 5 AST. R3 must
-complete and replay the full batch before Phase 6 can be marked complete.
+policy, and abstention policy; it neither retries nor recovers the missing Phase 5 AST. R3
+completed all 30 examples and strict replay resolved 67 logical task references from 64 unique
+Phase 6 outcomes with zero misses/calls. P0 answered 2/30 correctly; P1/P2 answered none, with 22
+abstentions and eight errors each. See `PHASE6_R3_RESULTS.md`.
 
 ## 7. End-to-end neuro-symbolic integration
 
