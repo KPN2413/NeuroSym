@@ -120,3 +120,22 @@ first-observation request accounting; R3.5 treats unavailable provider-layer tel
 They preserve prediction and report fingerprints and cannot trigger another inference call. The
 completed development result is reported in `PHASE6_R3_RESULTS.md` and may not be used to tune the
 frozen Phase 6 protocol.
+
+## Phase 7 integration protocol
+
+Phase 7 is an engineering/reproducibility experiment, not a new accuracy benchmark. Before the one
+real local canary, the starting commit, implementation commit, Phase 6 fingerprints, four formal
+fixtures, one natural request, exact model/digest/runtime, prompts, schemas, policy, cache root,
+dispatch ceiling, and acceptance criteria were frozen in
+`experiments/manifests/phase7-integration-canaries.v1.json`.
+
+Formal canaries must run with Ollama stopped, make zero provider calls, return the expected four-way
+status, and independently verify every proof. The natural canary may make at most twelve local
+dispatches and passes the integration gate when it reaches a typed terminal disposition without
+leakage or an unverifiable proof. Correctness is recorded but is not a post-hoc execution gate.
+
+Replay must run with Ollama stopped and reproduce the live scientific fields through validated cache
+hits with zero misses/calls. Phase 6-R3 fingerprints and Phase 4 300/same-30 conformance outputs must
+remain unchanged. No test-split record, hosted inference, external data transfer, prompt tuning, or
+final research claim is permitted. The observed natural correctness miss is retained in
+`PHASE7_VERIFICATION.md`.

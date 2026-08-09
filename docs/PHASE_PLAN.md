@@ -69,13 +69,21 @@ abstentions and eight errors each. See `PHASE6_R3_RESULTS.md`.
 
 ## 7. End-to-end neuro-symbolic integration
 
+**Status:** completed on `phase/07-end-to-end-integration` with formal, local-natural, cache-only
+replay, API, frontend, and frozen-regression evidence.
+
 Connect ingestion, parser, validators, correction/gating, reasoner, proofs, and experiment records behind stable backend services and APIs.
 
-**Gate:** representative cases complete end to end with replayable proofs and classified failure states.
+**Gate:** passed. Representative formal and natural cases reached typed terminal states, answered
+proofs independently verified, formal execution made zero provider calls, and local replay
+reproduced scientific fields with Ollama stopped. The negative natural correctness result is
+retained without tuning.
 
 ## 8. Research frontend
 
-Build the accessible research interface for theory entry, normalized AST inspection, decisions, proofs, validation/abstention explanations, runs, and baseline comparison. Use shadcn/ui when UI implementation begins.
+Extend the Phase 7 workbench into the full research interface for normalized AST inspection,
+experiment run history, baseline/ablation comparison, and exportable aggregate results. Use
+shadcn/ui only when it materially improves the existing accessible interface.
 
 **Gate:** critical UI states and API flows pass accessibility, browser, and error-path verification without fabricated data.
 

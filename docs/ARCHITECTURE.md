@@ -30,17 +30,40 @@ Typed feedback -> one local correction     semantic critic
                               + source-linked proof or explanation
 ```
 
-Phases 1-6 implement the contracts, service/UI shells, ProofWriter ingestion, deterministic sampling/leakage reporting, evaluation harness, direct/few-shot LLM baseline infrastructure, a gold-isolated local semantic parser, a bounded local critic/correction controller, semantic theory validation, the symbolic solver, and proof replay. They do not implement a production end-to-end API or research dashboard.
+Phases 1-7 implement the contracts, ProofWriter ingestion, deterministic sampling/leakage reporting,
+evaluation harness, direct/few-shot LLM baseline infrastructure, a gold-isolated local semantic
+parser, a bounded local critic/correction controller, semantic theory validation, the symbolic
+solver, proof replay, and a versioned end-to-end local API/workbench. The service is a research
+prototype, not a production multi-user deployment or final experiment dashboard.
 
 ## Components
 
 ### Research frontend
 
-`frontend/` is a Next.js App Router application. In Phase 1 it renders project identity, phase status, and live backend-health loading/success/failure states. Later it will submit theories, display normalized ASTs and proof traces, and expose research comparisons. It must not fabricate reasoning output.
+`frontend/` is a Next.js App Router application. The Phase 7 workbench submits natural-language or
+formal-AST inputs, selects P0/P1/P2, polls bounded jobs, and renders real stage, decision, proof,
+explanation, provenance, cancellation, and failure states. Phase 8 adds research-run inspection and
+comparison; the interface must never fabricate reasoning output.
 
 ### API backend
 
-`backend/` is a FastAPI service created through an application factory. Settings come from environment variables, and CORS is limited to configured origins. Phase 1 exposes only `GET /health`. Later routers will orchestrate parsing, validation, reasoning, and experiments without embedding provider logic in route handlers.
+`backend/` is a FastAPI service created through an application factory. Settings come from
+environment variables, and CORS is limited to configured origins. It preserves `GET /health` and
+exposes `/api/v1/neurosymbolic` through thin route handlers backed by a typed orchestration factory
+and bounded one-worker job manager. Route handlers do not contain provider or reasoning logic.
+
+### End-to-end orchestrator
+
+`verilogic_ns_api.orchestration` is the only Phase 7 composition boundary. Formal input bypasses
+all neural stages and remains provider-free. Natural input creates gold-free interactive views,
+reuses the frozen Phase 5 parser and Phase 6 controller, then passes only accepted validated ASTs to
+the Phase 4 engine and independent verifier. Its eleven-stage trace and provenance retain skipped,
+abstained, and failed states without reinterpreting them. Generated explanations are derived only
+from verified proof nodes and source links.
+
+The API queue is deliberately process-local: one active worker, bounded waiting capacity, finite
+retention, cooperative cancellation, and read-only polling. It adds no database or durable-job
+claim. Generated OpenAPI, JSON Schema, and TypeScript contracts share the same Pydantic source.
 
 ### Semantic parser port
 

@@ -230,3 +230,48 @@ policies, thresholds, examples, or runtime in response to these development metr
 **Reason:** Phase completion is an operational/reproducibility gate, not a performance threshold.
 The result shows that bounded correction recovered some component validity but did not recover an
 answerable end-to-end record under the frozen gates.
+
+## D-030: Expose one versioned orchestration contract
+
+**Status:** accepted for Phase 7
+
+**Decision:** Join the unchanged Phase 4-6 boundaries through strict version `1.0` request, result,
+trace, provenance, run-state, capability, and error models. Generate JSON Schema, OpenAPI, and the
+frontend TypeScript contract from that source.
+
+**Reason:** A single typed boundary prevents route, CLI, and UI consumers from assigning different
+meanings to `UNKNOWN`, `ABSTAINED`, `ERROR`, proof verification, or policy state.
+
+## D-031: Keep formal execution provider-free and local jobs bounded
+
+**Status:** accepted for Phase 7
+
+**Decision:** Formal AST requests construct no model provider and proceed while Ollama is stopped.
+Natural requests retain exact loopback model/runtime identity and a twelve-dispatch ceiling. The
+local API uses one worker, a bounded queue, finite result retention, and read-only polling.
+
+**Reason:** These constraints preserve deterministic formal reasoning, prevent polling from
+duplicating inference, and make local resource use explicit without introducing an out-of-scope
+database or durable workflow service.
+
+## D-032: Derive user explanations only from verified proofs
+
+**Status:** accepted for Phase 7
+
+**Decision:** An `ANSWERED` result requires independent Phase 4 verification. Its explanation is a
+deterministic projection of proof nodes and source text; model-authored prose and thinking are
+never explanatory evidence.
+
+**Reason:** Fluent language is not a logical certificate. This keeps every displayed inference
+traceable to the validated theory and independently replayed proof.
+
+## D-033: Retain the negative natural canary result
+
+**Status:** accepted after the frozen Phase 7 canary
+
+**Decision:** Report the Robin P2 canary as operationally complete but logically incorrect:
+`ANSWERED / UNKNOWN`, four local dispatches, verified proof, and exact zero-call replay. Do not tune
+the prompts, policy, model, or example in response.
+
+**Reason:** The preregistered Phase 7 gate tested integration and replay, not favorable model
+accuracy. Preserving the miss distinguishes pipeline correctness from semantic-parser quality.

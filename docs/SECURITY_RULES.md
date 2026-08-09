@@ -66,6 +66,16 @@ Do not fabricate outputs, proofs, metrics, prices, or benchmark records. Preserv
 - Retry only transient transport/rate/server failures. Authentication, permission, model, request, and schema failures abort without retry or silent fallback.
 - Constrain reasoning output paths beneath the current working directory, write atomically, and refuse replacement unless explicitly forced.
 - Bound closure size, rule instances, rounds, proof nodes, and optional execution time. Never present a partial closure as complete.
+- Phase 7 formal-AST execution must not construct or contact a model provider. Natural execution may
+  use only the exact loopback Ollama tag, digest, version, and frozen `think: false` settings.
+- Enforce the global twelve-dispatch request budget across parser, critic, and correction work;
+  provider exhaustion is terminal `ERROR`, never a fallback AST or logical answer.
+- Keep the API queue bounded to one worker, make polling read-only, expire retained jobs, and return
+  sanitized 404/422/429/503 errors without paths, traces, prompts, or payloads.
+- Only an independently verified proof may produce `ANSWERED` or a user-facing proof explanation.
+  Never use model prose or hidden thinking as formal evidence.
+- Treat the generated OpenAPI, JSON Schema, and frontend TypeScript artifacts as one versioned
+  contract; reject stale or hand-diverged generated files in verification.
 
 ## Review checklist
 

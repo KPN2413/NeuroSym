@@ -4,14 +4,14 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-6
+## Current implementation: Phases 1-7
 
 The repository provides:
 
 - durable project, architecture, logic, security, testing, and research specifications;
 - the versioned `theory.v1` JSON Schema with valid and intentionally invalid examples;
-- a FastAPI service with `GET /health`;
-- a minimal accessible Next.js App Router page with live backend-health states;
+- a FastAPI service with `GET /health` and versioned asynchronous neuro-symbolic run APIs;
+- an accessible Next.js workbench for natural-language and formal-AST reasoning;
 - backend and schema tests;
 - Ruff, ESLint, TypeScript, Docker Compose, and GitHub Actions configuration;
 - safe, streamed ProofWriter V2020.12.3 acquisition with observed provenance;
@@ -35,6 +35,10 @@ The repository provides:
 - parser-specific atomic cache/replay, typed fail-closed errors, and detailed parsing metrics.
 - a bounded Phase 6 validation/correction controller, structured fidelity critic, typed feedback,
   reliability gates, explicit abstention reasons, and gold-free audit traces.
+- a versioned Phase 7 orchestrator joining parsing, correction/policy, deterministic reasoning,
+  proof verification, provenance, and typed terminal outcomes;
+- a bounded one-worker local job queue, generated OpenAPI/JSON Schema/TypeScript contracts, CLI,
+  proof explorer, stage trace, cancellation, and backend capability reporting.
 
 A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
 were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
@@ -45,8 +49,9 @@ Phase 6 is complete through the separately preregistered R3 terminal-failure exp
 original interrupted pilot and R2 replication remain blocked historical evidence; R3 preserves
 that history and represents permanent provider failures as typed replayable `ERROR` outcomes.
 See `docs/PHASE6_PILOT_RESULTS.md`, `docs/PHASE6_RECOVERY_R2_RESULTS.md`, and
-`docs/PHASE6_R3_RESULTS.md`. Phase 7 has not begun.
-There is no production end-to-end API, database, authentication, or deployment.
+`docs/PHASE6_R3_RESULTS.md`. Phase 7 has completed its formal, local-natural, replay, API, UI, and
+regression gates; its frozen natural canary was operationally valid but logically incorrect.
+There is no database, authentication, public deployment, or final benchmark result.
 
 ## Prerequisites
 
@@ -68,7 +73,9 @@ python -m pip install -e ".[dev]"
 python -m uvicorn verilogic_ns_api.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-`GET http://localhost:8000/health` returns the service name, status, and version. Copy `backend/.env.example` to `backend/.env` only when local overrides are needed.
+`GET http://localhost:8000/health` returns the service name, status, and version.
+`GET http://localhost:8000/api/v1/neurosymbolic/capabilities` reports the Phase 7 runtime contract.
+Copy `backend/.env.example` to `backend/.env` only when local overrides are needed.
 
 ## Frontend setup
 
@@ -100,6 +107,22 @@ pnpm build
 ```
 
 Schema fixture behavior is covered by `backend/tests/test_schema.py` and runs as part of pytest.
+
+## End-to-end pipeline
+
+Activate the backend environment and run from the repository root:
+
+```bash
+python -m verilogic_ns_api.orchestration --help
+python -m verilogic_ns_api.orchestration export-schemas --check
+python -m verilogic_ns_api.orchestration run --formal-theory examples/theories/entailed.json --provider-mode cache_only
+```
+
+Formal AST mode is deterministic and provider-free. Natural-language mode reuses the frozen local
+Phase 5/6 parsing and correction contracts and therefore requires validated cache entries or the
+exact loopback Ollama runtime. `ANSWERED`, `ABSTAINED`, and `ERROR` remain distinct; logical
+`UNKNOWN` is never used for an infrastructure failure. See `docs/END_TO_END_PIPELINE.md`,
+`docs/API_CONTRACT.md`, and `docs/PHASE7_DEMO_GUIDE.md`.
 
 ## ProofWriter dataset commands
 

@@ -114,3 +114,14 @@ python -m verilogic_ns_api.validation_correction r3-compare --live results/valid
 It completed 67 logical cache hits with zero misses/provider calls and reproduced the live
 prediction/report fingerprints. The committed aggregate report is
 `docs/PHASE6_R3_RESULTS.md`; raw records, caches, and controller traces remain ignored.
+
+## Phase 7 end-to-end canaries
+
+`manifests/phase7-integration-canaries.v1.json` freezes the clean starting/implementation commits,
+Phase 6 fingerprints, four formal fixture identities, one exact natural request, local model
+identity/runtime, prompt/schema/policy hashes, isolated cache/result roots, and acceptance criteria.
+
+The formal cases are provider-free. The single natural P2 canary is an integration check, not a
+benchmark or tuning set, and has a global ceiling of twelve local dispatches. Raw requests,
+accepted ASTs, proofs, traces, and cache entries remain ignored. The sanitized outcomes and replay
+evidence are recorded in `docs/PHASE7_VERIFICATION.md`.

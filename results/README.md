@@ -59,3 +59,10 @@ Phase 6-R3 evidence is isolated under
 seven typed terminal errors, zero misses/calls, and three unavailable telemetry records. These
 ignored artifacts reproduce the sealed live predictions and report fingerprint; the sanitized
 aggregate is committed in `docs/PHASE6_R3_RESULTS.md`.
+
+Phase 7 uses isolated ignored roots `results/cache/orchestration-phase7/` and
+`results/orchestration/phase7-canaries/`. They contain local parser/critic/correction payloads,
+accepted theories, proof DAGs, traces, and replay outputs and must not be committed. The replay is
+valid only when Ollama is stopped and every logical request resolves from a validated terminal cache
+entry with zero misses and zero provider dispatches. Only the sanitized aggregate evidence in
+`docs/PHASE7_VERIFICATION.md` is tracked.

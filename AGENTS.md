@@ -75,6 +75,9 @@ python -m verilogic_ns_api.semantic_parsing replay --config experiments/configs/
 python -m verilogic_ns_api.validation_correction --help
 python -m verilogic_ns_api.validation_correction plan --config experiments/configs/ollama-validation-correction-pilot.yaml
 python -m verilogic_ns_api.validation_correction replay --config experiments/configs/ollama-validation-correction-pilot.yaml --run-id <unique-id>
+python -m verilogic_ns_api.orchestration --help
+python -m verilogic_ns_api.orchestration export-schemas --check
+python -m verilogic_ns_api.orchestration run --formal-theory examples/theories/entailed.json --provider-mode cache_only
 ```
 
 Dataset download, extraction, preparation, samples, and evaluation outputs are local generated artifacts and must remain ignored. Track only acquisition/normalization code, schemas, documentation, safe aggregate provenance, configurations, and small explicitly synthetic fixtures.
