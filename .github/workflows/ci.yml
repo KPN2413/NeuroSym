@@ -46,6 +46,8 @@ jobs:
           python -m verilogic_ns_api.reasoning --help
           python -m verilogic_ns_api.semantic_parsing --help
           python -m verilogic_ns_api.validation_correction --help
+          python -m verilogic_ns_api.orchestration --help
+          python -m verilogic_ns_api.orchestration export-schemas --check
 
       - name: Run synthetic dataset and evaluation smoke checks
         run: |
@@ -54,6 +56,7 @@ jobs:
           python -m verilogic_ns_api.baselines smoke --condition direct --output-root results/ci-baselines
           python -m verilogic_ns_api.baselines smoke --condition few_shot --output-root results/ci-baselines
           python -m verilogic_ns_api.reasoning reason --input examples/theories/entailed.json --human
+          python -m verilogic_ns_api.orchestration run --formal-theory examples/theories/entailed.json --provider-mode cache_only
 
   frontend:
     name: Frontend checks
@@ -86,6 +89,10 @@ jobs:
       - name: Run frontend type check
         working-directory: frontend
         run: pnpm type-check
+
+      - name: Run frontend tests
+        working-directory: frontend
+        run: pnpm test
 
       - name: Build frontend
         working-directory: frontend

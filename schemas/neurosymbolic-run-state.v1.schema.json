@@ -1,0 +1,1561 @@
+{
+  "$defs": {
+    "CanonicalLiteral": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "items": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "type": "string"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Arguments",
+          "type": "array"
+        },
+        "negated": {
+          "title": "Negated",
+          "type": "boolean"
+        },
+        "predicate": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Predicate",
+          "type": "string"
+        }
+      },
+      "required": [
+        "predicate",
+        "arguments",
+        "negated"
+      ],
+      "title": "CanonicalLiteral",
+      "type": "object"
+    },
+    "DerivedLiteralNode": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "minimum": 1,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "literal": {
+          "$ref": "#/$defs/CanonicalLiteral"
+        },
+        "node_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "const": "derived_literal",
+          "default": "derived_literal",
+          "title": "Node Type",
+          "type": "string"
+        },
+        "rule_application_node_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Rule Application Node Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "literal",
+        "rule_application_node_id",
+        "depth"
+      ],
+      "title": "DerivedLiteralNode",
+      "type": "object"
+    },
+    "DeterministicExplanation": {
+      "additionalProperties": false,
+      "properties": {
+        "headline": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Headline",
+          "type": "string"
+        },
+        "opposition_root_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opposition Root Id"
+        },
+        "proof_depth": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Depth"
+        },
+        "proof_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Hash"
+        },
+        "reasons": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 16,
+          "title": "Reasons",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "steps": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ExplanationStep"
+          },
+          "maxItems": 100000,
+          "title": "Steps",
+          "type": "array"
+        },
+        "summary": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Summary",
+          "type": "string"
+        },
+        "support_root_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Support Root Id"
+        },
+        "verifier_status": {
+          "enum": [
+            "VERIFIED",
+            "NOT_APPLICABLE"
+          ],
+          "title": "Verifier Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "headline",
+        "summary",
+        "verifier_status"
+      ],
+      "title": "DeterministicExplanation",
+      "type": "object"
+    },
+    "Entity": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        }
+      },
+      "required": [
+        "id",
+        "label"
+      ],
+      "title": "Entity",
+      "type": "object"
+    },
+    "EntityTerm": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "const": "entity",
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "EntityTerm",
+      "type": "object"
+    },
+    "ExplanationStep": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "minimum": 0,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "fact",
+            "rule"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "node_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "source_id": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_text": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Source Text",
+          "type": "string"
+        },
+        "statement": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sequence",
+        "kind",
+        "statement",
+        "source_id",
+        "source_text",
+        "depth",
+        "node_id"
+      ],
+      "title": "ExplanationStep",
+      "type": "object"
+    },
+    "GroundLiteral": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "items": {
+            "$ref": "#/$defs/EntityTerm"
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Arguments",
+          "type": "array"
+        },
+        "negated": {
+          "title": "Negated",
+          "type": "boolean"
+        },
+        "predicate": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Predicate",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "predicate",
+        "arguments",
+        "negated",
+        "source_id"
+      ],
+      "title": "GroundLiteral",
+      "type": "object"
+    },
+    "InputMode": {
+      "enum": [
+        "NATURAL_LANGUAGE",
+        "FORMAL_AST"
+      ],
+      "title": "InputMode",
+      "type": "string"
+    },
+    "ParserMetadata": {
+      "additionalProperties": false,
+      "properties": {
+        "confidence": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confidence"
+        },
+        "model_id": {
+          "anyOf": [
+            {
+              "maxLength": 256,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Id"
+        },
+        "parser_name": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+          "title": "Parser Name",
+          "type": "string"
+        },
+        "parser_version": {
+          "maxLength": 64,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9_.+-]{0,63}$",
+          "title": "Parser Version",
+          "type": "string"
+        },
+        "warnings": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Warnings",
+          "type": "array"
+        }
+      },
+      "required": [
+        "parser_name",
+        "parser_version"
+      ],
+      "title": "ParserMetadata",
+      "type": "object"
+    },
+    "PipelineDisposition": {
+      "enum": [
+        "ANSWERED",
+        "ABSTAINED",
+        "ERROR"
+      ],
+      "title": "PipelineDisposition",
+      "type": "string"
+    },
+    "PipelineError": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "pattern": "^[A-Z][A-Z0-9_]{0,127}$",
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/StageName"
+        }
+      },
+      "required": [
+        "stage",
+        "code",
+        "message"
+      ],
+      "title": "PipelineError",
+      "type": "object"
+    },
+    "PipelineProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_hits": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Hits",
+          "type": "integer"
+        },
+        "cache_misses": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Misses",
+          "type": "integer"
+        },
+        "engine_version": {
+          "title": "Engine Version",
+          "type": "string"
+        },
+        "input_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Input Hash",
+          "type": "string"
+        },
+        "input_mode": {
+          "$ref": "#/$defs/InputMode"
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Digest"
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Name"
+        },
+        "model_used": {
+          "title": "Model Used",
+          "type": "boolean"
+        },
+        "policy_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Policy Hash"
+        },
+        "policy_mode": {
+          "$ref": "#/$defs/PolicyMode"
+        },
+        "prompt_hashes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Prompt Hashes",
+          "type": "object"
+        },
+        "proof_verified": {
+          "default": false,
+          "title": "Proof Verified",
+          "type": "boolean"
+        },
+        "provider_dispatches": {
+          "default": 0,
+          "maximum": 12,
+          "minimum": 0,
+          "title": "Provider Dispatches",
+          "type": "integer"
+        },
+        "provider_mode": {
+          "$ref": "#/$defs/ProviderMode"
+        },
+        "provider_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Version"
+        },
+        "schema_hashes": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Schema Hashes",
+          "type": "object"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "theory_hash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Theory Hash"
+        }
+      },
+      "required": [
+        "input_hash",
+        "input_mode",
+        "policy_mode",
+        "provider_mode",
+        "engine_version",
+        "model_used"
+      ],
+      "title": "PipelineProvenance",
+      "type": "object"
+    },
+    "PipelineResult": {
+      "additionalProperties": false,
+      "properties": {
+        "abstention_reason": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Abstention Reason"
+        },
+        "accepted_theory": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Theory"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "correction_attempted": {
+          "default": false,
+          "title": "Correction Attempted",
+          "type": "boolean"
+        },
+        "disposition": {
+          "$ref": "#/$defs/PipelineDisposition"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PipelineError"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "explanation": {
+          "$ref": "#/$defs/DeterministicExplanation"
+        },
+        "logical_result": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReasoningStatus"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "proof": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProofDAG"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "proof_verification": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProofVerificationResult"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "provenance": {
+          "$ref": "#/$defs/PipelineProvenance"
+        },
+        "reasoning_telemetry": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReasoningTelemetry"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "trace": {
+          "items": {
+            "$ref": "#/$defs/StageTrace"
+          },
+          "maxItems": 11,
+          "minItems": 11,
+          "title": "Trace",
+          "type": "array"
+        }
+      },
+      "required": [
+        "disposition",
+        "explanation",
+        "trace",
+        "provenance"
+      ],
+      "title": "PipelineResult",
+      "type": "object"
+    },
+    "PolicyMode": {
+      "enum": [
+        "P0_RAW",
+        "P1_CORRECTED",
+        "P2_SELECTIVE"
+      ],
+      "title": "PolicyMode",
+      "type": "string"
+    },
+    "PredicateDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "argument_types": {
+          "anyOf": [
+            {
+              "items": {
+                "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Argument Types"
+        },
+        "arity": {
+          "enum": [
+            1,
+            2
+          ],
+          "title": "Arity",
+          "type": "integer"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arity"
+      ],
+      "title": "PredicateDefinition",
+      "type": "object"
+    },
+    "ProofDAG": {
+      "additionalProperties": false,
+      "properties": {
+        "nodes": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "derived_literal": "#/$defs/DerivedLiteralNode",
+                "rule_application": "#/$defs/RuleApplicationNode",
+                "source_fact": "#/$defs/SourceFactNode"
+              },
+              "propertyName": "node_type"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/SourceFactNode"
+              },
+              {
+                "$ref": "#/$defs/RuleApplicationNode"
+              },
+              {
+                "$ref": "#/$defs/DerivedLiteralNode"
+              }
+            ]
+          },
+          "maxItems": 100000,
+          "title": "Nodes",
+          "type": "array"
+        },
+        "opposition_root_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Opposition Root Id"
+        },
+        "proof_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Proof Hash",
+          "type": "string"
+        },
+        "query": {
+          "$ref": "#/$defs/CanonicalLiteral"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ReasoningStatus"
+        },
+        "support_root_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Support Root Id"
+        },
+        "theory_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Theory Hash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "theory_hash",
+        "query",
+        "status",
+        "nodes",
+        "proof_hash"
+      ],
+      "title": "ProofDAG",
+      "type": "object"
+    },
+    "ProofVerificationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "node_count": {
+          "minimum": 0,
+          "title": "Node Count",
+          "type": "integer"
+        },
+        "proof_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Proof Hash",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ReasoningStatus"
+        },
+        "valid": {
+          "const": true,
+          "default": true,
+          "title": "Valid",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "proof_hash",
+        "node_count"
+      ],
+      "title": "ProofVerificationResult",
+      "type": "object"
+    },
+    "ProviderMode": {
+      "enum": [
+        "live",
+        "cache_only"
+      ],
+      "title": "ProviderMode",
+      "type": "string"
+    },
+    "ReasoningLimitSnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "max_derived_literals": {
+          "exclusiveMinimum": 0,
+          "title": "Max Derived Literals",
+          "type": "integer"
+        },
+        "max_proof_nodes": {
+          "exclusiveMinimum": 0,
+          "title": "Max Proof Nodes",
+          "type": "integer"
+        },
+        "max_rounds": {
+          "exclusiveMinimum": 0,
+          "title": "Max Rounds",
+          "type": "integer"
+        },
+        "max_rule_firings": {
+          "exclusiveMinimum": 0,
+          "title": "Max Rule Firings",
+          "type": "integer"
+        },
+        "timeout_seconds": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeout Seconds"
+        }
+      },
+      "required": [
+        "max_derived_literals",
+        "max_rule_firings",
+        "max_rounds",
+        "max_proof_nodes"
+      ],
+      "title": "ReasoningLimitSnapshot",
+      "type": "object"
+    },
+    "ReasoningStatus": {
+      "enum": [
+        "ENTAILED",
+        "CONTRADICTED",
+        "UNKNOWN",
+        "INCONSISTENT"
+      ],
+      "title": "ReasoningStatus",
+      "type": "string"
+    },
+    "ReasoningTelemetry": {
+      "additionalProperties": false,
+      "properties": {
+        "conflict_count": {
+          "minimum": 0,
+          "title": "Conflict Count",
+          "type": "integer"
+        },
+        "derived_fact_count": {
+          "minimum": 0,
+          "title": "Derived Fact Count",
+          "type": "integer"
+        },
+        "duplicate_conclusions": {
+          "minimum": 0,
+          "title": "Duplicate Conclusions",
+          "type": "integer"
+        },
+        "execution_duration_ms": {
+          "minimum": 0,
+          "title": "Execution Duration Ms",
+          "type": "number"
+        },
+        "initial_fact_count": {
+          "minimum": 0,
+          "title": "Initial Fact Count",
+          "type": "integer"
+        },
+        "maximum_proof_depth": {
+          "minimum": 0,
+          "title": "Maximum Proof Depth",
+          "type": "integer"
+        },
+        "resource_limits": {
+          "$ref": "#/$defs/ReasoningLimitSnapshot"
+        },
+        "rounds": {
+          "minimum": 0,
+          "title": "Rounds",
+          "type": "integer"
+        },
+        "rule_instances_considered": {
+          "minimum": 0,
+          "title": "Rule Instances Considered",
+          "type": "integer"
+        },
+        "successful_rule_firings": {
+          "minimum": 0,
+          "title": "Successful Rule Firings",
+          "type": "integer"
+        },
+        "total_closure_size": {
+          "minimum": 0,
+          "title": "Total Closure Size",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "initial_fact_count",
+        "derived_fact_count",
+        "total_closure_size",
+        "conflict_count",
+        "rounds",
+        "rule_instances_considered",
+        "successful_rule_firings",
+        "duplicate_conclusions",
+        "maximum_proof_depth",
+        "execution_duration_ms",
+        "resource_limits"
+      ],
+      "title": "ReasoningTelemetry",
+      "type": "object"
+    },
+    "Rule": {
+      "additionalProperties": false,
+      "properties": {
+        "body": {
+          "items": {
+            "$ref": "#/$defs/RuleLiteral"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Body",
+          "type": "array"
+        },
+        "head": {
+          "$ref": "#/$defs/RuleLiteral"
+        },
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "variables": {
+          "items": {
+            "$ref": "#/$defs/VariableDefinition"
+          },
+          "maxItems": 64,
+          "title": "Variables",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "variables",
+        "body",
+        "head",
+        "source_id"
+      ],
+      "title": "Rule",
+      "type": "object"
+    },
+    "RuleApplicationNode": {
+      "additionalProperties": false,
+      "properties": {
+        "conclusion": {
+          "$ref": "#/$defs/CanonicalLiteral"
+        },
+        "depth": {
+          "minimum": 1,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "node_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "const": "rule_application",
+          "default": "rule_application",
+          "title": "Node Type",
+          "type": "string"
+        },
+        "premise_node_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Premise Node Ids",
+          "type": "array"
+        },
+        "rule_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_text": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Source Text",
+          "type": "string"
+        },
+        "substitution": {
+          "items": {
+            "$ref": "#/$defs/SubstitutionBinding"
+          },
+          "maxItems": 64,
+          "title": "Substitution",
+          "type": "array"
+        }
+      },
+      "required": [
+        "node_id",
+        "rule_id",
+        "source_id",
+        "source_text",
+        "substitution",
+        "premise_node_ids",
+        "conclusion",
+        "depth"
+      ],
+      "title": "RuleApplicationNode",
+      "type": "object"
+    },
+    "RuleLiteral": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "items": {
+            "discriminator": {
+              "mapping": {
+                "entity": "#/$defs/EntityTerm",
+                "variable": "#/$defs/VariableTerm"
+              },
+              "propertyName": "kind"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/EntityTerm"
+              },
+              {
+                "$ref": "#/$defs/VariableTerm"
+              }
+            ]
+          },
+          "maxItems": 2,
+          "minItems": 1,
+          "title": "Arguments",
+          "type": "array"
+        },
+        "negated": {
+          "title": "Negated",
+          "type": "boolean"
+        },
+        "predicate": {
+          "pattern": "^[a-z][a-z0-9_]{0,63}$",
+          "title": "Predicate",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "predicate",
+        "arguments",
+        "negated",
+        "source_id"
+      ],
+      "title": "RuleLiteral",
+      "type": "object"
+    },
+    "RunStatus": {
+      "enum": [
+        "QUEUED",
+        "RUNNING",
+        "COMPLETED",
+        "FAILED",
+        "CANCEL_REQUESTED",
+        "CANCELLED"
+      ],
+      "title": "RunStatus",
+      "type": "string"
+    },
+    "SourceFactNode": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "const": 0,
+          "default": 0,
+          "title": "Depth",
+          "type": "integer"
+        },
+        "literal": {
+          "$ref": "#/$defs/CanonicalLiteral"
+        },
+        "node_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Node Id",
+          "type": "string"
+        },
+        "node_type": {
+          "const": "source_fact",
+          "default": "source_fact",
+          "title": "Node Type",
+          "type": "string"
+        },
+        "source_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Source Id",
+          "type": "string"
+        },
+        "source_text": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "literal",
+        "source_id",
+        "source_text"
+      ],
+      "title": "SourceFactNode",
+      "type": "object"
+    },
+    "SourceStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "text": {
+          "maxLength": 10000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "text"
+      ],
+      "title": "SourceStatement",
+      "type": "object"
+    },
+    "StageName": {
+      "enum": [
+        "INPUT_VALIDATION",
+        "THEORY_PARSING",
+        "QUERY_PARSING",
+        "SOURCE_COVERAGE",
+        "SEMANTIC_VALIDATION",
+        "CRITIC",
+        "CORRECTION",
+        "RELIABILITY_POLICY",
+        "SYMBOLIC_REASONING",
+        "PROOF_VERIFICATION",
+        "FINAL_DECISION"
+      ],
+      "title": "StageName",
+      "type": "string"
+    },
+    "StageStatus": {
+      "enum": [
+        "NOT_STARTED",
+        "RUNNING",
+        "SUCCEEDED",
+        "SKIPPED",
+        "ABSTAINED",
+        "FAILED"
+      ],
+      "title": "StageStatus",
+      "type": "string"
+    },
+    "StageTrace": {
+      "additionalProperties": false,
+      "properties": {
+        "cache_status": {
+          "default": "not_applicable",
+          "enum": [
+            "hit",
+            "miss",
+            "mixed",
+            "not_applicable"
+          ],
+          "title": "Cache Status",
+          "type": "string"
+        },
+        "duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "number"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        },
+        "stage": {
+          "$ref": "#/$defs/StageName"
+        },
+        "status": {
+          "$ref": "#/$defs/StageStatus"
+        }
+      },
+      "required": [
+        "stage",
+        "status"
+      ],
+      "title": "StageTrace",
+      "type": "object"
+    },
+    "SubstitutionBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "entity": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Entity",
+          "type": "string"
+        },
+        "variable": {
+          "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+          "title": "Variable",
+          "type": "string"
+        }
+      },
+      "required": [
+        "variable",
+        "entity"
+      ],
+      "title": "SubstitutionBinding",
+      "type": "object"
+    },
+    "Theory": {
+      "additionalProperties": false,
+      "properties": {
+        "entities": {
+          "items": {
+            "$ref": "#/$defs/Entity"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Entities",
+          "type": "array"
+        },
+        "facts": {
+          "items": {
+            "$ref": "#/$defs/GroundLiteral"
+          },
+          "maxItems": 100000,
+          "title": "Facts",
+          "type": "array"
+        },
+        "parser_metadata": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ParserMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "predicates": {
+          "items": {
+            "$ref": "#/$defs/PredicateDefinition"
+          },
+          "maxItems": 1000,
+          "minItems": 1,
+          "title": "Predicates",
+          "type": "array"
+        },
+        "query": {
+          "$ref": "#/$defs/GroundLiteral"
+        },
+        "rules": {
+          "items": {
+            "$ref": "#/$defs/Rule"
+          },
+          "maxItems": 10000,
+          "title": "Rules",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_statements": {
+          "items": {
+            "$ref": "#/$defs/SourceStatement"
+          },
+          "maxItems": 10000,
+          "minItems": 1,
+          "title": "Source Statements",
+          "type": "array"
+        },
+        "theory_id": {
+          "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+          "title": "Theory Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "schema_version",
+        "theory_id",
+        "source_statements",
+        "entities",
+        "predicates",
+        "facts",
+        "rules",
+        "query"
+      ],
+      "title": "Theory",
+      "type": "object"
+    },
+    "VariableDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+          "title": "Name",
+          "type": "string"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Type"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "VariableDefinition",
+      "type": "object"
+    },
+    "VariableTerm": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "variable",
+          "title": "Kind",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "name"
+      ],
+      "title": "VariableTerm",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "completed_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Completed At"
+    },
+    "current_stage": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/StageName"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "result": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PipelineResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "started_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Started At"
+    },
+    "status": {
+      "$ref": "#/$defs/RunStatus"
+    },
+    "submitted_at": {
+      "format": "date-time",
+      "title": "Submitted At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "status",
+    "submitted_at"
+  ],
+  "title": "PipelineRunState",
+  "type": "object"
+}

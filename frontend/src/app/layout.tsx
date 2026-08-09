@@ -14,9 +14,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "VeriLogic-NS",
+  title: "VeriLogic-NS · Verified Reasoning Workbench",
   description:
-    "An explainable neuro-symbolic framework for source-linked logical verification.",
+    "A local neuro-symbolic workbench with deterministic reasoning and source-linked proofs.",
 };
 
 export default function RootLayout({

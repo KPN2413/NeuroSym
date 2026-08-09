@@ -1,6 +1,8 @@
 from fastapi import APIRouter
 
 from verilogic_ns_api.api.routes.health import router as health_router
+from verilogic_ns_api.api.routes.neurosymbolic import router as neurosymbolic_router
 
 api_router = APIRouter()
 api_router.include_router(health_router)
+api_router.include_router(neurosymbolic_router)

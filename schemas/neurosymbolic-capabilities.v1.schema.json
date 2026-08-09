@@ -1,0 +1,133 @@
+{
+  "$defs": {
+    "InputMode": {
+      "enum": [
+        "NATURAL_LANGUAGE",
+        "FORMAL_AST"
+      ],
+      "title": "InputMode",
+      "type": "string"
+    },
+    "PolicyMode": {
+      "enum": [
+        "P0_RAW",
+        "P1_CORRECTED",
+        "P2_SELECTIVE"
+      ],
+      "title": "PolicyMode",
+      "type": "string"
+    },
+    "ProviderMode": {
+      "enum": [
+        "live",
+        "cache_only"
+      ],
+      "title": "ProviderMode",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "api_version": {
+      "const": "v1",
+      "default": "v1",
+      "title": "Api Version",
+      "type": "string"
+    },
+    "local_model_ready": {
+      "title": "Local Model Ready",
+      "type": "boolean"
+    },
+    "maximum_active_jobs": {
+      "const": 1,
+      "default": 1,
+      "title": "Maximum Active Jobs",
+      "type": "integer"
+    },
+    "maximum_queued_jobs": {
+      "maximum": 16,
+      "minimum": 1,
+      "title": "Maximum Queued Jobs",
+      "type": "integer"
+    },
+    "model_digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Model Digest",
+      "type": "string"
+    },
+    "model_name": {
+      "title": "Model Name",
+      "type": "string"
+    },
+    "provider_mode": {
+      "$ref": "#/$defs/ProviderMode"
+    },
+    "provider_version": {
+      "title": "Provider Version",
+      "type": "string"
+    },
+    "resource_limits": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Resource Limits",
+      "type": "object"
+    },
+    "schema_hashes": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Schema Hashes",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "supported_input_modes": {
+      "items": {
+        "$ref": "#/$defs/InputMode"
+      },
+      "title": "Supported Input Modes",
+      "type": "array"
+    },
+    "supported_policy_modes": {
+      "items": {
+        "$ref": "#/$defs/PolicyMode"
+      },
+      "title": "Supported Policy Modes",
+      "type": "array"
+    },
+    "symbolic_engine_ready": {
+      "title": "Symbolic Engine Ready",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "supported_input_modes",
+    "supported_policy_modes",
+    "symbolic_engine_ready",
+    "local_model_ready",
+    "provider_mode",
+    "model_name",
+    "model_digest",
+    "provider_version",
+    "maximum_queued_jobs",
+    "resource_limits",
+    "schema_hashes"
+  ],
+  "title": "CapabilitiesResponse",
+  "type": "object"
+}

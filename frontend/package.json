@@ -12,7 +12,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "tsx --test tests/**/*.test.ts"
   },
   "dependencies": {
     "next": "16.2.10",
@@ -27,6 +28,7 @@
     "eslint": "9.39.5",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "4.3.2",
+    "tsx": "4.20.6",
     "typescript": "5.9.3"
   }
 }
