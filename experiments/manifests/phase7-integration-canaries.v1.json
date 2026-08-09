@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "phase": "phase7-end-to-end-integration",
+  "frozen_on": "2026-08-09",
+  "starting_commit": "4a74aa56f4b03b4c639b3cf79c74e59ad1e2f7f0",
+  "implementation_commit": "144d1d9933b5a6a5ae6b36b92955d64f5bfb6008",
+  "phase6_fingerprints": {
+    "prediction_seal": "86120857fdcb0d4414939861e10d3acfe168b5801d5b1d4bf18de459fa9547c9",
+    "report_fingerprint": "af70a0c2d0b3eb1134a61b0bda330c3d0421673768f1f8bdab02b291efc327ad"
+  },
+  "formal_canaries": [
+    {
+      "name": "entailed",
+      "theory_path": "examples/theories/entailed.json",
+      "theory_file_sha256": "68eb53acee438d7b9783e005b156b162e0f158ae4afaeee153c6d84cf7a9746f",
+      "request_sha256": "b4bdbc6f2a9582212058a50ceb0784c9bcc8e5f25ea00402667cb231d1b83c40",
+      "expected_logical_result": "ENTAILED"
+    },
+    {
+      "name": "contradicted",
+      "theory_path": "examples/theories/contradicted.json",
+      "theory_file_sha256": "f1db9bd823007fe936ccc47250e408dac589235bb3dbf5d2e133485cb419402e",
+      "request_sha256": "3dc3c7a72f12657420527221cc96e98ec5d1074d3fa4c88b0d3f2fb61b65f820",
+      "expected_logical_result": "CONTRADICTED"
+    },
+    {
+      "name": "unknown",
+      "theory_path": "examples/theories/unknown.json",
+      "theory_file_sha256": "bd98d4ab71958f11ff826aaadd441421a027e90abcf22f24b01a9361c5d729ae",
+      "request_sha256": "eb0bf14916f48eadb7e0087df40c127705d3ef3c75d088ad4ad1798413b7e534",
+      "expected_logical_result": "UNKNOWN"
+    },
+    {
+      "name": "inconsistent",
+      "theory_path": "examples/theories/inconsistent.json",
+      "theory_file_sha256": "c62d779d6cdc51c71a781f3d0b2167e4bf15b9488051e40d1cadbc6552cce0f0",
+      "request_sha256": "8b260175123da36a344a364eefe5ce95cabfbace4c2f61817d9074e960e84bdc",
+      "expected_logical_result": "INCONSISTENT"
+    }
+  ],
+  "natural_language_canary": {
+    "request": {
+      "schema_version": "1.0",
+      "input_mode": "NATURAL_LANGUAGE",
+      "policy_mode": "P2_SELECTIVE",
+      "natural_language": {
+        "statements": [
+          {
+            "source_id": "source_1",
+            "kind": "fact",
+            "text": "The robin is red."
+          },
+          {
+            "source_id": "source_2",
+            "kind": "rule",
+            "text": "If something is red, then it is warm."
+          }
+        ],
+        "query": "The robin is warm."
+      }
+    },
+    "request_sha256": "eb3f27fa9a299c181e00ca0a90953479b82039ebf41c55e84b0c27e8f53494fb",
+    "correctness_is_not_an_engineering_threshold": true
+  },
+  "local_model_contract": {
+    "provider": "ollama",
+    "endpoint": "http://127.0.0.1:11434",
+    "provider_version": "0.32.1",
+    "model": "qwen3.5:4b-q4_K_M",
+    "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+    "num_ctx": 8192,
+    "temperature": 0,
+    "seed": 20260713,
+    "think": false,
+    "concurrency": 1,
+    "maximum_new_dispatches": 12
+  },
+  "prompt_hashes": {
+    "theory_parser": "b4be4c4d028b4cf954cdf367cd01be21e354aa164e215d77f567f860e759e54f",
+    "query_parser": "eb11a6764cfbb8f98bc5bfd8adf8e999e4544d823d7129b0ea6f1e4b45cbf874",
+    "critic-theory": "8d47fa74cde03606fa31a415b41eb90281281aaa83e290c1d2916747d00e862f",
+    "critic-query": "74c4ccffeb83d1933cd148008dfddc6e4beb4dd318ec961dcd0e768ed7941549",
+    "correction-theory": "0d4df8971944f1bfeb607f011a1fc84557fbc3429d56057f6bc5b1a2db1d4eea",
+    "correction-query": "6a08824fb61fcb6981ea08a35358bbcb17a37108a9c973b59204627554f409ad"
+  },
+  "structured_schema_hashes": {
+    "theory_parser": "3ec7689a1e879cfcf6d3d004e147fb36327eda286fd9b929f445d9a488cf4d1f",
+    "query_parser": "33f25d5e0eaf5f12b2830b8d69b0505330a31685249d5a5353a041e1d556bf91",
+    "critic_theory": "f0bb25b63817320e2da79992b771af8ab3913775ac38932352846807055b09fb",
+    "critic_query": "3a1d562bd9084cfa51e15345dfc97c4756b3154cab9db348b753e33a75d1fa30",
+    "validation_feedback": "64a3dba0d2db467c38d3970598efe917408f71226b20cecb7890bd8d5898ea6e"
+  },
+  "reliability_policy_sha256": "d462527eb075920850701d121cc24f968e6db08880b866dc6fca9d08e1d14130",
+  "cache_directory": "results/cache/orchestration-phase7",
+  "output_directory": "results/orchestration/phase7-canaries",
+  "success_criteria": {
+    "formal_results_match": true,
+    "formal_provider_calls": 0,
+    "all_answered_proofs_independently_verify": true,
+    "natural_canary_reaches_typed_terminal_disposition": true,
+    "cache_only_replay_has_zero_misses_and_zero_provider_calls": true
+  },
+  "constraints": {
+    "prompt_tuning_after_result": false,
+    "test_split_data": false,
+    "hosted_inference": false,
+    "external_data_transfer": false,
+    "api_cost_usd": 0.0
+  }
+}
