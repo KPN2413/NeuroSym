@@ -68,6 +68,48 @@ def prepare_query_view(example: BenchmarkExample) -> PreparedQueryView:
     )
 
 
+def prepare_theory_view_from_statements(
+    statements: tuple[tuple[str, str, str], ...],
+) -> PreparedTheoryView:
+    """Build the existing gold-free parser view for an interactive request.
+
+    Each tuple is ``(source_id, text, expected_kind)``. The neutral identifiers are the
+    only identifiers exposed to the local model; caller-facing source identifiers remain
+    in the private binding exactly as they do for benchmark examples.
+    """
+
+    neutral_statements: list[NeutralStatement] = []
+    bindings: list[SourceBinding] = []
+    for index, (source_id, text, expected_kind) in enumerate(statements, start=1):
+        neutral_id = f"sent{index}"
+        neutral_statements.append(NeutralStatement(source_id=neutral_id, text=text))
+        bindings.append(
+            SourceBinding(
+                neutral_id=neutral_id,
+                original_id=source_id,
+                text=text,
+                expected_kind=expected_kind,
+            )
+        )
+    payload = [{"source_id": item.source_id, "text": item.text} for item in neutral_statements]
+    return PreparedTheoryView(
+        public=TheoryParseInput(
+            input_hash=sha256_payload(payload), statements=tuple(neutral_statements)
+        ),
+        bindings=tuple(bindings),
+    )
+
+
+def prepare_query_view_from_text(text: str, *, source_id: str = "query") -> PreparedQueryView:
+    """Build the existing gold-free query view for an interactive request."""
+
+    return PreparedQueryView(
+        public=QueryParseInput(input_hash=sha256_payload({"text": text}), text=text),
+        original_source_id=source_id,
+        text=text,
+    )
+
+
 def assert_same_theory(left: PreparedTheoryView, right: PreparedTheoryView) -> None:
     if left.public.input_hash != right.public.input_hash or left.bindings != right.bindings:
         raise ParserInputError("records sharing a theory ID contain different theory text")
