@@ -92,3 +92,36 @@ P0 is exact Phase 5 replay, P1 is corrected-valid, and P2 is corrected-selective
 same candidates and calls. Record-level data and controller traces remain ignored; aggregate metrics
 must report recovery, critic quality, AST quality, risk/coverage, proof verification, and efficiency.
 No test record, API key, paid call, or external dataset transmission is permitted.
+
+The separately frozen Recovery Replication v2 configs are
+`configs/ollama-semantic-parser-phase6-r2.yaml` and
+`configs/ollama-validation-correction-phase6-r2.yaml`. They use isolated `phase6-r2` caches and
+preserve the original model, prompts, schemas, validator, correction bound, and policy. R2 stopped
+at its Phase 5 cache gate with 57/58 logical components replayable after the same frozen theory
+request exhausted its 4,096-token limit twice. Do not resume it with altered settings or another
+until-success prompt; see `docs/PHASE6_RECOVERY_R2_RESULTS.md`.
+
+Phase 6-R3 uses `configs/ollama-semantic-parser-phase6-r3.yaml` and
+`configs/ollama-validation-correction-phase6-r3.yaml`. It preserves R2 behavior while adding typed
+terminal outcomes in isolated `phase6-r3` cache/result namespaces. The final authoritative
+verification is cache-only:
+
+```text
+python -m verilogic_ns_api.validation_correction r3-replay --config experiments/configs/ollama-validation-correction-phase6-r3.yaml --run-id phase6-r3-replay-final-r5
+python -m verilogic_ns_api.validation_correction r3-compare --live results/validation-correction-phase6-r3/phase6-r3-live-resumed-3 --replay results/validation-correction-phase6-r3/phase6-r3-replay-final-r5
+```
+
+It completed 67 logical cache hits with zero misses/provider calls and reproduced the live
+prediction/report fingerprints. The committed aggregate report is
+`docs/PHASE6_R3_RESULTS.md`; raw records, caches, and controller traces remain ignored.
+
+## Phase 7 end-to-end canaries
+
+`manifests/phase7-integration-canaries.v1.json` freezes the clean starting/implementation commits,
+Phase 6 fingerprints, four formal fixture identities, one exact natural request, local model
+identity/runtime, prompt/schema/policy hashes, isolated cache/result roots, and acceptance criteria.
+
+The formal cases are provider-free. The single natural P2 canary is an integration check, not a
+benchmark or tuning set, and has a global ceiling of twelve local dispatches. Raw requests,
+accepted ASTs, proofs, traces, and cache entries remain ignored. The sanitized outcomes and replay
+evidence are recorded in `docs/PHASE7_VERIFICATION.md`.

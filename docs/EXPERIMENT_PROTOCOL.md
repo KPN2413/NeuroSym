@@ -93,3 +93,49 @@ All controller artifacts and the evidence-gate policy are hash-frozen before dev
 Gold ASTs, labels, proofs, depth, closure, and oracle results cannot enter requests or decisions.
 Evaluation against gold happens only after final component decisions. The valid logical label
 `UNKNOWN` remains distinct from deliberate `ABSTAIN` and infrastructure `ERROR`.
+
+The first development attempt was interrupted before all decisions were frozen. In the recovered
+workspace, the ignored Phase 5 response cache and almost all Phase 6 response entries are absent.
+Because the protocol forbids regenerating the 58 raw Phase 5 responses, no P1/P2 development metrics
+are available and none may be reconstructed. Restore the exact cache evidence from backup, require
+58 Phase 5 preflight hits, finish all 30 controller decisions, and complete zero-call replay before
+examining or reporting development aggregates.
+
+Phase 6 Recovery Replication v2 separately preregistered an isolated regeneration without changing
+the original blocked evidence. It stopped before Phase 6 inference because one frozen theory
+request exhausted the unchanged 4,096-token output limit twice. The resulting 57/58 logical
+replayable Phase 5 components fail the mandatory cache gate. No third prompt, behavior change,
+prediction seal, or gold evaluation is permitted under that protocol; see
+`PHASE6_RECOVERY_R2_RESULTS.md`.
+
+Phase 6-R3 separately froze typed terminal outcomes before continuing. It reused 55 schema-valid
+unique R2 responses byte-for-byte and represented two unique terminal parser outcomes explicitly;
+one successful response is shared by two logical components. Terminal outcomes propagate as
+evaluation `ERROR` and never as an AST, `UNKNOWN`, or `ABSTAIN`. R3 subsequently completed all
+controller work, sealed predictions before evaluation, and reproduced them through cache-only
+replay.
+
+Post-seal amendments R3.4 and R3.5 are reporting-only: R3.4 corrects experiment labels and
+first-observation request accounting; R3.5 treats unavailable provider-layer telemetry as null.
+They preserve prediction and report fingerprints and cannot trigger another inference call. The
+completed development result is reported in `PHASE6_R3_RESULTS.md` and may not be used to tune the
+frozen Phase 6 protocol.
+
+## Phase 7 integration protocol
+
+Phase 7 is an engineering/reproducibility experiment, not a new accuracy benchmark. Before the one
+real local canary, the starting commit, implementation commit, Phase 6 fingerprints, four formal
+fixtures, one natural request, exact model/digest/runtime, prompts, schemas, policy, cache root,
+dispatch ceiling, and acceptance criteria were frozen in
+`experiments/manifests/phase7-integration-canaries.v1.json`.
+
+Formal canaries must run with Ollama stopped, make zero provider calls, return the expected four-way
+status, and independently verify every proof. The natural canary may make at most twelve local
+dispatches and passes the integration gate when it reaches a typed terminal disposition without
+leakage or an unverifiable proof. Correctness is recorded but is not a post-hoc execution gate.
+
+Replay must run with Ollama stopped and reproduce the live scientific fields through validated cache
+hits with zero misses/calls. Phase 6-R3 fingerprints and Phase 4 300/same-30 conformance outputs must
+remain unchanged. No test-split record, hosted inference, external data transfer, prompt tuning, or
+final research claim is permitted. The observed natural correctness miss is retained in
+`PHASE7_VERIFICATION.md`.

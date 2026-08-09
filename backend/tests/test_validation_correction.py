@@ -18,22 +18,29 @@ from verilogic_ns_api.research.models import (
     Split,
     WorldAssumption,
 )
+from verilogic_ns_api.semantic_parsing.cache import ParserResponseCache
+from verilogic_ns_api.semantic_parsing.configuration import PreparedParserExperiment
 from verilogic_ns_api.semantic_parsing.models import (
+    CandidateQueryOutput,
     CandidateTheoryOutput,
+    ParserExperimentConfig,
     ParserResponse,
     ParserRuntimeConfig,
     ParserTiming,
     ParserUsage,
 )
+from verilogic_ns_api.semantic_parsing.prompts import render_query_input, render_theory_input
+from verilogic_ns_api.semantic_parsing.provider import StructuredRequest
 from verilogic_ns_api.semantic_parsing.views import prepare_query_view, prepare_theory_view
+from verilogic_ns_api.validation_correction import cli as correction_cli
 from verilogic_ns_api.validation_correction.cache import CorrectionResponseCache
-from verilogic_ns_api.validation_correction.configuration import prepare_correction_experiment
 from verilogic_ns_api.validation_correction.controller import (
     ControllerTransitionError,
     CorrectionStateMachine,
     ValidationCorrectionController,
 )
 from verilogic_ns_api.validation_correction.corruptions import controlled_corruptions
+from verilogic_ns_api.validation_correction.evaluation import _efficiency, _write_traces
 from verilogic_ns_api.validation_correction.feedback import (
     candidate_hash,
     validate_theory_candidate,
@@ -64,7 +71,10 @@ from verilogic_ns_api.validation_correction.provider import (
     CorrectionTaskRequest,
     OllamaCorrectionProvider,
 )
-from verilogic_ns_api.validation_correction.raw import load_raw_phase5_candidates
+from verilogic_ns_api.validation_correction.raw import (
+    Phase5CacheMissError,
+    load_raw_phase5_candidates,
+)
 from verilogic_ns_api.validation_correction.service import TaskExecution
 
 DIGEST = "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd"
@@ -668,14 +678,96 @@ def test_correction_cache_round_trip_and_hash_invalidation(tmp_path: Path) -> No
     assert cache.load(changed) is None
 
 
-def test_phase5_raw_cache_is_reused_without_provider() -> None:
-    root = Path(__file__).resolve().parents[2]
-    prepared = prepare_correction_experiment(
-        root / "experiments/configs/ollama-validation-correction-pilot.yaml"
+def test_phase5_raw_cache_is_reused_without_provider(tmp_path: Path) -> None:
+    item = example()
+    theory_prompt = "Return a theory candidate."
+    query_prompt = "Return a query candidate."
+    config = ParserExperimentConfig(
+        name="synthetic-parser",
+        dataset_version="synthetic",
+        data_source="unused.zip",
+        variant="synthetic",
+        archive_sha256="a" * 64,
+        pilot_manifest="unused-pilot.json",
+        pilot_manifest_sha256="b" * 64,
+        calibration_manifest="unused-calibration.json",
+        calibration_manifest_sha256="c" * 64,
+        theory_prompt="unused-theory.md",
+        theory_prompt_sha256="d" * 64,
+        query_prompt="unused-query.md",
+        query_prompt_sha256="e" * 64,
+        theory_schema_sha256=sha256_payload(CandidateTheoryOutput.model_json_schema()),
+        query_schema_sha256=sha256_payload(CandidateQueryOutput.model_json_schema()),
+        cache_directory="cache",
+        output_directory="output",
+        runtime=runtime(),
     )
-    raw = load_raw_phase5_candidates(prepared.phase5, calibration=False)
-    assert raw.cache_hits == 58
-    assert len(raw.theories) == 28 and len(raw.queries) == 30
+    prepared = PreparedParserExperiment(
+        config=config,
+        config_path=tmp_path / "synthetic.yaml",
+        root=tmp_path,
+        theory_prompt=theory_prompt,
+        query_prompt=query_prompt,
+        pilot_examples=(item,),
+        calibration_examples=(),
+    )
+    cache = ParserResponseCache(tmp_path / "cache")
+    now = datetime.now(UTC)
+    theory_view = prepare_theory_view(item)
+    query_view = prepare_query_view(item)
+    requests_and_content = (
+        (
+            StructuredRequest(
+                kind="theory",
+                instructions=theory_prompt,
+                input_text=render_theory_input(theory_view.public),
+                prompt_hash=config.theory_prompt_sha256,
+                input_hash=theory_view.public.input_hash,
+                output_schema=CandidateTheoryOutput.model_json_schema(),
+                schema_hash=sha256_payload(CandidateTheoryOutput.model_json_schema()),
+                config=config.runtime,
+            ),
+            valid_theory(),
+        ),
+        (
+            StructuredRequest(
+                kind="query",
+                instructions=query_prompt,
+                input_text=render_query_input(query_view.public),
+                prompt_hash=config.query_prompt_sha256,
+                input_hash=query_view.public.input_hash,
+                output_schema=CandidateQueryOutput.model_json_schema(),
+                schema_hash=sha256_payload(CandidateQueryOutput.model_json_schema()),
+                config=config.runtime,
+            ),
+            valid_query(),
+        ),
+    )
+    for request, content in requests_and_content:
+        cache.store(
+            request,
+            ParserResponse(
+                request_hash=request.request_hash,
+                configured_model=config.runtime.model,
+                returned_model=config.runtime.model,
+                provider_version=config.runtime.provider_version,
+                model_digest=config.runtime.model_digest,
+                content=content,
+                usage=ParserUsage(input_tokens=1, output_tokens=1, total_tokens=2),
+                timing=ParserTiming(
+                    total_duration_ms=1,
+                    load_duration_ms=0,
+                    prompt_eval_duration_ms=0.5,
+                    generation_duration_ms=0.5,
+                ),
+                started_at=now,
+                completed_at=now,
+                latency_ms=1,
+            ),
+        )
+    raw = load_raw_phase5_candidates(prepared, calibration=False)
+    assert raw.cache_hits == 2
+    assert len(raw.theories) == 1 and len(raw.queries) == 1
 
 
 def test_reliability_evidence_is_observable_and_stable() -> None:
@@ -689,3 +781,83 @@ def test_reliability_evidence_is_observable_and_stable() -> None:
     )
     assert evidence.mandatory_gates_passed
     assert "gold" not in json.dumps(evidence.model_dump(mode="json"))
+
+
+def test_resume_efficiency_reports_invocation_and_unique_totals() -> None:
+    decision = accepted_decision(ComponentType.THEORY, valid_theory()).model_copy(
+        update={
+            "task_outcomes": (
+                TaskOutcome(
+                    task_kind=TaskKind.CRITIC_THEORY,
+                    request_hash="7" * 64,
+                    status=TaskStatus.SUCCESS,
+                    cache_hit=True,
+                    input_tokens=10,
+                    output_tokens=2,
+                    duration_ms=100,
+                ),
+                TaskOutcome(
+                    task_kind=TaskKind.CORRECTION_THEORY,
+                    request_hash="8" * 64,
+                    status=TaskStatus.SUCCESS,
+                    cache_hit=False,
+                    input_tokens=20,
+                    output_tokens=4,
+                    duration_ms=200,
+                ),
+            )
+        }
+    )
+    metrics = _efficiency({"theory": decision}, {}, raw_cache_hits=58)
+    assert metrics["completion_invocation_new_local_calls"] == 1
+    assert metrics["resumed_cache_hits"] == 1
+    assert metrics["total_unique_pilot_requests"] == 2
+    assert metrics["input_tokens"] == 20
+    assert metrics["total_unique_input_tokens"] == 30
+    assert metrics["total_unique_output_tokens"] == 6
+    assert metrics["total_unique_inference_ms"] == 300
+
+
+def test_controller_trace_persists_gold_free_reliability_evidence(tmp_path: Path) -> None:
+    decision = accepted_decision(ComponentType.THEORY, valid_theory()).model_copy(
+        update={
+            "task_outcomes": (
+                TaskOutcome(
+                    task_kind=TaskKind.CRITIC_THEORY,
+                    request_hash="9" * 64,
+                    status=TaskStatus.SUCCESS,
+                    cache_hit=True,
+                    input_tokens=10,
+                    output_tokens=2,
+                    duration_ms=100,
+                ),
+            )
+        }
+    )
+    _write_traces(tmp_path, {"theory": decision}, {})
+    payload = json.loads((tmp_path / "controller-traces.json").read_text(encoding="utf-8"))
+    record = next(iter(payload["theories"].values()))
+    assert record["reliability"]["critic_accepted"] is True
+    assert record["operations"][0]["request_hash"] == "9" * 64
+    encoded = json.dumps(record, sort_keys=True)
+    assert "gold_label" not in encoded
+    assert "gold_proof" not in encoded
+    assert "final_candidate" not in record["trace"]
+    assert "raw_candidate" not in record["trace"]
+    assert "output" not in record["operations"][0]
+
+
+def test_plan_cli_reports_missing_operational_cache_without_traceback(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.setattr(correction_cli, "prepare_correction_experiment", lambda _path: object())
+
+    def missing_cache(_prepared: object) -> dict[str, object]:
+        raise Phase5CacheMissError("missing frozen Phase 5 theory cache entry")
+
+    monkeypatch.setattr(correction_cli, "build_correction_plan", missing_cache)
+    result = correction_cli.main(["plan", "--config", "synthetic.yaml"])
+    captured = capsys.readouterr()
+    assert result == 2
+    assert "missing frozen Phase 5 theory cache entry" in captured.err
+    assert "Traceback" not in captured.err

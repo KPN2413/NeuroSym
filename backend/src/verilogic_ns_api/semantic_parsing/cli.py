@@ -19,6 +19,10 @@ from verilogic_ns_api.semantic_parsing.models import (
     QueryParseInput,
     TheoryParseInput,
 )
+from verilogic_ns_api.semantic_parsing.precompute import (
+    ParserPrecomputeError,
+    precompute_parser_cache,
+)
 from verilogic_ns_api.semantic_parsing.prompts import PromptRegistry
 from verilogic_ns_api.semantic_parsing.provider import OllamaStructuredProvider
 from verilogic_ns_api.semantic_parsing.service import SemanticParser
@@ -27,12 +31,18 @@ from verilogic_ns_api.semantic_parsing.service import SemanticParser
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Local gold-isolated neural semantic parser")
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for name in ("plan", "run", "replay"):
+    for name in ("plan", "run", "replay", "cache"):
         command = subparsers.add_parser(name)
         command.add_argument("--config", type=Path, required=True)
         if name != "plan":
             command.add_argument("--dataset", choices=("calibration", "pilot"), default="pilot")
             command.add_argument("--run-id")
+        if name == "cache":
+            command.add_argument(
+                "--cache-only",
+                action="store_true",
+                help="require every logical request to be satisfied by the configured cache",
+            )
     for name in ("parse-theory", "parse-query"):
         command = subparsers.add_parser(name)
         command.add_argument("--config", type=Path, required=True)
@@ -115,6 +125,15 @@ def main(argv: list[str] | None = None) -> int:
                 f"{datetime.now(UTC).strftime('%Y%m%dT%H%M%SZ')}"
             )
             output_root = resolve_repository_path(prepared.root, prepared.config.output_directory)
+            if args.command == "cache":
+                report = precompute_parser_cache(
+                    examples=examples,
+                    parser=service,
+                    output_directory=output_root / run_id,
+                    run_id=run_id,
+                )
+                print(json.dumps(report, indent=2, sort_keys=True))
+                return 0
             report = run_parser_evaluation(
                 examples=examples,
                 data_source=resolve_repository_path(prepared.root, prepared.config.data_source),
@@ -129,7 +148,7 @@ def main(argv: list[str] | None = None) -> int:
         finally:
             if provider is not None:
                 provider.close()
-    except (OSError, ValueError, ValidationError) as error:
+    except (OSError, ValueError, ValidationError, ParserPrecomputeError) as error:
         print(f"semantic-parser error: {error}", file=sys.stderr)
         return 2
 

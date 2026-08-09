@@ -11,8 +11,9 @@ The matrix grows with the implementation. Every behavior change requires corresp
 | Reasoner | unary/binary, joins, constants, shared variables, conjunction, chains, cycles, explicit negation, OWA, inconsistency, no contraposition, determinism, limits | performance regression at larger final scale | `python -m pytest` |
 | Proofs | canonical selection/hashes, exact sources/rules/substitutions, independent closure replay, graph integrity, tampering and fabricated-unknown rejection | final proof metrics/dashboard integration | `python -m pytest` |
 | ProofWriter formal conformance | deterministic S-expression adapter, same-30 check, balanced 300-example OWA development ceiling, independent verification | no test split until final frozen protocol | explicit local reasoning CLI |
-| Parser boundary | Gold-free views, theory/query schemas, strict local endpoint/model, malformed/extra output, source coverage, semantic validation, cache/replay, alpha canonicalization, no-thinking/no-gold tests | confidence gate and correction limits remain Phase 6 | `python -m pytest` |
-| Correction controller | Typed state transitions, one-attempt bound, stable feedback/hashes, critic/correction schema failures, no-progress, gold isolation, abstention/error/unknown separation, cache identity/replay, and P0 compatibility | larger final-scale selective-risk evaluation remains Phase 9 | `python -m pytest` |
+| Parser boundary | Gold-free views, theory/query schemas, strict local endpoint/model, malformed/extra output, source coverage, semantic validation, cache/replay, alpha canonicalization, no-thinking/no-gold tests | operational cache recovery and larger final-scale monitoring | `python -m pytest` |
+| Correction controller | Typed state transitions, one-attempt bound, stable feedback/hashes, critic/correction schema failures, no-progress, gold isolation, abstention/error/unknown separation, synthetic-cache operational flow, resumed-call accounting, gold-free traces, cache identity/replay, sanitized missing-cache CLI failure, and P0 compatibility | restored real-cache pilot/replay and larger final-scale selective-risk evaluation remain operational/Phase 9 gates | `python -m pytest` |
+| Terminal provider outcomes | strict schema/hash/provenance, request/prompt/schema/model binding, success/terminal/miss/corrupt/incomplete discrimination, atomic cache, no-call replay, parser/critic/correction propagation, error metrics, accounting, and one-correction bound | operational R3 cache materialization and full zero-call replay | `python -m pytest` |
 | Dataset acquisition | mocked success, interruption, timeout, HTTP errors, size/checksum/ZIP failure, idempotence, force, traversal, symlink, cleanup | real-source availability regression and operational monitoring | `python -m pytest` |
 | Dataset ingestion | OWA mapping, CWA refusal, malformed/missing/duplicate records, stable IDs, proof preservation, ZIP/directory streaming, official splits | further official variants and future format versions | `python -m pytest` |
 | Sampling/leakage | seeds, filters, balanced/stratified sampling, impossible requests, test guard, IDs/questions/content/theory overlap | scale/performance and approved perturbation pairing | `python -m pytest` |
@@ -22,7 +23,9 @@ The matrix grows with the implementation. Every behavior change requires corresp
 | Provider resilience | mocked OpenAI Responses plus native Ollama mapping, strict local endpoint/model/version/digest/device checks, all labels, malformed output, timeout/connection failure, telemetry, bounded retry, auth fail-fast, circuit breaker, and thinking non-persistence | monitor exact runtime compatibility | `python -m pytest` |
 | Cache and cost gates | deterministic keys, atomic/corrupt/mismatch/concurrent behavior, replay miss, resume, approvals, pre-dispatch/mid-run caps | billing reconciliation | `python -m pytest` |
 | Phase 3 fairness | balanced 30-record dev manifest, six train-only demos, hashes, non-overlap, local direct/few config equality, distinct rendering, and paired deltas | final test protocol remains deferred | `python -m pytest` |
-| Frontend | lint, TypeScript, production compilation | component states, accessibility, API integration, reasoning/proof views | `pnpm lint && pnpm type-check && pnpm build` |
+| Phase 7 orchestration | formal zero-provider path; natural P0/P1/P2; parser, critic, correction, abstention and terminal errors; source coverage; limits; proof failure; exact eleven-stage traces; deterministic explanations; replay provenance | scale and final experiment integration | `python -m pytest` |
+| Phase 7 API/jobs | request/result contracts, 202/poll/cancel/capabilities, bounded queue, one worker, expiry, stable polling, model unavailable, sanitized errors, CORS, schema/OpenAPI freshness | durable multi-process execution is out of current scope | `python -m pytest` |
+| Frontend | component state helpers, contract-driven inputs, loading/terminal states, lint, TypeScript, production compilation, HTTP smoke | automated browser accessibility and research comparison dashboard remain Phase 8 gates | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
 | Containers | Compose parse/config validation | service health and end-to-end smoke test | `docker compose config` |
 | Security | unsafe identifiers and unsupported fields rejected | injection payloads, limits, secret scanning, error redaction, CORS negatives | component suites |
 
@@ -42,3 +45,24 @@ Tests must cover malformed JSON, unknown fields, unsupported arity and operators
 ## Quality gates
 
 Ruff lint and format checks, pytest, frontend ESLint, frontend TypeScript, and the frontend production build must pass in CI. Dataset/evaluation CLI help and synthetic smoke commands are phase verification gates. Network acquisition is mocked in routine tests; real archive checks are explicit verification steps, not flaky CI dependencies. A skipped acceptance test requires an explicit reason and must not be reported as passed.
+
+Ignored real datasets and response caches are never prerequisites for routine pytest. Their
+preflight and replay are explicit operational gates and a missing immutable entry must fail closed.
+
+Phase 6-R2 adds routine tests for normalized configuration equivalence, isolated namespaces,
+frozen-hash enforcement, 58-logical/57-unique duplicate handling, cache-only miss rejection,
+prediction-seal verification, and replay mismatch detection. The real local run exercised the
+fail-closed cache gate: a persistent structured-output failure remained a miss and prevented Phase
+6 execution.
+
+Phase 6-R3 adds typed terminal-envelope provenance/hash/tamper tests, success/terminal/miss cache
+discrimination, terminal propagation as `ERROR`, idempotent materialization, duplicate-request
+accounting, unavailable telemetry propagation, and prospective null accounting for provider-layer
+failures. The operational replay additionally verifies 67 cache hits, zero misses/calls, seven
+terminal outcomes, three unavailable accounting records, and exact prediction/report fingerprint
+equality with Ollama stopped.
+
+Phase 7 adds formal and natural orchestration integration, strict versioned API/schema generation,
+gold-free interactive views, proof-derived explanations, bounded queue/cancellation behavior,
+frontend state helpers, and negative tests proving that provider failures, resource limits,
+abstentions, and proof-verification failures cannot become logical `UNKNOWN` or `ANSWERED`.

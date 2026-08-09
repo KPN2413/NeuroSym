@@ -1,0 +1,2114 @@
+{
+  "components": {
+    "schemas": {
+      "ApiErrorResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiErrorResponse",
+        "type": "object"
+      },
+      "CanonicalLiteral": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments": {
+            "items": {
+              "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+              "type": "string"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Arguments",
+            "type": "array"
+          },
+          "negated": {
+            "title": "Negated",
+            "type": "boolean"
+          },
+          "predicate": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Predicate",
+            "type": "string"
+          }
+        },
+        "required": [
+          "predicate",
+          "arguments",
+          "negated"
+        ],
+        "title": "CanonicalLiteral",
+        "type": "object"
+      },
+      "CapabilitiesResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "api_version": {
+            "const": "v1",
+            "default": "v1",
+            "title": "Api Version",
+            "type": "string"
+          },
+          "local_model_ready": {
+            "title": "Local Model Ready",
+            "type": "boolean"
+          },
+          "maximum_active_jobs": {
+            "const": 1,
+            "default": 1,
+            "title": "Maximum Active Jobs",
+            "type": "integer"
+          },
+          "maximum_queued_jobs": {
+            "maximum": 16.0,
+            "minimum": 1.0,
+            "title": "Maximum Queued Jobs",
+            "type": "integer"
+          },
+          "model_digest": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Model Digest",
+            "type": "string"
+          },
+          "model_name": {
+            "title": "Model Name",
+            "type": "string"
+          },
+          "provider_mode": {
+            "$ref": "#/components/schemas/ProviderMode"
+          },
+          "provider_version": {
+            "title": "Provider Version",
+            "type": "string"
+          },
+          "resource_limits": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Resource Limits",
+            "type": "object"
+          },
+          "schema_hashes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Schema Hashes",
+            "type": "object"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "supported_input_modes": {
+            "items": {
+              "$ref": "#/components/schemas/InputMode"
+            },
+            "title": "Supported Input Modes",
+            "type": "array"
+          },
+          "supported_policy_modes": {
+            "items": {
+              "$ref": "#/components/schemas/PolicyMode"
+            },
+            "title": "Supported Policy Modes",
+            "type": "array"
+          },
+          "symbolic_engine_ready": {
+            "title": "Symbolic Engine Ready",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "supported_input_modes",
+          "supported_policy_modes",
+          "symbolic_engine_ready",
+          "local_model_ready",
+          "provider_mode",
+          "model_name",
+          "model_digest",
+          "provider_version",
+          "maximum_queued_jobs",
+          "resource_limits",
+          "schema_hashes"
+        ],
+        "title": "CapabilitiesResponse",
+        "type": "object"
+      },
+      "DerivedLiteralNode": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "minimum": 1.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "literal": {
+            "$ref": "#/components/schemas/CanonicalLiteral"
+          },
+          "node_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Node Id",
+            "type": "string"
+          },
+          "node_type": {
+            "const": "derived_literal",
+            "default": "derived_literal",
+            "title": "Node Type",
+            "type": "string"
+          },
+          "rule_application_node_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Rule Application Node Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_id",
+          "literal",
+          "rule_application_node_id",
+          "depth"
+        ],
+        "title": "DerivedLiteralNode",
+        "type": "object"
+      },
+      "DeterministicExplanation": {
+        "additionalProperties": false,
+        "properties": {
+          "headline": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Headline",
+            "type": "string"
+          },
+          "opposition_root_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opposition Root Id"
+          },
+          "proof_depth": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proof Depth"
+          },
+          "proof_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Proof Hash"
+          },
+          "reasons": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 16,
+            "title": "Reasons",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "steps": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/ExplanationStep"
+            },
+            "maxItems": 100000,
+            "title": "Steps",
+            "type": "array"
+          },
+          "summary": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Summary",
+            "type": "string"
+          },
+          "support_root_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support Root Id"
+          },
+          "verifier_status": {
+            "enum": [
+              "VERIFIED",
+              "NOT_APPLICABLE"
+            ],
+            "title": "Verifier Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "headline",
+          "summary",
+          "verifier_status"
+        ],
+        "title": "DeterministicExplanation",
+        "type": "object"
+      },
+      "Entity": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Label",
+            "type": "string"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "Entity",
+        "type": "object"
+      },
+      "EntityTerm": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "const": "entity",
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ],
+        "title": "EntityTerm",
+        "type": "object"
+      },
+      "ExplanationStep": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "minimum": 0.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "kind": {
+            "enum": [
+              "fact",
+              "rule"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "node_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Node Id",
+            "type": "string"
+          },
+          "sequence": {
+            "minimum": 1.0,
+            "title": "Sequence",
+            "type": "integer"
+          },
+          "source_id": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_text": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Source Text",
+            "type": "string"
+          },
+          "statement": {
+            "maxLength": 1000,
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "sequence",
+          "kind",
+          "statement",
+          "source_id",
+          "source_text",
+          "depth",
+          "node_id"
+        ],
+        "title": "ExplanationStep",
+        "type": "object"
+      },
+      "FormalAstInput": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "$ref": "#/components/schemas/GroundLiteral"
+          },
+          "theory": {
+            "$ref": "#/components/schemas/Theory"
+          }
+        },
+        "required": [
+          "theory",
+          "query"
+        ],
+        "title": "FormalAstInput",
+        "type": "object"
+      },
+      "GroundLiteral": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments": {
+            "items": {
+              "$ref": "#/components/schemas/EntityTerm"
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Arguments",
+            "type": "array"
+          },
+          "negated": {
+            "title": "Negated",
+            "type": "boolean"
+          },
+          "predicate": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Predicate",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "predicate",
+          "arguments",
+          "negated",
+          "source_id"
+        ],
+        "title": "GroundLiteral",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "service": {
+            "title": "Service",
+            "type": "string"
+          },
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "service",
+          "status",
+          "version"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "InputMode": {
+        "enum": [
+          "NATURAL_LANGUAGE",
+          "FORMAL_AST"
+        ],
+        "title": "InputMode",
+        "type": "string"
+      },
+      "NaturalLanguageInput": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          },
+          "statements": {
+            "items": {
+              "$ref": "#/components/schemas/NaturalLanguageStatement"
+            },
+            "maxItems": 32,
+            "minItems": 1,
+            "title": "Statements",
+            "type": "array"
+          }
+        },
+        "required": [
+          "statements",
+          "query"
+        ],
+        "title": "NaturalLanguageInput",
+        "type": "object"
+      },
+      "NaturalLanguageStatement": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "$ref": "#/components/schemas/StatementKind"
+          },
+          "source_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-z][a-z0-9_]{0,63}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Id"
+          },
+          "text": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "text"
+        ],
+        "title": "NaturalLanguageStatement",
+        "type": "object"
+      },
+      "ParserMetadata": {
+        "additionalProperties": false,
+        "properties": {
+          "confidence": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          },
+          "model_id": {
+            "anyOf": [
+              {
+                "maxLength": 256,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Id"
+          },
+          "parser_name": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+            "title": "Parser Name",
+            "type": "string"
+          },
+          "parser_version": {
+            "maxLength": 64,
+            "minLength": 1,
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9_.+-]{0,63}$",
+            "title": "Parser Version",
+            "type": "string"
+          },
+          "warnings": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 100,
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "parser_name",
+          "parser_version"
+        ],
+        "title": "ParserMetadata",
+        "type": "object"
+      },
+      "PipelineDisposition": {
+        "enum": [
+          "ANSWERED",
+          "ABSTAINED",
+          "ERROR"
+        ],
+        "title": "PipelineDisposition",
+        "type": "string"
+      },
+      "PipelineError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageName"
+          }
+        },
+        "required": [
+          "stage",
+          "code",
+          "message"
+        ],
+        "title": "PipelineError",
+        "type": "object"
+      },
+      "PipelineProvenance": {
+        "additionalProperties": false,
+        "properties": {
+          "cache_hits": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Cache Hits",
+            "type": "integer"
+          },
+          "cache_misses": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Cache Misses",
+            "type": "integer"
+          },
+          "engine_version": {
+            "title": "Engine Version",
+            "type": "string"
+          },
+          "input_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Input Hash",
+            "type": "string"
+          },
+          "input_mode": {
+            "$ref": "#/components/schemas/InputMode"
+          },
+          "model_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Digest"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "model_used": {
+            "title": "Model Used",
+            "type": "boolean"
+          },
+          "policy_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Hash"
+          },
+          "policy_mode": {
+            "$ref": "#/components/schemas/PolicyMode"
+          },
+          "prompt_hashes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Prompt Hashes",
+            "type": "object"
+          },
+          "proof_verified": {
+            "default": false,
+            "title": "Proof Verified",
+            "type": "boolean"
+          },
+          "provider_dispatches": {
+            "default": 0,
+            "maximum": 12.0,
+            "minimum": 0.0,
+            "title": "Provider Dispatches",
+            "type": "integer"
+          },
+          "provider_mode": {
+            "$ref": "#/components/schemas/ProviderMode"
+          },
+          "provider_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Version"
+          },
+          "schema_hashes": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Schema Hashes",
+            "type": "object"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "theory_hash": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theory Hash"
+          }
+        },
+        "required": [
+          "input_hash",
+          "input_mode",
+          "policy_mode",
+          "provider_mode",
+          "engine_version",
+          "model_used"
+        ],
+        "title": "PipelineProvenance",
+        "type": "object"
+      },
+      "PipelineRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "formal_ast": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/FormalAstInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "input_mode": {
+            "$ref": "#/components/schemas/InputMode"
+          },
+          "natural_language": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NaturalLanguageInput"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "policy_mode": {
+            "$ref": "#/components/schemas/PolicyMode",
+            "default": "P2_SELECTIVE"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "input_mode"
+        ],
+        "title": "PipelineRequest",
+        "type": "object"
+      },
+      "PipelineResult": {
+        "additionalProperties": false,
+        "properties": {
+          "abstention_reason": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstention Reason"
+          },
+          "accepted_theory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Theory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "correction_attempted": {
+            "default": false,
+            "title": "Correction Attempted",
+            "type": "boolean"
+          },
+          "disposition": {
+            "$ref": "#/components/schemas/PipelineDisposition"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PipelineError"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "explanation": {
+            "$ref": "#/components/schemas/DeterministicExplanation"
+          },
+          "logical_result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReasoningStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proof": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProofDAG"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proof_verification": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProofVerificationResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/PipelineProvenance"
+          },
+          "reasoning_telemetry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ReasoningTelemetry"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "trace": {
+            "items": {
+              "$ref": "#/components/schemas/StageTrace"
+            },
+            "maxItems": 11,
+            "minItems": 11,
+            "title": "Trace",
+            "type": "array"
+          }
+        },
+        "required": [
+          "disposition",
+          "explanation",
+          "trace",
+          "provenance"
+        ],
+        "title": "PipelineResult",
+        "type": "object"
+      },
+      "PipelineRunAccepted": {
+        "additionalProperties": false,
+        "properties": {
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "QUEUED",
+              "RUNNING"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "status"
+        ],
+        "title": "PipelineRunAccepted",
+        "type": "object"
+      },
+      "PipelineRunState": {
+        "additionalProperties": false,
+        "properties": {
+          "completed_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "current_stage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StageName"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PipelineResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "run_id": {
+            "title": "Run Id",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "started_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Started At"
+          },
+          "status": {
+            "$ref": "#/components/schemas/RunStatus"
+          },
+          "submitted_at": {
+            "format": "date-time",
+            "title": "Submitted At",
+            "type": "string"
+          }
+        },
+        "required": [
+          "run_id",
+          "status",
+          "submitted_at"
+        ],
+        "title": "PipelineRunState",
+        "type": "object"
+      },
+      "PolicyMode": {
+        "enum": [
+          "P0_RAW",
+          "P1_CORRECTED",
+          "P2_SELECTIVE"
+        ],
+        "title": "PolicyMode",
+        "type": "string"
+      },
+      "PredicateDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "argument_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Argument Types"
+          },
+          "arity": {
+            "enum": [
+              1,
+              2
+            ],
+            "title": "Arity",
+            "type": "integer"
+          },
+          "name": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "arity"
+        ],
+        "title": "PredicateDefinition",
+        "type": "object"
+      },
+      "ProofDAG": {
+        "additionalProperties": false,
+        "properties": {
+          "nodes": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "derived_literal": "#/components/schemas/DerivedLiteralNode",
+                  "rule_application": "#/components/schemas/RuleApplicationNode",
+                  "source_fact": "#/components/schemas/SourceFactNode"
+                },
+                "propertyName": "node_type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/SourceFactNode"
+                },
+                {
+                  "$ref": "#/components/schemas/RuleApplicationNode"
+                },
+                {
+                  "$ref": "#/components/schemas/DerivedLiteralNode"
+                }
+              ]
+            },
+            "maxItems": 100000,
+            "title": "Nodes",
+            "type": "array"
+          },
+          "opposition_root_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Opposition Root Id"
+          },
+          "proof_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Proof Hash",
+            "type": "string"
+          },
+          "query": {
+            "$ref": "#/components/schemas/CanonicalLiteral"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReasoningStatus"
+          },
+          "support_root_id": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Support Root Id"
+          },
+          "theory_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Theory Hash",
+            "type": "string"
+          }
+        },
+        "required": [
+          "theory_hash",
+          "query",
+          "status",
+          "nodes",
+          "proof_hash"
+        ],
+        "title": "ProofDAG",
+        "type": "object"
+      },
+      "ProofVerificationResult": {
+        "additionalProperties": false,
+        "properties": {
+          "node_count": {
+            "minimum": 0.0,
+            "title": "Node Count",
+            "type": "integer"
+          },
+          "proof_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Proof Hash",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ReasoningStatus"
+          },
+          "valid": {
+            "const": true,
+            "default": true,
+            "title": "Valid",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "proof_hash",
+          "node_count"
+        ],
+        "title": "ProofVerificationResult",
+        "type": "object"
+      },
+      "ProviderMode": {
+        "enum": [
+          "live",
+          "cache_only"
+        ],
+        "title": "ProviderMode",
+        "type": "string"
+      },
+      "ReasoningLimitSnapshot": {
+        "additionalProperties": false,
+        "properties": {
+          "max_derived_literals": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Derived Literals",
+            "type": "integer"
+          },
+          "max_proof_nodes": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Proof Nodes",
+            "type": "integer"
+          },
+          "max_rounds": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Rounds",
+            "type": "integer"
+          },
+          "max_rule_firings": {
+            "exclusiveMinimum": 0.0,
+            "title": "Max Rule Firings",
+            "type": "integer"
+          },
+          "timeout_seconds": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timeout Seconds"
+          }
+        },
+        "required": [
+          "max_derived_literals",
+          "max_rule_firings",
+          "max_rounds",
+          "max_proof_nodes"
+        ],
+        "title": "ReasoningLimitSnapshot",
+        "type": "object"
+      },
+      "ReasoningStatus": {
+        "enum": [
+          "ENTAILED",
+          "CONTRADICTED",
+          "UNKNOWN",
+          "INCONSISTENT"
+        ],
+        "title": "ReasoningStatus",
+        "type": "string"
+      },
+      "ReasoningTelemetry": {
+        "additionalProperties": false,
+        "properties": {
+          "conflict_count": {
+            "minimum": 0.0,
+            "title": "Conflict Count",
+            "type": "integer"
+          },
+          "derived_fact_count": {
+            "minimum": 0.0,
+            "title": "Derived Fact Count",
+            "type": "integer"
+          },
+          "duplicate_conclusions": {
+            "minimum": 0.0,
+            "title": "Duplicate Conclusions",
+            "type": "integer"
+          },
+          "execution_duration_ms": {
+            "minimum": 0.0,
+            "title": "Execution Duration Ms",
+            "type": "number"
+          },
+          "initial_fact_count": {
+            "minimum": 0.0,
+            "title": "Initial Fact Count",
+            "type": "integer"
+          },
+          "maximum_proof_depth": {
+            "minimum": 0.0,
+            "title": "Maximum Proof Depth",
+            "type": "integer"
+          },
+          "resource_limits": {
+            "$ref": "#/components/schemas/ReasoningLimitSnapshot"
+          },
+          "rounds": {
+            "minimum": 0.0,
+            "title": "Rounds",
+            "type": "integer"
+          },
+          "rule_instances_considered": {
+            "minimum": 0.0,
+            "title": "Rule Instances Considered",
+            "type": "integer"
+          },
+          "successful_rule_firings": {
+            "minimum": 0.0,
+            "title": "Successful Rule Firings",
+            "type": "integer"
+          },
+          "total_closure_size": {
+            "minimum": 0.0,
+            "title": "Total Closure Size",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "initial_fact_count",
+          "derived_fact_count",
+          "total_closure_size",
+          "conflict_count",
+          "rounds",
+          "rule_instances_considered",
+          "successful_rule_firings",
+          "duplicate_conclusions",
+          "maximum_proof_depth",
+          "execution_duration_ms",
+          "resource_limits"
+        ],
+        "title": "ReasoningTelemetry",
+        "type": "object"
+      },
+      "Rule": {
+        "additionalProperties": false,
+        "properties": {
+          "body": {
+            "items": {
+              "$ref": "#/components/schemas/RuleLiteral"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Body",
+            "type": "array"
+          },
+          "head": {
+            "$ref": "#/components/schemas/RuleLiteral"
+          },
+          "id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "variables": {
+            "items": {
+              "$ref": "#/components/schemas/VariableDefinition"
+            },
+            "maxItems": 64,
+            "title": "Variables",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "variables",
+          "body",
+          "head",
+          "source_id"
+        ],
+        "title": "Rule",
+        "type": "object"
+      },
+      "RuleApplicationNode": {
+        "additionalProperties": false,
+        "properties": {
+          "conclusion": {
+            "$ref": "#/components/schemas/CanonicalLiteral"
+          },
+          "depth": {
+            "minimum": 1.0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "node_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Node Id",
+            "type": "string"
+          },
+          "node_type": {
+            "const": "rule_application",
+            "default": "rule_application",
+            "title": "Node Type",
+            "type": "string"
+          },
+          "premise_node_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 64,
+            "minItems": 1,
+            "title": "Premise Node Ids",
+            "type": "array"
+          },
+          "rule_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_text": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Source Text",
+            "type": "string"
+          },
+          "substitution": {
+            "items": {
+              "$ref": "#/components/schemas/SubstitutionBinding"
+            },
+            "maxItems": 64,
+            "title": "Substitution",
+            "type": "array"
+          }
+        },
+        "required": [
+          "node_id",
+          "rule_id",
+          "source_id",
+          "source_text",
+          "substitution",
+          "premise_node_ids",
+          "conclusion",
+          "depth"
+        ],
+        "title": "RuleApplicationNode",
+        "type": "object"
+      },
+      "RuleLiteral": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "entity": "#/components/schemas/EntityTerm",
+                  "variable": "#/components/schemas/VariableTerm"
+                },
+                "propertyName": "kind"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/EntityTerm"
+                },
+                {
+                  "$ref": "#/components/schemas/VariableTerm"
+                }
+              ]
+            },
+            "maxItems": 2,
+            "minItems": 1,
+            "title": "Arguments",
+            "type": "array"
+          },
+          "negated": {
+            "title": "Negated",
+            "type": "boolean"
+          },
+          "predicate": {
+            "pattern": "^[a-z][a-z0-9_]{0,63}$",
+            "title": "Predicate",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "predicate",
+          "arguments",
+          "negated",
+          "source_id"
+        ],
+        "title": "RuleLiteral",
+        "type": "object"
+      },
+      "RunStatus": {
+        "enum": [
+          "QUEUED",
+          "RUNNING",
+          "COMPLETED",
+          "FAILED",
+          "CANCEL_REQUESTED",
+          "CANCELLED"
+        ],
+        "title": "RunStatus",
+        "type": "string"
+      },
+      "SourceFactNode": {
+        "additionalProperties": false,
+        "properties": {
+          "depth": {
+            "const": 0,
+            "default": 0,
+            "title": "Depth",
+            "type": "integer"
+          },
+          "literal": {
+            "$ref": "#/components/schemas/CanonicalLiteral"
+          },
+          "node_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Node Id",
+            "type": "string"
+          },
+          "node_type": {
+            "const": "source_fact",
+            "default": "source_fact",
+            "title": "Node Type",
+            "type": "string"
+          },
+          "source_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Source Id",
+            "type": "string"
+          },
+          "source_text": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Source Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "node_id",
+          "literal",
+          "source_id",
+          "source_text"
+        ],
+        "title": "SourceFactNode",
+        "type": "object"
+      },
+      "SourceStatement": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Id",
+            "type": "string"
+          },
+          "text": {
+            "maxLength": 10000,
+            "minLength": 1,
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "text"
+        ],
+        "title": "SourceStatement",
+        "type": "object"
+      },
+      "StageName": {
+        "enum": [
+          "INPUT_VALIDATION",
+          "THEORY_PARSING",
+          "QUERY_PARSING",
+          "SOURCE_COVERAGE",
+          "SEMANTIC_VALIDATION",
+          "CRITIC",
+          "CORRECTION",
+          "RELIABILITY_POLICY",
+          "SYMBOLIC_REASONING",
+          "PROOF_VERIFICATION",
+          "FINAL_DECISION"
+        ],
+        "title": "StageName",
+        "type": "string"
+      },
+      "StageStatus": {
+        "enum": [
+          "NOT_STARTED",
+          "RUNNING",
+          "SUCCEEDED",
+          "SKIPPED",
+          "ABSTAINED",
+          "FAILED"
+        ],
+        "title": "StageStatus",
+        "type": "string"
+      },
+      "StageTrace": {
+        "additionalProperties": false,
+        "properties": {
+          "cache_status": {
+            "default": "not_applicable",
+            "enum": [
+              "hit",
+              "miss",
+              "mixed",
+              "not_applicable"
+            ],
+            "title": "Cache Status",
+            "type": "string"
+          },
+          "duration_ms": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Duration Ms",
+            "type": "number"
+          },
+          "error_code": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "maxLength": 500,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "stage": {
+            "$ref": "#/components/schemas/StageName"
+          },
+          "status": {
+            "$ref": "#/components/schemas/StageStatus"
+          }
+        },
+        "required": [
+          "stage",
+          "status"
+        ],
+        "title": "StageTrace",
+        "type": "object"
+      },
+      "StatementKind": {
+        "enum": [
+          "fact",
+          "rule"
+        ],
+        "title": "StatementKind",
+        "type": "string"
+      },
+      "SubstitutionBinding": {
+        "additionalProperties": false,
+        "properties": {
+          "entity": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Entity",
+            "type": "string"
+          },
+          "variable": {
+            "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+            "title": "Variable",
+            "type": "string"
+          }
+        },
+        "required": [
+          "variable",
+          "entity"
+        ],
+        "title": "SubstitutionBinding",
+        "type": "object"
+      },
+      "Theory": {
+        "additionalProperties": false,
+        "properties": {
+          "entities": {
+            "items": {
+              "$ref": "#/components/schemas/Entity"
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "title": "Entities",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/GroundLiteral"
+            },
+            "maxItems": 100000,
+            "title": "Facts",
+            "type": "array"
+          },
+          "parser_metadata": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ParserMetadata"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "predicates": {
+            "items": {
+              "$ref": "#/components/schemas/PredicateDefinition"
+            },
+            "maxItems": 1000,
+            "minItems": 1,
+            "title": "Predicates",
+            "type": "array"
+          },
+          "query": {
+            "$ref": "#/components/schemas/GroundLiteral"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/Rule"
+            },
+            "maxItems": 10000,
+            "title": "Rules",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "source_statements": {
+            "items": {
+              "$ref": "#/components/schemas/SourceStatement"
+            },
+            "maxItems": 10000,
+            "minItems": 1,
+            "title": "Source Statements",
+            "type": "array"
+          },
+          "theory_id": {
+            "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$",
+            "title": "Theory Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "theory_id",
+          "source_statements",
+          "entities",
+          "predicates",
+          "facts",
+          "rules",
+          "query"
+        ],
+        "title": "Theory",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      },
+      "VariableDefinition": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "pattern": "^[A-Za-z][A-Za-z0-9_.-]{0,127}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "VariableDefinition",
+        "type": "object"
+      },
+      "VariableTerm": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "const": "variable",
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "pattern": "^[A-Z][A-Za-z0-9_]{0,63}$",
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "name"
+        ],
+        "title": "VariableTerm",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Local explainable neuro-symbolic reasoning API.",
+    "title": "VeriLogic-NS API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/v1/neurosymbolic/capabilities": {
+      "get": {
+        "operationId": "capabilities_api_v1_neurosymbolic_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CapabilitiesResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Capabilities",
+        "tags": [
+          "neurosymbolic"
+        ]
+      }
+    },
+    "/api/v1/neurosymbolic/runs": {
+      "post": {
+        "operationId": "submit_run_api_v1_neurosymbolic_runs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PipelineRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineRunAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Submit Run",
+        "tags": [
+          "neurosymbolic"
+        ]
+      }
+    },
+    "/api/v1/neurosymbolic/runs/{run_id}": {
+      "delete": {
+        "operationId": "cancel_run_api_v1_neurosymbolic_runs__run_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineRunState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Cancel Run",
+        "tags": [
+          "neurosymbolic"
+        ]
+      },
+      "get": {
+        "operationId": "get_run_api_v1_neurosymbolic_runs__run_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "run_id",
+            "required": true,
+            "schema": {
+              "title": "Run Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PipelineRunState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Run",
+        "tags": [
+          "neurosymbolic"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    }
+  }
+}

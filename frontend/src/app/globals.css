@@ -7,23 +7,41 @@
 
 :root {
   color-scheme: light;
-  background: #f8fafc;
+  background: #f4f0e8;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+}
+
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at 15% 10%, rgb(224 231 255 / 60%), transparent 32rem),
-    #f8fafc;
-  color: #0f172a;
+  background: #f4f0e8;
+  color: #17201d;
   font-family: "Geist", "Geist Fallback", ui-sans-serif, system-ui, sans-serif;
 }
 
+button,
+select,
+textarea {
+  font: inherit;
+}
+
 ::selection {
-  background: #c7d2fe;
-  color: #1e1b4b;
+  background: #b8d8cc;
+  color: #0f2f28;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

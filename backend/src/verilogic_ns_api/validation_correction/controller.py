@@ -538,7 +538,7 @@ def _critic_sources_valid(report: BaseModel, allowed: set[str]) -> bool:
 
 
 def _provider_failed(outcome: TaskOutcome) -> bool:
-    return outcome.status in {TaskStatus.PROVIDER_ERROR, TaskStatus.TIMEOUT}
+    return outcome.terminal or outcome.status in {TaskStatus.PROVIDER_ERROR, TaskStatus.TIMEOUT}
 
 
 def _invalid_reason(component: ComponentType, feedback: ValidationFeedback) -> AbstentionReason:

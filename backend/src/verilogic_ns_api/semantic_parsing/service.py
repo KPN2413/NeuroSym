@@ -13,6 +13,7 @@ from verilogic_ns_api.semantic_parsing.models import (
     CandidateTheoryOutput,
     ParserKind,
     ParserOutcome,
+    ParserResponse,
     ParserRuntimeConfig,
     ParserStatus,
     QueryParseInput,
@@ -27,6 +28,17 @@ from verilogic_ns_api.semantic_parsing.provider import (
     ParserTimeoutError,
     ParserTransientError,
     StructuredRequest,
+)
+from verilogic_ns_api.terminal_outcomes import (
+    AttemptEvidence,
+    CachedOutcomeType,
+    PipelineFailureStatus,
+    TerminalErrorCode,
+    TerminalProviderOutcome,
+    TerminalRuntime,
+    TerminalStage,
+    build_terminal_outcome,
+    validation_error_hash,
 )
 
 T = TypeVar("T", bound=BaseModel)
@@ -102,13 +114,17 @@ class SemanticParser:
             config=self.config,
         )
         try:
-            response = self.cache.load(request)
+            cached = self.cache.load_outcome(request)
         except ParserCacheError as error:
             return _failure(
                 kind, value.input_hash, request.request_hash, ParserStatus.STRUCTURAL_INVALID, error
             )
-        cache_hit = response is not None
-        if response is None:
+        if cached is not None and cached.outcome_type is CachedOutcomeType.TERMINAL_ERROR:
+            assert cached.terminal_error is not None
+            return _terminal_failure(kind, value.input_hash, cached.terminal_error)
+        response = cached.response if cached is not None else None
+        cache_hit = cached is not None
+        if cached is None:
             if self.replay_only or self.provider is None:
                 return _failure(
                     kind,
@@ -120,18 +136,25 @@ class SemanticParser:
             response = self._dispatch(request, kind, value.input_hash)
             if isinstance(response, ParseExecution):
                 return response
-            self.cache.store(request, response)
         try:
             candidate = output_model.model_validate(response.content)
         except ValidationError as error:
-            return _failure(
+            terminal = _invalid_response_terminal(
+                request=request,
+                response=response,
+                kind=kind,
+                error=error,
+            )
+            if cached is None:
+                self.cache.store_terminal(request, terminal)
+            return _terminal_failure(
                 kind,
                 value.input_hash,
-                request.request_hash,
-                ParserStatus.STRUCTURED_OUTPUT_ERROR,
-                error,
+                terminal,
                 cache_hit=cache_hit,
             )
+        if cached is None:
+            self.cache.store(request, response)
         outcome = ParserOutcome(
             parser_kind=kind,
             input_hash=value.input_hash,
@@ -173,6 +196,89 @@ class SemanticParser:
                 )
             time.sleep(0.25 * (2**attempt))
         raise AssertionError("unreachable retry state")
+
+
+def _terminal_failure(
+    kind: ParserKind,
+    input_hash: str,
+    terminal: TerminalProviderOutcome,
+    *,
+    cache_hit: bool = True,
+) -> ParseExecution:
+    status = {
+        PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR: ParserStatus.STRUCTURED_OUTPUT_ERROR,
+        PipelineFailureStatus.TIMEOUT: ParserStatus.TIMEOUT,
+        PipelineFailureStatus.PROVIDER_ERROR: ParserStatus.PROVIDER_ERROR,
+    }[terminal.pipeline_status]
+    return ParseExecution(
+        outcome=ParserOutcome(
+            parser_kind=kind,
+            input_hash=input_hash,
+            request_hash=terminal.request_hash,
+            status=status,
+            cache_hit=cache_hit,
+            error_type=terminal.error_code.value,
+            error_message=terminal.reason,
+        ),
+        candidate=None,
+    )
+
+
+def _invalid_response_terminal(
+    *,
+    request: StructuredRequest,
+    response: ParserResponse,
+    kind: ParserKind,
+    error: ValidationError,
+) -> TerminalProviderOutcome:
+    evidence = sha256_payload(
+        {
+            "namespace": "semantic-parser-invalid-response.v1",
+            "request_hash": request.request_hash,
+            "response_content_sha256": sha256_payload(response.content),
+            "validation_error_sha256": validation_error_hash(error),
+        }
+    )
+    attempt = AttemptEvidence(
+        attempt_number=1,
+        request_hash=request.request_hash,
+        evidence_sha256=evidence,
+        finish_reason="invalid_structured_output",
+        input_tokens=response.usage.input_tokens,
+        output_tokens=response.usage.output_tokens,
+        total_duration_ms=response.timing.total_duration_ms,
+        observed_at=response.completed_at,
+    )
+    num_predict = (
+        request.config.theory_num_predict
+        if kind is ParserKind.THEORY
+        else request.config.query_num_predict
+    )
+    return build_terminal_outcome(
+        stage=(
+            TerminalStage.SEMANTIC_PARSER_THEORY
+            if kind is ParserKind.THEORY
+            else TerminalStage.SEMANTIC_PARSER_QUERY
+        ),
+        error_code=TerminalErrorCode.INVALID_STRUCTURED_OUTPUT,
+        pipeline_status=PipelineFailureStatus.STRUCTURED_OUTPUT_ERROR,
+        reason="Provider response failed the frozen parser output schema.",
+        request_identity=request.identity(),
+        semantic_config_hash=sha256_payload(request.config.model_dump(mode="json")),
+        runtime=TerminalRuntime(
+            endpoint=request.config.endpoint,
+            provider_version=request.config.provider_version,
+            model=request.config.model,
+            model_digest=request.config.model_digest,
+            temperature=request.config.temperature,
+            seed=request.config.seed,
+            num_ctx=request.config.num_ctx,
+            num_predict=num_predict,
+            think=request.config.think,
+        ),
+        permitted_attempt_count=request.config.max_attempts,
+        attempts=(attempt,),
+    )
 
 
 def _failure(

@@ -25,6 +25,20 @@ The development pilot uses the same frozen 30 OWA development examples as Phases
 schemas, model/runtime, train-only calibration manifest, correction limit, and reliability policy
 are recorded in `experiments/manifests/phase6-freeze.v1.json` before the pilot. Test data is excluded.
 
+## Interrupted-pilot recovery status
+
+The committed controller is operational, but the development pilot cannot currently resume. The
+workspace contains zero of the required Phase 5 semantic-parser cache entries and only one Phase 6
+cache JSON. No incomplete Phase 6 run directory survives. The plan command therefore exits with a
+typed, sanitized missing-cache error before any model request or metric inspection.
+
+The original ignored `results/cache/semantic-parser/` directory must be restored with the exact 28
+theory and 30 query responses used by Phase 5. The original
+`results/cache/validation-correction/` critic/correction entries should also be restored so the
+interrupted work is reused. These entries must come from backup or filesystem/version history;
+regenerating Phase 5 responses would violate the frozen protocol. After restoration, plan must show
+58 Phase 5 hits before run/resume is permitted.
+
 ## Typed feedback and critic
 
 Deterministic feedback is versioned, canonically ordered, length-bounded, source-linked where
@@ -62,6 +76,12 @@ quality, AST quality, accuracy, coverage, answered-only accuracy, selective risk
 abstention reasons, tokens, local inference time, and cache use. The 30-example pilot supports no
 significance claim.
 
+Resume accounting separates new local calls in the completion invocation from reused cache hits and
+deduplicates telemetry by request hash. It reports total unique pilot requests, critic requests,
+correction requests, input/output tokens, and inference time across both the interrupted and
+completion invocations. Gold-free trace envelopes retain controller/reliability decisions and
+sanitized operation metadata without candidates, source text, gold data, or model thinking.
+
 ## Reproduction
 
 From the activated backend environment:
@@ -76,3 +96,30 @@ python -m verilogic_ns_api.validation_correction replay --config experiments/con
 Raw inputs, requests, model responses, traces, and record-level predictions remain ignored locally.
 All inference is loopback-only through the digest-pinned Qwen model; API cost and hosted calls are
 zero. ProofWriter's dataset licence remains unverified.
+
+## Recovery Replication v2 outcome
+
+Phase 6-R2 used isolated `phase6-r2` cache/result namespaces and froze its protocol before local
+development inference. Of 57 unique Phase 5 request hashes, 56 produced valid immutable cache
+entries. The remaining theory request reached the unchanged 4,096-token output limit on two
+executions without valid structured output. The no-repeat rule and frozen runtime prevent another
+attempt or a larger output limit. Phase 6-R2 therefore stopped at 57/58 logical replayable
+components before controller execution, prediction sealing, or metric access. This provider
+failure is an operational blocker, not an `ABSTAIN`, `UNKNOWN`, or reconstructed response.
+
+## Phase 6-R3 completed outcome
+
+R3 introduced strict, request-bound `SUCCESS` and `TERMINAL_ERROR` cache envelopes without changing
+the parser, correction, critic, policy, model, runtime, or development sample. Provider failures
+are final `ERROR` results for their affected records and replay without another model call.
+
+The full 30-example run completed and was sealed. P0 reached the reasoner for two examples; both
+results and proofs verified. Bounded correction made 25 structurally invalid components valid and
+recovered source coverage/semantic validation for four components, but introduced three
+regressions and made no previously unanswerable record answerable. P1 and P2 therefore answered
+zero records. P1 abstained on 22 and errored on eight; P2 preserved those totals, with one critic
+rejection replacing one no-progress abstention reason.
+
+The final R5 replay ran with Ollama stopped, resolved 67 logical task references using 64 unique
+cached Phase 6 outcomes, made zero provider calls, and matched the live prediction seal and report
+fingerprint. Complete metrics and operational history are in `PHASE6_R3_RESULTS.md`.

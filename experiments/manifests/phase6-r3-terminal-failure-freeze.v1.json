@@ -1,0 +1,168 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3 Terminal Parser Failure Handling",
+  "frozen_before_phase6_inference": true,
+  "original_phase6_status": "BLOCKED",
+  "phase6_r2_status": "BLOCKED",
+  "reuse_method": "Validate every R2 response envelope; copy schema-valid successes byte-for-byte into an isolated R3 cache; convert the preserved invalid query response and the exhausted missing theory request into typed terminal outcomes.",
+  "verified_inventory_decision": {
+    "unique_successes": 55,
+    "unique_terminal_errors": 2,
+    "unique_outcomes": 57,
+    "logical_components": 58,
+    "reason_expected_counts_differ": "Machine validation found one preserved R2 query response that fails the frozen CandidateQueryOutput schema. It is not misreported as SUCCESS.",
+    "terminal_error_codes": [
+      "INVALID_STRUCTURED_OUTPUT",
+      "OUTPUT_LIMIT_EXHAUSTED"
+    ]
+  },
+  "terminal_rules": {
+    "terminal_is_error": true,
+    "terminal_is_not_unknown": true,
+    "terminal_is_not_abstain": true,
+    "terminal_is_not_ast": true,
+    "terminal_prevents_provider_retry": true,
+    "missing_request_third_attempt_forbidden": true,
+    "missing_request_output_limit": 4096,
+    "terminal_records_remain_in_metric_denominators": true
+  },
+  "policy": {
+    "p0": "Terminal theory or query components produce typed ERROR; unrelated records continue.",
+    "p1": "The unchanged validation policy may perform at most one semantic correction for a structurally invalid or absent candidate; terminal correction failures remain ERROR.",
+    "p2": "The unchanged selective policy applies only after valid candidates exist; ERROR is never converted to ABSTAIN or UNKNOWN.",
+    "proof_rule": "Only valid accepted AST pairs enter Phase 4 and every emitted proof must verify independently.",
+    "seal_before_gold_evaluation": true
+  },
+  "maximum_semantic_corrections_per_component": 1,
+  "provider_retry_limit": 2,
+  "maximum_new_phase6_unique_local_tasks": 180,
+  "metrics": [
+    "classification_accuracy_coverage_selective_risk",
+    "macro_precision_recall_f1",
+    "per_label_and_per_depth",
+    "typed_error_counts",
+    "parser_structure_source_semantic_ast_closure",
+    "critic_and_correction_yield",
+    "abstention_transitions_and_reasons",
+    "symbolic_reasoning_and_independent_proof_verification",
+    "historical_inherited_live_and_replay_accounting"
+  ],
+  "replay_requirements": {
+    "ollama_unavailable": true,
+    "provider_calls": 0,
+    "cache_misses": 0,
+    "new_tokens": 0,
+    "identical_prediction_and_report_fingerprints": true
+  },
+  "acceptance_criteria": [
+    "all_58_phase5_logical_components_are_replayable_success_or_terminal_outcomes",
+    "no_new_phase5_provider_call",
+    "all_30_records_have_sealed_p0_p1_p2_outcomes",
+    "phase6_unique_local_tasks_at_most_180",
+    "terminal_errors_remain_errors",
+    "every_accepted_proof_verifies",
+    "final_replay_has_zero_calls_and_zero_misses",
+    "historical_evidence_hashes_remain_unchanged"
+  ],
+  "test_split_forbidden": true,
+  "development_tuning_forbidden": true,
+  "dataset_licence_status": "unverified",
+  "limitations": [
+    "R3 reuses preserved R2 neural outputs and is not an independent neural-parser replication.",
+    "R3 does not recover the missing structured output; it measures a terminal ERROR.",
+    "Temperature zero and a fixed seed do not guarantee deterministic local generation.",
+    "Thirty development examples do not support significance or superiority claims."
+  ],
+  "frozen_facts": {
+    "development_manifest_sha256": "16fd49a90f77aa7b59c1b55a62fa1846638beb7a3c86ea07ff97a685d76360b3",
+    "logical_phase5_components": 58,
+    "model_contract": {
+      "concurrency": 1,
+      "endpoint": "http://127.0.0.1:11434",
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "num_ctx": 8192,
+      "provider": "ollama",
+      "provider_version": "0.32.1",
+      "seed": 20260713,
+      "temperature": 0,
+      "think": false
+    },
+    "ordered_record_ids": [
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-882/Q19",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1038/Q3",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-341/Q15",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-771/Q7",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-777/Q6",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-162/Q16",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-858/Q13",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-40/Q8",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-791/Q7",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-472/Q2",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-717/Q11",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-106/Q8",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-713/Q1",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-654/Q5",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-668/Q20",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-111/Q5",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-897/Q16",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-582/Q3",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1071/Q11",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-863/Q1",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1028/Q4",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-717/Q12",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1212/Q17",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-783/Q12",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1028/Q6",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-695/Q4",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1203/Q2",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-372/Q13",
+      "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-711/Q17",
+      "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-1186/Q16"
+    ],
+    "ordered_record_ids_sha256": "784b01ff779fec5da534696a8f9c3d11b6c067f31568cba80466dc3442e00e98",
+    "paths": {
+      "phase5_cache": "results/cache/semantic-parser-phase6-r3",
+      "phase5_output": "results/semantic-parsing-phase6-r3",
+      "phase6_cache": "results/cache/validation-correction-phase6-r3",
+      "phase6_output": "results/validation-correction-phase6-r3",
+      "source_cache_read_only": "results/cache/semantic-parser-phase6-r2"
+    },
+    "phase5_r3_config_sha256": "a8b56ba502a651a0d8f9e27d95597f5e1fcc4c12d74358d1f9cc9867fba60bb7",
+    "phase5_request_manifest_sha256": "40101985e37ec739205945db0b8ce98ffacec5bab7d8fc8dbc295e3d96327951",
+    "phase6_r3_config_sha256": "2efbe7813f6b73eff8aa3c1cddb249836b9d5e785f700b0cdb500beb2ebe2b07",
+    "prompt_hashes": {
+      "correction_query": "6a08824fb61fcb6981ea08a35358bbcb17a37108a9c973b59204627554f409ad",
+      "correction_theory": "0d4df8971944f1bfeb607f011a1fc84557fbc3429d56057f6bc5b1a2db1d4eea",
+      "critic_query": "74c4ccffeb83d1933cd148008dfddc6e4beb4dd318ec961dcd0e768ed7941549",
+      "critic_theory": "8d47fa74cde03606fa31a415b41eb90281281aaa83e290c1d2916747d00e862f",
+      "phase5_query": "eb11a6764cfbb8f98bc5bfd8adf8e999e4544d823d7129b0ea6f1e4b45cbf874",
+      "phase5_theory": "b4be4c4d028b4cf954cdf367cd01be21e354aa164e215d77f567f860e759e54f"
+    },
+    "r2_1_freeze_manifest_sha256": "dd6db160bb2c23e266ab2751a129e7669db6c07d1a19be159fc692b25c8d8173",
+    "r2_cache_files": 56,
+    "r2_cache_inventory_sha256": "aa658f350479dec3dd77ae68b8550ac1d70bb4db25ad5e2d5ace66e668bdde70",
+    "r2_failed_attempt_evidence": {
+      "attempt_1": "955d6712cf463b5e1bfb002b03b75d17ab2520a6f6eafebad0574d7ef21187e3",
+      "attempt_2": "89c61c28903a6c1fda52fa42f68326d75a75e4f2aed20721037e26242a30076a",
+      "cumulative": "0cd66182ae2165eb910b78f45d23ed15c491abd58b976870432ac45432d2196f"
+    },
+    "r2_final_commit": "3c6106d21288ed31829bd6eeb5db96e7d9ee9705",
+    "r2_freeze_manifest_sha256": "a9009cba5663fdd5c51704e3be219e12af01d924e55e55dc1a60f3c96cdb8e4c",
+    "r2_report_sha256": "9266855183e29e1011fe3298bef01f8b44b2efe8733fa05acf3d5c00c11a56a2",
+    "reliability_policy_sha256": "d462527eb075920850701d121cc24f968e6db08880b866dc6fca9d08e1d14130",
+    "schema_hashes": {
+      "correction_query": "33f25d5e0eaf5f12b2830b8d69b0505330a31685249d5a5353a041e1d556bf91",
+      "correction_theory": "3ec7689a1e879cfcf6d3d004e147fb36327eda286fd9b929f445d9a488cf4d1f",
+      "critic_query": "3a1d562bd9084cfa51e15345dfc97c4756b3154cab9db348b753e33a75d1fa30",
+      "critic_theory": "f0bb25b63817320e2da79992b771af8ab3913775ac38932352846807055b09fb",
+      "feedback": "64a3dba0d2db467c38d3970598efe917408f71226b20cecb7890bd8d5898ea6e",
+      "phase5_query": "33f25d5e0eaf5f12b2830b8d69b0505330a31685249d5a5353a041e1d556bf91",
+      "phase5_theory": "3ec7689a1e879cfcf6d3d004e147fb36327eda286fd9b929f445d9a488cf4d1f",
+      "terminal_outcome_file_sha256": "a905e50cb827c245ef7dbfb531f2a6ea239e9f0993ab4d4dfe082deff563901d"
+    },
+    "semantic_configuration_sha256": "f60813a5792cc3c7e668b6f3ada1320ff352e0e01e2783ac96d0b93cce005079",
+    "starting_checkpoint": "3c6106d21288ed31829bd6eeb5db96e7d9ee9705",
+    "unique_phase5_requests": 57
+  }
+}

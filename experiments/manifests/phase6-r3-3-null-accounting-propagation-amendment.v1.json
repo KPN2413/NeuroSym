@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3.3 Null Accounting Propagation Amendment",
+  "amends_commit": "e2c486fce2e48abf157d2558b87569139f1e3768",
+  "amends_manifest": "experiments/manifests/phase6-r3-2-terminal-replay-amendment.v1.json",
+  "amends_manifest_sha256": "96b88be1ad0858dc693dada1bc3049ca3776fabf851fd9e36bc2c9ebd54a3b41",
+  "trigger": "The first post-R3.2 resume made no provider call and stopped while converting the replayed terminal provider outcome into TaskOutcome because TaskOutcome still required numeric telemetry.",
+  "development_metrics_examined": false,
+  "prediction_sets_sealed": false,
+  "performance_based_change": false,
+  "failed_resume_evidence": {
+    "run_id": "phase6-r3-live-resumed-2",
+    "stderr": {
+      "path": "results/phase6-r3-ops/phase6-r3-live-resumed-2.stderr.log",
+      "sha256": "f0fcb79f76527fb3bee008daa6f3a6bc5262db6671de48d5ddbd2c6687ee896d"
+    },
+    "stdout": {
+      "path": "results/phase6-r3-ops/phase6-r3-live-resumed-2.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "run_state": {
+      "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-2/run-state.json",
+      "sha256": "45ad3cb0f2ad559f4f961c93626f102d86dddd54ff51395969c1d81006b7de5e"
+    },
+    "terminal_cache_sha256": "1c5397dcf2d2ad95cd0ae55554cc5a8082db326c17204de3d4c795829a51d20c",
+    "correction_cache_files_before": 4,
+    "correction_cache_files_after": 4,
+    "provider_calls": 0,
+    "new_cache_entries": 0
+  },
+  "behavior_change": [
+    "Allow terminal TaskOutcome telemetry fields to preserve JSON null while requiring complete numeric accounting for all non-terminal outcomes.",
+    "Make operational and request-ledger totals null when any included value is unavailable, while separately reporting observed subtotals and unavailable-value counts."
+  ],
+  "forbidden": [
+    "coercing unavailable telemetry to zero",
+    "another execution of the exhausted request",
+    "prompt, schema, model, runtime, policy, sample, threshold, or metric-definition changes",
+    "using development labels or the test split"
+  ],
+  "acceptance": [
+    "terminal TaskOutcome construction preserves null accounting",
+    "non-terminal TaskOutcome rejects null accounting",
+    "aggregate accounting reports null completeness, observed subtotal, and unavailable count",
+    "the resumed pipeline reaches later requests without retrying the terminal request",
+    "all prior R3 evidence remains unchanged"
+  ]
+}

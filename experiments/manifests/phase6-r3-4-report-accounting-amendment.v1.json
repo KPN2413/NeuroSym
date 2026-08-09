@@ -1,0 +1,49 @@
+{
+  "schema_version": "1.0",
+  "experiment": "Phase 6-R3.4 Report Label and Duplicate Accounting Amendment",
+  "amends_commit": "acb9e4fd3226fa6aa2e1a350288598535a247129",
+  "amends_manifest": "experiments/manifests/phase6-r3-3-null-accounting-propagation-amendment.v1.json",
+  "amends_manifest_sha256": "f86ea401017febe40e69ed0df5da6d61a817de7f3cdc22583716a79355b3ce06",
+  "trigger": "Post-seal evaluation exposed R2 labels in the R3 comparison table and a three-call request-ledger undercount caused by retaining the last cache-hit observation for duplicate request hashes.",
+  "development_metrics_examined": true,
+  "prediction_sets_sealed": true,
+  "performance_based_change": false,
+  "sealed_live_evidence": {
+    "run_id": "phase6-r3-live-resumed-3",
+    "prediction_seal": {
+      "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-3/prediction-seal.json",
+      "sha256": "66f2b4496888fdc42c886df077f9f3144b8d2c3221707e9a4755904606458058"
+    },
+    "report": {
+      "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-3/report.json",
+      "sha256": "5bc7fd2940030857e5f26a41a294e576c1783672058ee90f788abe9baaa850cf"
+    },
+    "request_ledger": {
+      "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-3/request-ledger.json",
+      "sha256": "f30d6aa876478590e20ea91271be1964bcc60c9f94e0d0d654c2633bc9f50d59"
+    },
+    "run_state": {
+      "path": "results/validation-correction-phase6-r3/phase6-r3-live-resumed-3/run-state.json",
+      "sha256": "c1ddd8e44264bc5dee0d9577032d2445aed8d85cd09be12765fdd0a7f97d9e54"
+    },
+    "phase6_cache_files": 64,
+    "provider_calls_after_seal": 0
+  },
+  "behavior_change": [
+    "Render Phase 6-R3 labels for R3 comparison rows while preserving R2 labels for historical R2 evaluations.",
+    "Deduplicate request-ledger entries by retaining the first observation, matching the operational ledger and preserving whether a request was first executed live or inherited from cache."
+  ],
+  "unchanged": [
+    "all sealed P0, P1, and P2 predictions",
+    "all component decisions, corrections, abstentions, proofs, and metric definitions",
+    "all prompts, schemas, model settings, sample records, and policy thresholds",
+    "the original live run and report as immutable pre-amendment evidence"
+  ],
+  "acceptance": [
+    "R3 comparison rows are labeled R3",
+    "the replay request ledger reports zero new calls and complete cache hits",
+    "live/replay prediction and report fingerprints remain identical",
+    "the zero-call replay runs with Ollama stopped",
+    "no individual example is rerun"
+  ]
+}
