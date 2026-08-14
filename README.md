@@ -1,4 +1,4 @@
-# VeriLogic-NS
+ # VeriLogic-NS
 
 VeriLogic-NS is an explainable neuro-symbolic research framework that will combine an existing large language model with a deterministic symbolic reasoner. The language model is limited to converting natural-language premises and queries into a restricted typed AST; validation and formal reasoning remain deterministic and auditable.
 
