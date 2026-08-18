@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "EvidenceVerification": {
+      "enum": [
+        "HASH_VERIFIED",
+        "CROSS_CHECKED",
+        "SOURCE_HASH_RECORDED",
+        "UNAVAILABLE"
+      ],
+      "title": "EvidenceVerification",
+      "type": "string"
+    },
+    "ExperimentStatus": {
+      "enum": [
+        "PASS",
+        "BLOCKED",
+        "INVALIDATED",
+        "COMPLETE_WITH_NEGATIVE_RESULT"
+      ],
+      "title": "ExperimentStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "api_cost_usd": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Api Cost Usd"
+    },
+    "chart_eligible": {
+      "title": "Chart Eligible",
+      "type": "boolean"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Commit"
+    },
+    "comparability_groups": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Comparability Groups",
+      "type": "array"
+    },
+    "condition": {
+      "title": "Condition",
+      "type": "string"
+    },
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "evidence_verification_status": {
+      "$ref": "#/$defs/EvidenceVerification"
+    },
+    "experiment_id": {
+      "title": "Experiment Id",
+      "type": "string"
+    },
+    "main_limitation": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Main Limitation"
+    },
+    "model_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Model Name"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "phase": {
+      "title": "Phase",
+      "type": "string"
+    },
+    "policy_mode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Policy Mode"
+    },
+    "primary_metrics": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Primary Metrics",
+      "type": "object"
+    },
+    "provider_call_count": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Provider Call Count"
+    },
+    "recorded_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recorded At"
+    },
+    "replay_status": {
+      "title": "Replay Status",
+      "type": "string"
+    },
+    "sample_size": {
+      "title": "Sample Size",
+      "type": "integer"
+    },
+    "split": {
+      "title": "Split",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/ExperimentStatus"
+    }
+  },
+  "required": [
+    "experiment_id",
+    "name",
+    "phase",
+    "condition",
+    "policy_mode",
+    "status",
+    "recorded_at",
+    "commit",
+    "model_name",
+    "dataset",
+    "split",
+    "sample_size",
+    "replay_status",
+    "provider_call_count",
+    "api_cost_usd",
+    "primary_metrics",
+    "main_limitation",
+    "comparability_groups",
+    "chart_eligible",
+    "evidence_verification_status"
+  ],
+  "title": "ExperimentSummary",
+  "type": "object"
+}

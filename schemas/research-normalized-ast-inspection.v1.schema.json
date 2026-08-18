@@ -1,0 +1,364 @@
+{
+  "$defs": {
+    "CorrectionDiff": {
+      "additionalProperties": false,
+      "properties": {
+        "additions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Additions",
+          "type": "array"
+        },
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "changed_arguments": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Arguments",
+          "type": "array"
+        },
+        "changed_polarity": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Polarity",
+          "type": "array"
+        },
+        "changed_predicates": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Predicates",
+          "type": "array"
+        },
+        "changed_source_references": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Changed Source References",
+          "type": "array"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "removals": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Removals",
+          "type": "array"
+        }
+      },
+      "required": [
+        "available"
+      ],
+      "title": "CorrectionDiff",
+      "type": "object"
+    },
+    "LiteralView": {
+      "additionalProperties": false,
+      "properties": {
+        "arguments": {
+          "items": {
+            "$ref": "#/$defs/TermView"
+          },
+          "title": "Arguments",
+          "type": "array"
+        },
+        "canonical_id": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Canonical Id",
+          "type": "string"
+        },
+        "display": {
+          "title": "Display",
+          "type": "string"
+        },
+        "negated": {
+          "title": "Negated",
+          "type": "boolean"
+        },
+        "predicate": {
+          "title": "Predicate",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "canonical_id",
+        "predicate",
+        "arguments",
+        "negated",
+        "source_id",
+        "display"
+      ],
+      "title": "LiteralView",
+      "type": "object"
+    },
+    "PredicateView": {
+      "additionalProperties": false,
+      "properties": {
+        "argument_types": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Argument Types"
+        },
+        "arity": {
+          "enum": [
+            1,
+            2
+          ],
+          "title": "Arity",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arity",
+        "argument_types"
+      ],
+      "title": "PredicateView",
+      "type": "object"
+    },
+    "RuleView": {
+      "additionalProperties": false,
+      "properties": {
+        "conclusion": {
+          "$ref": "#/$defs/LiteralView"
+        },
+        "premises": {
+          "items": {
+            "$ref": "#/$defs/LiteralView"
+          },
+          "title": "Premises",
+          "type": "array"
+        },
+        "rule_id": {
+          "title": "Rule Id",
+          "type": "string"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "variables": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Variables",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rule_id",
+        "variables",
+        "premises",
+        "conclusion",
+        "source_id"
+      ],
+      "title": "RuleView",
+      "type": "object"
+    },
+    "SourceMappingView": {
+      "additionalProperties": false,
+      "properties": {
+        "referenced_by": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Referenced By",
+          "type": "array"
+        },
+        "source_id": {
+          "title": "Source Id",
+          "type": "string"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_id",
+        "text",
+        "referenced_by"
+      ],
+      "title": "SourceMappingView",
+      "type": "object"
+    },
+    "TermView": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "entity",
+            "variable"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "value": {
+          "title": "Value",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "value"
+      ],
+      "title": "TermView",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "canonical_json": {
+      "additionalProperties": true,
+      "title": "Canonical Json",
+      "type": "object"
+    },
+    "canonical_theory_id": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Canonical Theory Id",
+      "type": "string"
+    },
+    "correction_attempted": {
+      "title": "Correction Attempted",
+      "type": "boolean"
+    },
+    "correction_diff": {
+      "$ref": "#/$defs/CorrectionDiff"
+    },
+    "entities": {
+      "items": {
+        "additionalProperties": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "type": "object"
+      },
+      "title": "Entities",
+      "type": "array"
+    },
+    "facts": {
+      "items": {
+        "$ref": "#/$defs/LiteralView"
+      },
+      "title": "Facts",
+      "type": "array"
+    },
+    "predicates": {
+      "items": {
+        "$ref": "#/$defs/PredicateView"
+      },
+      "title": "Predicates",
+      "type": "array"
+    },
+    "proof_roots": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Proof Roots",
+      "type": "array"
+    },
+    "query": {
+      "$ref": "#/$defs/LiteralView"
+    },
+    "rules": {
+      "items": {
+        "$ref": "#/$defs/RuleView"
+      },
+      "title": "Rules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "semantic_validation_status": {
+      "const": "VALID",
+      "default": "VALID",
+      "title": "Semantic Validation Status",
+      "type": "string"
+    },
+    "source_coverage_status": {
+      "enum": [
+        "COMPLETE",
+        "INCOMPLETE"
+      ],
+      "title": "Source Coverage Status",
+      "type": "string"
+    },
+    "source_mapping": {
+      "items": {
+        "$ref": "#/$defs/SourceMappingView"
+      },
+      "title": "Source Mapping",
+      "type": "array"
+    },
+    "theory_id": {
+      "title": "Theory Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "theory_id",
+    "canonical_theory_id",
+    "facts",
+    "rules",
+    "query",
+    "predicates",
+    "entities",
+    "source_mapping",
+    "source_coverage_status",
+    "correction_attempted",
+    "correction_diff",
+    "proof_roots",
+    "canonical_json"
+  ],
+  "title": "NormalizedAstInspection",
+  "type": "object"
+}

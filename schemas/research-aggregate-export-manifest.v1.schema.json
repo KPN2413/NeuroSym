@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "applied_filters": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Applied Filters",
+      "type": "object"
+    },
+    "canonical_content_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Canonical Content Hash",
+      "type": "string"
+    },
+    "catalogue_version": {
+      "title": "Catalogue Version",
+      "type": "string"
+    },
+    "export_format": {
+      "enum": [
+        "json",
+        "csv",
+        "markdown"
+      ],
+      "title": "Export Format",
+      "type": "string"
+    },
+    "filename": {
+      "pattern": "^[a-z0-9][a-z0-9_.-]{0,127}$",
+      "title": "Filename",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "metric_count": {
+      "minimum": 0,
+      "title": "Metric Count",
+      "type": "integer"
+    },
+    "missing_value": {
+      "const": "NA",
+      "default": "NA",
+      "title": "Missing Value",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "catalogue_version",
+    "export_format",
+    "applied_filters",
+    "generated_at",
+    "canonical_content_hash",
+    "filename",
+    "metric_count"
+  ],
+  "title": "AggregateExportManifest",
+  "type": "object"
+}

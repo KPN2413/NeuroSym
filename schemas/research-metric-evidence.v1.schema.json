@@ -1,0 +1,260 @@
+{
+  "$defs": {
+    "EvidenceType": {
+      "enum": [
+        "DIRECTLY_OBSERVED",
+        "DERIVED",
+        "DOCUMENTED",
+        "UNAVAILABLE"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "EvidenceVerification": {
+      "enum": [
+        "HASH_VERIFIED",
+        "CROSS_CHECKED",
+        "SOURCE_HASH_RECORDED",
+        "UNAVAILABLE"
+      ],
+      "title": "EvidenceVerification",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "benchmark_variant": {
+      "title": "Benchmark Variant",
+      "type": "string"
+    },
+    "comparability_group": {
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+      "title": "Comparability Group",
+      "type": "string"
+    },
+    "condition": {
+      "title": "Condition",
+      "type": "string"
+    },
+    "dataset": {
+      "title": "Dataset",
+      "type": "string"
+    },
+    "dataset_version": {
+      "title": "Dataset Version",
+      "type": "string"
+    },
+    "denominator": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Denominator"
+    },
+    "derivation_formula": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Derivation Formula"
+    },
+    "dimensions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Dimensions",
+      "type": "object"
+    },
+    "display_name": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Display Name",
+      "type": "string"
+    },
+    "evidence_type": {
+      "$ref": "#/$defs/EvidenceType"
+    },
+    "limitations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "metric_id": {
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+      "title": "Metric Id",
+      "type": "string"
+    },
+    "model_digest": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Model Digest"
+    },
+    "model_name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Model Name"
+    },
+    "numerator": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Numerator"
+    },
+    "phase": {
+      "pattern": "^Phase [3-7](?:-R[0-9]+)?$",
+      "title": "Phase",
+      "type": "string"
+    },
+    "policy_mode": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Policy Mode"
+    },
+    "run_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Run Id"
+    },
+    "sample_size": {
+      "minimum": 0,
+      "title": "Sample Size",
+      "type": "integer"
+    },
+    "selection_manifest": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Selection Manifest"
+    },
+    "source_artifact": {
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+      "title": "Source Artifact",
+      "type": "string"
+    },
+    "source_artifact_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Source Artifact Hash",
+      "type": "string"
+    },
+    "source_commit": {
+      "anyOf": [
+        {
+          "pattern": "^[a-f0-9]{40}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Source Commit"
+    },
+    "split": {
+      "title": "Split",
+      "type": "string"
+    },
+    "unit": {
+      "pattern": "^[a-z][a-z0-9_.-]{0,63}$",
+      "title": "Unit",
+      "type": "string"
+    },
+    "value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Value"
+    },
+    "verification_status": {
+      "$ref": "#/$defs/EvidenceVerification"
+    }
+  },
+  "required": [
+    "metric_id",
+    "display_name",
+    "value",
+    "unit",
+    "numerator",
+    "denominator",
+    "dataset",
+    "dataset_version",
+    "split",
+    "benchmark_variant",
+    "sample_size",
+    "selection_manifest",
+    "phase",
+    "condition",
+    "policy_mode",
+    "model_name",
+    "run_id",
+    "source_artifact",
+    "source_artifact_hash",
+    "evidence_type",
+    "derivation_formula",
+    "comparability_group",
+    "verification_status"
+  ],
+  "title": "MetricEvidence",
+  "type": "object"
+}

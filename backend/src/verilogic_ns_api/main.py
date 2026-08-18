@@ -11,6 +11,8 @@ from verilogic_ns_api.config import Settings, get_settings
 from verilogic_ns_api.orchestration.factory import OrchestrationFactory
 from verilogic_ns_api.orchestration.jobs import InMemoryJobManager
 from verilogic_ns_api.orchestration.models import ApiErrorResponse, ProviderMode
+from verilogic_ns_api.research_frontend.catalogue import ResearchCatalogueService
+from verilogic_ns_api.research_frontend.models import ResearchApiError
 
 
 def create_app(
@@ -18,6 +20,7 @@ def create_app(
     *,
     orchestration_factory: OrchestrationFactory | None = None,
     job_manager: InMemoryJobManager | None = None,
+    research_catalogue: ResearchCatalogueService | None = None,
 ) -> FastAPI:
     resolved_settings = settings or get_settings()
     resolved_factory = orchestration_factory or OrchestrationFactory(
@@ -28,6 +31,7 @@ def create_app(
         maximum_queued_jobs=resolved_settings.orchestration_queue_size,
         retention_seconds=resolved_settings.orchestration_retention_seconds,
     )
+    resolved_research_catalogue = research_catalogue or ResearchCatalogueService()
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
@@ -43,6 +47,7 @@ def create_app(
     app.state.settings = resolved_settings
     app.state.orchestration_factory = resolved_factory
     app.state.job_manager = resolved_jobs
+    app.state.research_catalogue = resolved_research_catalogue
     app.add_middleware(
         CORSMiddleware,
         allow_origins=resolved_settings.cors_origins,
@@ -61,6 +66,12 @@ def create_app(
                 message="The request does not satisfy the versioned API contract.",
             )
             return JSONResponse(status_code=422, content=payload.model_dump(mode="json"))
+        if request.url.path.startswith("/api/v1/research"):
+            payload = ResearchApiError(
+                code="INVALID_RESEARCH_REQUEST",
+                message="The request does not satisfy the versioned research API contract.",
+            )
+            return JSONResponse(status_code=422, content=payload.model_dump(mode="json"))
         return JSONResponse(status_code=422, content={"detail": "Request validation failed."})
 
     @app.exception_handler(HTTPException)
@@ -72,6 +83,15 @@ def create_app(
                 content = ApiErrorResponse(
                     code="API_ERROR",
                     message="The API could not complete the request.",
+                ).model_dump(mode="json")
+            return JSONResponse(status_code=error.status_code, content=content)
+        if request.url.path.startswith("/api/v1/research"):
+            if isinstance(error.detail, dict) and error.detail.get("schema_version") == "1.0":
+                content = error.detail
+            else:
+                content = ResearchApiError(
+                    code="RESEARCH_API_ERROR",
+                    message="The research API could not complete the request.",
                 ).model_dump(mode="json")
             return JSONResponse(status_code=error.status_code, content=content)
         return JSONResponse(status_code=error.status_code, content={"detail": error.detail})

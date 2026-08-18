@@ -1,0 +1,100 @@
+{
+  "$defs": {
+    "ComparisonType": {
+      "enum": [
+        "PAIRED",
+        "SAME_SELECTION_DIFFERENT_REPRESENTATION",
+        "DESCRIPTIVE_ONLY",
+        "INCOMPARABLE"
+      ],
+      "title": "ComparisonType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "comparison_id": {
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+      "title": "Comparison Id",
+      "type": "string"
+    },
+    "comparison_type": {
+      "$ref": "#/$defs/ComparisonType"
+    },
+    "evidence_sources": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence Sources",
+      "type": "array"
+    },
+    "experiment_ids": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 8,
+      "minItems": 2,
+      "title": "Experiment Ids",
+      "type": "array"
+    },
+    "limitations": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 20,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "outcome_counts": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Outcome Counts",
+      "type": "object"
+    },
+    "paired": {
+      "title": "Paired",
+      "type": "boolean"
+    },
+    "same_selection": {
+      "title": "Same Selection",
+      "type": "boolean"
+    },
+    "supported_metrics": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supported Metrics",
+      "type": "array"
+    },
+    "title": {
+      "title": "Title",
+      "type": "string"
+    },
+    "warning": {
+      "title": "Warning",
+      "type": "string"
+    }
+  },
+  "required": [
+    "comparison_id",
+    "title",
+    "comparison_type",
+    "experiment_ids",
+    "paired",
+    "same_selection",
+    "supported_metrics",
+    "warning",
+    "evidence_sources"
+  ],
+  "title": "ComparisonCompatibility",
+  "type": "object"
+}

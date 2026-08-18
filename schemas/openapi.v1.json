@@ -29,6 +29,49 @@
         "title": "ApiErrorResponse",
         "type": "object"
       },
+      "AstInspectionRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "accepted_theory": {
+            "$ref": "#/components/schemas/Theory"
+          },
+          "correction_attempted": {
+            "default": false,
+            "title": "Correction Attempted",
+            "type": "boolean"
+          },
+          "pre_correction_theory": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Theory"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "proof_roots": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 2,
+            "title": "Proof Roots",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "accepted_theory"
+        ],
+        "title": "AstInspectionRequest",
+        "type": "object"
+      },
       "CanonicalLiteral": {
         "additionalProperties": false,
         "properties": {
@@ -164,6 +207,252 @@
           "schema_hashes"
         ],
         "title": "CapabilitiesResponse",
+        "type": "object"
+      },
+      "CatalogueOverview": {
+        "additionalProperties": false,
+        "properties": {
+          "catalogue_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalogue Hash",
+            "type": "string"
+          },
+          "catalogue_id": {
+            "title": "Catalogue Id",
+            "type": "string"
+          },
+          "catalogue_version": {
+            "title": "Catalogue Version",
+            "type": "string"
+          },
+          "comparison_count": {
+            "minimum": 0.0,
+            "title": "Comparison Count",
+            "type": "integer"
+          },
+          "evidence_validation_status": {
+            "const": "VERIFIED",
+            "default": "VERIFIED",
+            "title": "Evidence Validation Status",
+            "type": "string"
+          },
+          "experiment_count": {
+            "minimum": 0.0,
+            "title": "Experiment Count",
+            "type": "integer"
+          },
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentSummary"
+            },
+            "title": "Experiments",
+            "type": "array"
+          },
+          "global_limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Global Limitations",
+            "type": "array"
+          },
+          "provider_calls_during_phase8": {
+            "title": "Provider Calls During Phase8",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "zero_cost": {
+            "title": "Zero Cost",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "catalogue_id",
+          "catalogue_version",
+          "catalogue_hash",
+          "experiment_count",
+          "comparison_count",
+          "experiments",
+          "global_limitations",
+          "zero_cost",
+          "provider_calls_during_phase8"
+        ],
+        "title": "CatalogueOverview",
+        "type": "object"
+      },
+      "ComparisonCompatibility": {
+        "additionalProperties": false,
+        "properties": {
+          "comparison_id": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+            "title": "Comparison Id",
+            "type": "string"
+          },
+          "comparison_type": {
+            "$ref": "#/components/schemas/ComparisonType"
+          },
+          "evidence_sources": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Evidence Sources",
+            "type": "array"
+          },
+          "experiment_ids": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 8,
+            "minItems": 2,
+            "title": "Experiment Ids",
+            "type": "array"
+          },
+          "limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Limitations",
+            "type": "array"
+          },
+          "outcome_counts": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Outcome Counts",
+            "type": "object"
+          },
+          "paired": {
+            "title": "Paired",
+            "type": "boolean"
+          },
+          "same_selection": {
+            "title": "Same Selection",
+            "type": "boolean"
+          },
+          "supported_metrics": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Supported Metrics",
+            "type": "array"
+          },
+          "title": {
+            "title": "Title",
+            "type": "string"
+          },
+          "warning": {
+            "title": "Warning",
+            "type": "string"
+          }
+        },
+        "required": [
+          "comparison_id",
+          "title",
+          "comparison_type",
+          "experiment_ids",
+          "paired",
+          "same_selection",
+          "supported_metrics",
+          "warning",
+          "evidence_sources"
+        ],
+        "title": "ComparisonCompatibility",
+        "type": "object"
+      },
+      "ComparisonType": {
+        "enum": [
+          "PAIRED",
+          "SAME_SELECTION_DIFFERENT_REPRESENTATION",
+          "DESCRIPTIVE_ONLY",
+          "INCOMPARABLE"
+        ],
+        "title": "ComparisonType",
+        "type": "string"
+      },
+      "CorrectionDiff": {
+        "additionalProperties": false,
+        "properties": {
+          "additions": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Additions",
+            "type": "array"
+          },
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "changed_arguments": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Arguments",
+            "type": "array"
+          },
+          "changed_polarity": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Polarity",
+            "type": "array"
+          },
+          "changed_predicates": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Predicates",
+            "type": "array"
+          },
+          "changed_source_references": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Changed Source References",
+            "type": "array"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "removals": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Removals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "available"
+        ],
+        "title": "CorrectionDiff",
         "type": "object"
       },
       "DerivedLiteralNode": {
@@ -362,6 +651,483 @@
         "title": "EntityTerm",
         "type": "object"
       },
+      "EvidenceType": {
+        "enum": [
+          "DIRECTLY_OBSERVED",
+          "DERIVED",
+          "DOCUMENTED",
+          "UNAVAILABLE"
+        ],
+        "title": "EvidenceType",
+        "type": "string"
+      },
+      "EvidenceVerification": {
+        "enum": [
+          "HASH_VERIFIED",
+          "CROSS_CHECKED",
+          "SOURCE_HASH_RECORDED",
+          "UNAVAILABLE"
+        ],
+        "title": "EvidenceVerification",
+        "type": "string"
+      },
+      "ExperimentDetail": {
+        "additionalProperties": false,
+        "properties": {
+          "api_cost_usd": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Cost Usd"
+          },
+          "benchmark_variant": {
+            "title": "Benchmark Variant",
+            "type": "string"
+          },
+          "branch": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Branch"
+          },
+          "chart_eligible": {
+            "default": true,
+            "title": "Chart Eligible",
+            "type": "boolean"
+          },
+          "commit": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commit"
+          },
+          "comparability_groups": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Comparability Groups",
+            "type": "array"
+          },
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "evidence_sources": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Evidence Sources",
+            "type": "array"
+          },
+          "evidence_verification_status": {
+            "$ref": "#/components/schemas/EvidenceVerification"
+          },
+          "experiment_id": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+            "title": "Experiment Id",
+            "type": "string"
+          },
+          "limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 30,
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metrics": {
+            "items": {
+              "$ref": "#/components/schemas/MetricEvidence"
+            },
+            "title": "Metrics",
+            "type": "array"
+          },
+          "model_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Digest"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          },
+          "phase": {
+            "title": "Phase",
+            "type": "string"
+          },
+          "policy_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Mode"
+          },
+          "provider_call_count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Call Count"
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At"
+          },
+          "replay_status": {
+            "title": "Replay Status",
+            "type": "string"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "sample_size": {
+            "minimum": 0.0,
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "selection_manifest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Manifest"
+          },
+          "split": {
+            "title": "Split",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExperimentStatus"
+          }
+        },
+        "required": [
+          "experiment_id",
+          "name",
+          "phase",
+          "condition",
+          "policy_mode",
+          "status",
+          "recorded_at",
+          "branch",
+          "model_name",
+          "dataset",
+          "dataset_version",
+          "split",
+          "benchmark_variant",
+          "sample_size",
+          "selection_manifest",
+          "run_id",
+          "replay_status",
+          "metrics",
+          "evidence_sources",
+          "evidence_verification_status"
+        ],
+        "title": "ExperimentDetail",
+        "type": "object"
+      },
+      "ExperimentListResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentSummary"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "page": {
+            "minimum": 1.0,
+            "title": "Page",
+            "type": "integer"
+          },
+          "page_size": {
+            "maximum": 100.0,
+            "minimum": 1.0,
+            "title": "Page Size",
+            "type": "integer"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "total": {
+            "minimum": 0.0,
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "title": "ExperimentListResponse",
+        "type": "object"
+      },
+      "ExperimentStatus": {
+        "enum": [
+          "PASS",
+          "BLOCKED",
+          "INVALIDATED",
+          "COMPLETE_WITH_NEGATIVE_RESULT"
+        ],
+        "title": "ExperimentStatus",
+        "type": "string"
+      },
+      "ExperimentSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "api_cost_usd": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Api Cost Usd"
+          },
+          "chart_eligible": {
+            "title": "Chart Eligible",
+            "type": "boolean"
+          },
+          "commit": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Commit"
+          },
+          "comparability_groups": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Comparability Groups",
+            "type": "array"
+          },
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "evidence_verification_status": {
+            "$ref": "#/components/schemas/EvidenceVerification"
+          },
+          "experiment_id": {
+            "title": "Experiment Id",
+            "type": "string"
+          },
+          "main_limitation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Main Limitation"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "phase": {
+            "title": "Phase",
+            "type": "string"
+          },
+          "policy_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Mode"
+          },
+          "primary_metrics": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "title": "Primary Metrics",
+            "type": "object"
+          },
+          "provider_call_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Call Count"
+          },
+          "recorded_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recorded At"
+          },
+          "replay_status": {
+            "title": "Replay Status",
+            "type": "string"
+          },
+          "sample_size": {
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "split": {
+            "title": "Split",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ExperimentStatus"
+          }
+        },
+        "required": [
+          "experiment_id",
+          "name",
+          "phase",
+          "condition",
+          "policy_mode",
+          "status",
+          "recorded_at",
+          "commit",
+          "model_name",
+          "dataset",
+          "split",
+          "sample_size",
+          "replay_status",
+          "provider_call_count",
+          "api_cost_usd",
+          "primary_metrics",
+          "main_limitation",
+          "comparability_groups",
+          "chart_eligible",
+          "evidence_verification_status"
+        ],
+        "title": "ExperimentSummary",
+        "type": "object"
+      },
       "ExplanationStep": {
         "additionalProperties": false,
         "properties": {
@@ -517,6 +1283,285 @@
         "title": "InputMode",
         "type": "string"
       },
+      "LiteralView": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments": {
+            "items": {
+              "$ref": "#/components/schemas/TermView"
+            },
+            "title": "Arguments",
+            "type": "array"
+          },
+          "canonical_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Canonical Id",
+            "type": "string"
+          },
+          "display": {
+            "title": "Display",
+            "type": "string"
+          },
+          "negated": {
+            "title": "Negated",
+            "type": "boolean"
+          },
+          "predicate": {
+            "title": "Predicate",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "canonical_id",
+          "predicate",
+          "arguments",
+          "negated",
+          "source_id",
+          "display"
+        ],
+        "title": "LiteralView",
+        "type": "object"
+      },
+      "MetricEvidence": {
+        "additionalProperties": false,
+        "properties": {
+          "benchmark_variant": {
+            "title": "Benchmark Variant",
+            "type": "string"
+          },
+          "comparability_group": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+            "title": "Comparability Group",
+            "type": "string"
+          },
+          "condition": {
+            "title": "Condition",
+            "type": "string"
+          },
+          "dataset": {
+            "title": "Dataset",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "denominator": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Denominator"
+          },
+          "derivation_formula": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Derivation Formula"
+          },
+          "dimensions": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Dimensions",
+            "type": "object"
+          },
+          "display_name": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "evidence_type": {
+            "$ref": "#/components/schemas/EvidenceType"
+          },
+          "limitations": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 20,
+            "title": "Limitations",
+            "type": "array"
+          },
+          "metric_id": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+            "title": "Metric Id",
+            "type": "string"
+          },
+          "model_digest": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{64}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Digest"
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name"
+          },
+          "numerator": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numerator"
+          },
+          "phase": {
+            "pattern": "^Phase [3-7](?:-R[0-9]+)?$",
+            "title": "Phase",
+            "type": "string"
+          },
+          "policy_mode": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Policy Mode"
+          },
+          "run_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run Id"
+          },
+          "sample_size": {
+            "minimum": 0.0,
+            "title": "Sample Size",
+            "type": "integer"
+          },
+          "selection_manifest": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Selection Manifest"
+          },
+          "source_artifact": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+            "title": "Source Artifact",
+            "type": "string"
+          },
+          "source_artifact_hash": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Source Artifact Hash",
+            "type": "string"
+          },
+          "source_commit": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Commit"
+          },
+          "split": {
+            "title": "Split",
+            "type": "string"
+          },
+          "unit": {
+            "pattern": "^[a-z][a-z0-9_.-]{0,63}$",
+            "title": "Unit",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "verification_status": {
+            "$ref": "#/components/schemas/EvidenceVerification"
+          }
+        },
+        "required": [
+          "metric_id",
+          "display_name",
+          "value",
+          "unit",
+          "numerator",
+          "denominator",
+          "dataset",
+          "dataset_version",
+          "split",
+          "benchmark_variant",
+          "sample_size",
+          "selection_manifest",
+          "phase",
+          "condition",
+          "policy_mode",
+          "model_name",
+          "run_id",
+          "source_artifact",
+          "source_artifact_hash",
+          "evidence_type",
+          "derivation_formula",
+          "comparability_group",
+          "verification_status"
+        ],
+        "title": "MetricEvidence",
+        "type": "object"
+      },
       "NaturalLanguageInput": {
         "additionalProperties": false,
         "properties": {
@@ -573,6 +1618,124 @@
           "text"
         ],
         "title": "NaturalLanguageStatement",
+        "type": "object"
+      },
+      "NormalizedAstInspection": {
+        "additionalProperties": false,
+        "properties": {
+          "canonical_json": {
+            "additionalProperties": true,
+            "title": "Canonical Json",
+            "type": "object"
+          },
+          "canonical_theory_id": {
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Canonical Theory Id",
+            "type": "string"
+          },
+          "correction_attempted": {
+            "title": "Correction Attempted",
+            "type": "boolean"
+          },
+          "correction_diff": {
+            "$ref": "#/components/schemas/CorrectionDiff"
+          },
+          "entities": {
+            "items": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "title": "Entities",
+            "type": "array"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/LiteralView"
+            },
+            "title": "Facts",
+            "type": "array"
+          },
+          "predicates": {
+            "items": {
+              "$ref": "#/components/schemas/PredicateView"
+            },
+            "title": "Predicates",
+            "type": "array"
+          },
+          "proof_roots": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Proof Roots",
+            "type": "array"
+          },
+          "query": {
+            "$ref": "#/components/schemas/LiteralView"
+          },
+          "rules": {
+            "items": {
+              "$ref": "#/components/schemas/RuleView"
+            },
+            "title": "Rules",
+            "type": "array"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          },
+          "semantic_validation_status": {
+            "const": "VALID",
+            "default": "VALID",
+            "title": "Semantic Validation Status",
+            "type": "string"
+          },
+          "source_coverage_status": {
+            "enum": [
+              "COMPLETE",
+              "INCOMPLETE"
+            ],
+            "title": "Source Coverage Status",
+            "type": "string"
+          },
+          "source_mapping": {
+            "items": {
+              "$ref": "#/components/schemas/SourceMappingView"
+            },
+            "title": "Source Mapping",
+            "type": "array"
+          },
+          "theory_id": {
+            "title": "Theory Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "theory_id",
+          "canonical_theory_id",
+          "facts",
+          "rules",
+          "query",
+          "predicates",
+          "entities",
+          "source_mapping",
+          "source_coverage_status",
+          "correction_attempted",
+          "correction_diff",
+          "proof_roots",
+          "canonical_json"
+        ],
+        "title": "NormalizedAstInspection",
         "type": "object"
       },
       "ParserMetadata": {
@@ -1115,6 +2278,44 @@
         "title": "PredicateDefinition",
         "type": "object"
       },
+      "PredicateView": {
+        "additionalProperties": false,
+        "properties": {
+          "argument_types": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Argument Types"
+          },
+          "arity": {
+            "enum": [
+              1,
+              2
+            ],
+            "title": "Arity",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "arity",
+          "argument_types"
+        ],
+        "title": "PredicateView",
+        "type": "object"
+      },
       "ProofDAG": {
         "additionalProperties": false,
         "properties": {
@@ -1368,6 +2569,34 @@
         "title": "ReasoningTelemetry",
         "type": "object"
       },
+      "ResearchApiError": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "pattern": "^[A-Z][A-Z0-9_]{0,127}$",
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "maxLength": 500,
+            "minLength": 1,
+            "title": "Message",
+            "type": "string"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ResearchApiError",
+        "type": "object"
+      },
       "Rule": {
         "additionalProperties": false,
         "properties": {
@@ -1531,6 +2760,45 @@
         "title": "RuleLiteral",
         "type": "object"
       },
+      "RuleView": {
+        "additionalProperties": false,
+        "properties": {
+          "conclusion": {
+            "$ref": "#/components/schemas/LiteralView"
+          },
+          "premises": {
+            "items": {
+              "$ref": "#/components/schemas/LiteralView"
+            },
+            "title": "Premises",
+            "type": "array"
+          },
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "variables": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Variables",
+            "type": "array"
+          }
+        },
+        "required": [
+          "rule_id",
+          "variables",
+          "premises",
+          "conclusion",
+          "source_id"
+        ],
+        "title": "RuleView",
+        "type": "object"
+      },
       "RunStatus": {
         "enum": [
           "QUEUED",
@@ -1585,6 +2853,33 @@
           "source_text"
         ],
         "title": "SourceFactNode",
+        "type": "object"
+      },
+      "SourceMappingView": {
+        "additionalProperties": false,
+        "properties": {
+          "referenced_by": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Referenced By",
+            "type": "array"
+          },
+          "source_id": {
+            "title": "Source Id",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source_id",
+          "text",
+          "referenced_by"
+        ],
+        "title": "SourceMappingView",
         "type": "object"
       },
       "SourceStatement": {
@@ -1723,6 +3018,29 @@
           "entity"
         ],
         "title": "SubstitutionBinding",
+        "type": "object"
+      },
+      "TermView": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "entity",
+              "variable"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "value"
+        ],
+        "title": "TermView",
         "type": "object"
       },
       "Theory": {
@@ -2086,6 +3404,437 @@
         "summary": "Get Run",
         "tags": [
           "neurosymbolic"
+        ]
+      }
+    },
+    "/api/v1/research/ast-inspect": {
+      "post": {
+        "description": "Render a supplied accepted AST without invoking a model or solver.",
+        "operationId": "ast_inspection_api_v1_research_ast_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AstInspectionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NormalizedAstInspection"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ast Inspection",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/catalogue": {
+      "get": {
+        "description": "Return the validated, aggregate catalogue overview.",
+        "operationId": "catalogue_api_v1_research_catalogue_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogueOverview"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Catalogue",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/comparisons": {
+      "get": {
+        "operationId": "comparisons_api_v1_research_comparisons_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ComparisonCompatibility"
+                  },
+                  "title": "Response Comparisons Api V1 Research Comparisons Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Comparisons",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/experiments": {
+      "get": {
+        "operationId": "list_experiments_api_v1_research_experiments_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "phase",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 40,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Phase"
+            }
+          },
+          {
+            "in": "query",
+            "name": "condition",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Condition"
+            }
+          },
+          {
+            "in": "query",
+            "name": "policy_mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Policy Mode"
+            }
+          },
+          {
+            "in": "query",
+            "name": "model",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 160,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Model"
+            }
+          },
+          {
+            "in": "query",
+            "name": "dataset",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 100,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Dataset"
+            }
+          },
+          {
+            "in": "query",
+            "name": "split",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Split"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "comparability_group",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Comparability Group"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page",
+            "required": false,
+            "schema": {
+              "default": 1,
+              "maximum": 10000,
+              "minimum": 1,
+              "title": "Page",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "page_size",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Page Size",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List Experiments",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/experiments/{experiment_id}": {
+      "get": {
+        "operationId": "experiment_api_v1_research_experiments__experiment_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "experiment_id",
+            "required": true,
+            "schema": {
+              "title": "Experiment Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExperimentDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchApiError"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Experiment",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/exports": {
+      "get": {
+        "operationId": "aggregate_export_api_v1_research_exports_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "json",
+              "enum": [
+                "json",
+                "csv",
+                "markdown"
+              ],
+              "title": "Format",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "phase",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 40,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Phase"
+            }
+          },
+          {
+            "in": "query",
+            "name": "condition",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Condition"
+            }
+          },
+          {
+            "in": "query",
+            "name": "policy_mode",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 80,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Policy Mode"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Aggregate Export",
+        "tags": [
+          "research"
         ]
       }
     },
