@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 import type {
   CapabilitiesResponse,
@@ -203,6 +204,12 @@ export function NeuroSymbolicWorkbench() {
             </div>
           </div>
           <div className="flex items-center gap-2 text-xs">
+            <Link
+              href="/research"
+              className="rounded-full border border-[#17201d]/15 px-3 py-1.5 font-medium hover:bg-white"
+            >
+              Research evidence
+            </Link>
             <span
               className={`size-2 rounded-full ${backendError ? "bg-[#b5412c]" : "bg-[#218264]"}`}
               aria-hidden="true"
