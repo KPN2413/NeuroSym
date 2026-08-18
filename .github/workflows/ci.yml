@@ -48,6 +48,9 @@ jobs:
           python -m verilogic_ns_api.validation_correction --help
           python -m verilogic_ns_api.orchestration --help
           python -m verilogic_ns_api.orchestration export-schemas --check
+          python -m verilogic_ns_api.research_frontend validate-catalogue
+          python -m verilogic_ns_api.research_frontend build-catalogue --check
+          python -m verilogic_ns_api.research_frontend export-schemas --check
 
       - name: Run synthetic dataset and evaluation smoke checks
         run: |

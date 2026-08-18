@@ -139,3 +139,15 @@ hits with zero misses/calls. Phase 6-R3 fingerprints and Phase 4 300/same-30 con
 remain unchanged. No test-split record, hosted inference, external data transfer, prompt tuning, or
 final research claim is permitted. The observed natural correctness miss is retained in
 `PHASE7_VERIFICATION.md`.
+
+## Phase 8 evidence reconstruction protocol
+
+Phase 8 performs no new experiment, inference or statistical test. It reconstructs retained
+aggregate evidence from hash-verified tracked sources. Documentation-only measurements are labelled
+`DOCUMENTED`; derived metrics retain formulas; unavailable machine evidence remains null. Original
+Phase 6, R2, R3 and Phase 7 negative history are distinct conditions.
+
+Only the registered direct/few-shot relationship is paired. Oracle/natural views are ceiling
+comparisons, cross-phase views are descriptive, and Phase 5 versus R3 is explicitly incomparable.
+No dashboard interaction may create a new comparison or causal correction claim. Test-split data,
+ignored caches and raw benchmark records are outside the Phase 8 boundary.

@@ -76,6 +76,11 @@ Do not fabricate outputs, proofs, metrics, prices, or benchmark records. Preserv
   Never use model prose or hidden thinking as formal evidence.
 - Treat the generated OpenAPI, JSON Schema, and frontend TypeScript artifacts as one versioned
   contract; reject stale or hand-diverged generated files in verification.
+- Validate the research catalogue and tracked source hashes before application startup. Research
+  routes are read-only, initialize no provider, accept no arbitrary path, and expose no ignored
+  cache/run payload, benchmark text, hidden reasoning, secret, model weight or personal path.
+- Bound research pagination and export size. Use enumerated export formats, fixed safe filenames,
+  canonical hashes and sanitized errors. Null evidence must remain null rather than becoming zero.
 
 ## Review checklist
 

@@ -81,6 +81,9 @@ retained without tuning.
 
 ## 8. Research frontend
 
+**Status:** completed on `phase/08-research-frontend` with a versioned evidence catalogue,
+read-only API, normalized AST inspector, research dashboard and deterministic aggregate exports.
+
 Extend the Phase 7 workbench into the full research interface for normalized AST inspection,
 experiment run history, baseline/ablation comparison, and exportable aggregate results. Use
 shadcn/ui only when it materially improves the existing accessible interface.

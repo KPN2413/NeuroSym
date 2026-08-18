@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-7
+## Current implementation: Phases 1-8
 
 The repository provides:
 
@@ -39,6 +39,9 @@ The repository provides:
   proof verification, provenance, and typed terminal outcomes;
 - a bounded one-worker local job queue, generated OpenAPI/JSON Schema/TypeScript contracts, CLI,
   proof explorer, stage trace, cancellation, and backend capability reporting.
+- a source-hash-validated research evidence catalogue, read-only research API, normalized AST
+  inspector, filterable experiment history, compatibility-gated comparisons, exact charts and
+  deterministic JSON/CSV/Markdown exports.
 
 A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
 were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
@@ -51,6 +54,7 @@ that history and represents permanent provider failures as typed replayable `ERR
 See `docs/PHASE6_PILOT_RESULTS.md`, `docs/PHASE6_RECOVERY_R2_RESULTS.md`, and
 `docs/PHASE6_R3_RESULTS.md`. Phase 7 has completed its formal, local-natural, replay, API, UI, and
 regression gates; its frozen natural canary was operationally valid but logically incorrect.
+The `/research` route reconstructs aggregate evidence with Ollama stopped and no provider call.
 There is no database, authentication, public deployment, or final benchmark result.
 
 ## Prerequisites
@@ -86,7 +90,24 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open `http://localhost:3000`. `NEXT_PUBLIC_API_BASE_URL` defaults to `http://localhost:8000`; copy `frontend/.env.example` to `frontend/.env.local` to override it. pnpm is the only supported frontend package manager.
+Open `http://localhost:3000` for the workbench or `http://localhost:3000/research` for the Phase 8
+evidence dashboard. `NEXT_PUBLIC_API_BASE_URL` defaults to `http://localhost:8000`; copy
+`frontend/.env.example` to `frontend/.env.local` to override it. pnpm is the only supported frontend
+package manager.
+
+## Research evidence
+
+With the backend environment active at the repository root:
+
+```bash
+python -m verilogic_ns_api.research_frontend validate-catalogue
+python -m verilogic_ns_api.research_frontend catalogue-summary
+python -m verilogic_ns_api.research_frontend export-schemas --check
+```
+
+See `docs/RESEARCH_FRONTEND.md`, `docs/RESEARCH_EVIDENCE_CATALOGUE.md` and
+`docs/RESEARCH_EXPORTS.md`. Missing historical metrics remain `NA`; Phase 5 and Phase 6-R3 are
+explicitly incomparable; the Phase 4 oracle is not presented as natural-language performance.
 
 ## Verification
 

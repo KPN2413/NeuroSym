@@ -13,6 +13,12 @@ contract is generated from the same source and must pass the schema freshness ch
 | `DELETE /api/v1/neurosymbolic/runs/{run_id}` | `200` | Cancel a queued job or request cancellation of active work |
 | `GET /api/v1/neurosymbolic/capabilities` | `200` | Report modes, policies, model readiness, limits, and schema hashes |
 | `GET /health` | `200` | Preserve the existing service health contract |
+| `GET /api/v1/research/catalogue` | `200` | Return the validated aggregate evidence overview |
+| `GET /api/v1/research/experiments` | `200` | Filter and page sanitized experiment summaries |
+| `GET /api/v1/research/experiments/{experiment_id}` | `200` | Return one experiment with metric provenance |
+| `GET /api/v1/research/comparisons` | `200` | Return only registered comparison relationships |
+| `GET /api/v1/research/exports?format=...` | `200` | Download deterministic JSON, CSV, or Markdown |
+| `POST /api/v1/research/ast-inspect` | `200` | Render a strictly validated supplied AST without inference |
 
 The run resource moves through `QUEUED`, `RUNNING`, `COMPLETED`, `FAILED`,
 `CANCEL_REQUESTED`, or `CANCELLED`. A completed pipeline may have disposition `ANSWERED`,
@@ -64,3 +70,8 @@ python -m verilogic_ns_api.orchestration export-schemas --check
 Any breaking field or meaning change requires a new schema/API version and a decision record. The
 checked OpenAPI artifact is `schemas/openapi.v1.json`; frontend consumers import only the generated
 contract rather than duplicating backend enums by hand.
+
+Research validation errors use the strict `ResearchApiError` contract. Pagination is bounded to
+100 records per page; filters and export formats are typed and length bounded. Export filenames
+are fixed by the server, and no endpoint accepts a filesystem path. Research responses exclude
+raw benchmark/provider material, caches, stack traces and personal paths.

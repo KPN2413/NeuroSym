@@ -25,7 +25,9 @@ The matrix grows with the implementation. Every behavior change requires corresp
 | Phase 3 fairness | balanced 30-record dev manifest, six train-only demos, hashes, non-overlap, local direct/few config equality, distinct rendering, and paired deltas | final test protocol remains deferred | `python -m pytest` |
 | Phase 7 orchestration | formal zero-provider path; natural P0/P1/P2; parser, critic, correction, abstention and terminal errors; source coverage; limits; proof failure; exact eleven-stage traces; deterministic explanations; replay provenance | scale and final experiment integration | `python -m pytest` |
 | Phase 7 API/jobs | request/result contracts, 202/poll/cancel/capabilities, bounded queue, one worker, expiry, stable polling, model unavailable, sanitized errors, CORS, schema/OpenAPI freshness | durable multi-process execution is out of current scope | `python -m pytest` |
-| Frontend | component state helpers, contract-driven inputs, loading/terminal states, lint, TypeScript, production compilation, HTTP smoke | automated browser accessibility and research comparison dashboard remain Phase 8 gates | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
+| Research catalogue/API | source hashes, provenance, null/derived evidence, duplicate rejection, comparison compatibility, filters/pagination, deterministic exports, AST views and sanitized errors | final experiment-scale aggregates remain Phase 9 | `python -m pytest` |
+| Research frontend | loading/error/empty states, history, missing values, comparisons, attrition, R3 dispositions, AST inspector, exports, navigation, lint, TypeScript and production build | deployment browser matrix remains Phase 10 | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
+| Frontend | component state helpers, contract-driven inputs, loading/terminal states, lint, TypeScript, production compilation, HTTP smoke | deployment browser matrix remains Phase 10 | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
 | Containers | Compose parse/config validation | service health and end-to-end smoke test | `docker compose config` |
 | Security | unsafe identifiers and unsupported fields rejected | injection payloads, limits, secret scanning, error redaction, CORS negatives | component suites |
 
@@ -66,3 +68,8 @@ Phase 7 adds formal and natural orchestration integration, strict versioned API/
 gold-free interactive views, proof-derived explanations, bounded queue/cancellation behavior,
 frontend state helpers, and negative tests proving that provider failures, resource limits,
 abstentions, and proof-verification failures cannot become logical `UNKNOWN` or `ANSWERED`.
+
+Phase 8 adds catalogue/source integrity, documented/derived/unavailable distinctions, paired and
+incomparable contracts, export round trips and determinism, path rejection, explicit-negation and
+binary AST views, correction diffs, research UI helpers/states, exact chart surfaces and Phase 7
+workbench navigation regression coverage.

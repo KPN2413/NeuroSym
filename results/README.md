@@ -66,3 +66,8 @@ accepted theories, proof DAGs, traces, and replay outputs and must not be commit
 valid only when Ollama is stopped and every logical request resolves from a validated terminal cache
 entry with zero misses and zero provider dispatches. Only the sanitized aggregate evidence in
 `docs/PHASE7_VERIFICATION.md` is tracked.
+
+Phase 8 does not read ignored result roots. Its canonical sanitized aggregate is tracked at
+`research/catalogues/phase1-7-evidence.v1.json`; deterministic local export files belong under
+ignored `results/research-exports/`. Exports contain only aggregate metrics and provenance, never
+raw prompts, responses, benchmark text, model thinking or absolute paths.

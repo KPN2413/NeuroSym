@@ -120,3 +120,15 @@ Every asserted fact and rule has a `source_id`. The versioned proof DAG contains
 ## Deployment boundaries
 
 Docker Compose runs the frontend and backend as separate services. The browser uses a public API base URL; server-side service names are not exposed as browser URLs. No database or provider credential exists in Phase 1. Future deployments must retain explicit origin allowlists, environment-only secrets, resource limits, and non-root containers where practical.
+
+## Research evidence boundary
+
+`verilogic_ns_api.research_frontend` loads one tracked, versioned aggregate catalogue and verifies
+every tracked source artifact hash before serving data. The research routes are read-only; they do
+not construct a provider, access ignored run/cache roots, execute reasoning, or accept local paths.
+Pydantic models normalize metric provenance, null evidence, experiment history and comparison
+compatibility. Versioned JSON Schema and the generated TypeScript contract share those models.
+
+The `/research` Next.js route reads only the sanitized API. Lightweight CSS charts, tables,
+filters and the synthetic AST inspector are client-side presentation. JSON/CSV/Markdown exporters
+derive from the same catalogue and bind deterministic bytes to a canonical content hash.

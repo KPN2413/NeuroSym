@@ -78,6 +78,9 @@ python -m verilogic_ns_api.validation_correction replay --config experiments/con
 python -m verilogic_ns_api.orchestration --help
 python -m verilogic_ns_api.orchestration export-schemas --check
 python -m verilogic_ns_api.orchestration run --formal-theory examples/theories/entailed.json --provider-mode cache_only
+python -m verilogic_ns_api.research_frontend validate-catalogue
+python -m verilogic_ns_api.research_frontend catalogue-summary
+python -m verilogic_ns_api.research_frontend export-schemas --check
 ```
 
 Dataset download, extraction, preparation, samples, and evaluation outputs are local generated artifacts and must remain ignored. Track only acquisition/normalization code, schemas, documentation, safe aggregate provenance, configurations, and small explicitly synthetic fixtures.
@@ -119,6 +122,10 @@ docker compose up --build
 - Never add real credentials, tokens, private endpoints, personal data, or secrets. Use documented placeholders in `.env.example`; local `.env*` files remain ignored.
 - Do not log secrets, full provider payloads containing sensitive data, or hidden model reasoning.
 - Do not expose stack traces or internal validation details through public production responses.
+- Research metrics must come from the validated tracked catalogue. Preserve null as unavailable,
+  keep accuracy paired with coverage, and expose only registered comparison relationships.
+- Research endpoints are read-only and must not initialize a provider, read ignored runs/caches,
+  accept arbitrary paths, or expose raw benchmark/provider material.
 
 ## Change discipline
 

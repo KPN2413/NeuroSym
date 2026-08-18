@@ -275,3 +275,26 @@ the prompts, policy, model, or example in response.
 
 **Reason:** The preregistered Phase 7 gate tested integration and replay, not favorable model
 accuracy. Preserving the miss distinguishes pipeline correctness from semantic-parser quality.
+
+## D-034: Normalize historical evidence before visualization
+
+**Status:** accepted for Phase 8
+
+**Decision:** Generate one strict, source-hash-validated aggregate catalogue from retained tracked
+evidence. Documentation-only measurements remain `DOCUMENTED`; missing machine evidence remains
+null and `UNAVAILABLE`. Dashboard code and exports consume this catalogue rather than separate
+hard-coded measurements.
+
+**Reason:** A shared evidence boundary prevents the UI, API and downloads from silently assigning
+different values, provenance or missing-data meanings.
+
+## D-035: Register comparison compatibility explicitly
+
+**Status:** accepted for Phase 8
+
+**Decision:** Permit paired claims only for matching frozen selections; label oracle/natural
+relationships as ceiling comparisons, unrelated aggregates as descriptive, and Phase 5 versus R3
+as incomparable. Accuracy is always presented with coverage.
+
+**Reason:** Similar labels and sample counts do not imply paired records, equivalent inputs or a
+causal correction effect.
