@@ -54,6 +54,7 @@ def run_correction_evaluation(
     output_directory: Path,
     run_id: str,
     calibration: bool,
+    enforce_historical_p0: bool = True,
 ) -> dict[str, object]:
     if output_directory.exists():
         raise Phase6EvaluationError(f"run directory already exists: {output_directory}")
@@ -75,7 +76,7 @@ def run_correction_evaluation(
         output_directory=output_directory / "p0-raw",
         run_id=f"{run_id}-p0",
     )
-    if not calibration:
+    if not calibration and enforce_historical_p0:
         _assert_frozen_p0(p0_report)
 
     raw = load_raw_phase5_candidates(prepared.phase5, calibration=calibration)
@@ -207,6 +208,13 @@ def run_correction_evaluation(
         output_directory / "p1-predictions.json",
         [item.model_dump(mode="json") for item in p1.predictions],
     )
+    _atomic_jsonl(output_directory / "p0-predictions.jsonl", p0_predictions)
+    _atomic_jsonl(
+        output_directory / "validation-only-predictions.jsonl",
+        validation_only_predictions,
+    )
+    _atomic_jsonl(output_directory / "p1-predictions.jsonl", p1.predictions)
+    _atomic_jsonl(output_directory / "p2-predictions.jsonl", p2.predictions)
     _atomic_json(
         output_directory / "p2-predictions.json",
         [item.model_dump(mode="json") for item in p2.predictions],
@@ -710,6 +718,22 @@ def _atomic_json(path: Path, payload: object) -> None:
         with os.fdopen(handle, "w", encoding="utf-8") as stream:
             json.dump(payload, stream, indent=2, sort_keys=True)
             stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(temporary, path)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def _atomic_jsonl(path: Path, predictions) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    try:
+        with os.fdopen(handle, "w", encoding="utf-8", newline="\n") as stream:
+            for prediction in predictions:
+                stream.write(json.dumps(prediction.model_dump(mode="json"), sort_keys=True))
+                stream.write("\n")
             stream.flush()
             os.fsync(stream.fileno())
         os.replace(temporary, path)

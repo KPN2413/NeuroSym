@@ -298,3 +298,16 @@ as incomparable. Accuracy is always presented with coverage.
 
 **Reason:** Similar labels and sample counts do not imply paired records, equivalent inputs or a
 causal correction effect.
+
+## D-036: Regenerate Phase 9 evidence under a separate frozen protocol
+
+**Status:** accepted for Phase 9
+
+**Decision:** Treat the missing historical dataset and caches as irrecoverable local evidence.
+Create a separately labelled, development-only Phase 9 evidence set with a new deterministic
+selection, exact local model/runtime identity, isolated caches and raw records, controlled
+same-selection ablations, zero-call replay and sanitized aggregate publication. Historical Phase
+1-8 reports and catalogue entries remain immutable.
+
+**Reason:** Regeneration can support reproducible Phase 9 experiments, but it cannot restore or
+retroactively strengthen the provenance of missing historical cache evidence.
