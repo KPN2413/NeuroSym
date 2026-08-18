@@ -1,0 +1,156 @@
+{
+  "archive_sha256": "bbc5694901e8306d0bd659aa1ad53ccfd02c201864f4b320ffa3777827d1fc26",
+  "artifacts": [
+    {
+      "artifact_id": "baseline-output-schema",
+      "path": "schemas/llm-baseline-output.v1.schema.json",
+      "sha256": "314a546f0a3deb5c416b2d061fc7c1b44a127fcd8915a9f8dc4cc7ff5fa30d88"
+    },
+    {
+      "artifact_id": "correction-config",
+      "path": "experiments/configs/ollama-validation-correction-phase9.yaml",
+      "sha256": "34c774c5f6abe74032a56c4e0207293ac07424ffe73fb48f4639fc4e00f51cd9"
+    },
+    {
+      "artifact_id": "dataset-provenance",
+      "path": "experiments/manifests/phase9-dataset-provenance.v1.json",
+      "sha256": "889507917b544fead71aa3b48f9eb25190fe8a1c3710c80daba1b4104fbc5701"
+    },
+    {
+      "artifact_id": "development-selection",
+      "path": "experiments/manifests/phase9-regenerated-dev.v1.json",
+      "sha256": "41bc31229f317b151eb1f0a7a363439252bce85a4aeff175b92e9522682599ab"
+    },
+    {
+      "artifact_id": "direct-config",
+      "path": "experiments/configs/ollama-direct-phase9.yaml",
+      "sha256": "8e9ddcc616ca34f874dc50de04846f4b6827979745c266611779f13f8ef78b97"
+    },
+    {
+      "artifact_id": "direct-prompt",
+      "path": "prompts/baselines/direct/v1.md",
+      "sha256": "45ec0b919678daa881f4165217fc89a39f34eada6ef47abac4645e6752974d5f"
+    },
+    {
+      "artifact_id": "few-shot-config",
+      "path": "experiments/configs/ollama-few-shot-phase9.yaml",
+      "sha256": "50f56cbff5cce6daec67773c085929cd5945b617b875c69967ce7b7cea3ec779"
+    },
+    {
+      "artifact_id": "few-shot-prompt",
+      "path": "prompts/baselines/few_shot/v1.md",
+      "sha256": "45ec0b919678daa881f4165217fc89a39f34eada6ef47abac4645e6752974d5f"
+    },
+    {
+      "artifact_id": "phase9-protocol",
+      "path": "docs/PHASE9_RECOVERY_PROTOCOL.md",
+      "sha256": "f627eae352dc89138dd0127b721c86c5500d78de877d9ea5dcd6ac19256d9f92"
+    },
+    {
+      "artifact_id": "query-correction-prompt",
+      "path": "prompts/semantic_correction/query/v1.md",
+      "sha256": "ccd17724f5538cfc5ceb69d7c93484d51a3a3103dc516916160a3610742cc045"
+    },
+    {
+      "artifact_id": "query-correction-schema",
+      "path": "schemas/semantic-correction-query.v1.schema.json",
+      "sha256": "8e5e9b50e652172fcf15e3214c8b469436152ae901b9571e3d1c2cb0f9412760"
+    },
+    {
+      "artifact_id": "query-critic-prompt",
+      "path": "prompts/semantic_critic/query/v1.md",
+      "sha256": "f5ca6145b503c0f2bcbcfa261410d004f5f2e1196b8754abc2191f2be39d1b3f"
+    },
+    {
+      "artifact_id": "query-critic-schema",
+      "path": "schemas/semantic-critic-query.v1.schema.json",
+      "sha256": "5c61eb49d1ad357f7772e0c0e3c5aaf0238dd63f9aac135c2078c99a78de3c32"
+    },
+    {
+      "artifact_id": "query-output-schema",
+      "path": "schemas/neural-query-output.v1.schema.json",
+      "sha256": "8e5e9b50e652172fcf15e3214c8b469436152ae901b9571e3d1c2cb0f9412760"
+    },
+    {
+      "artifact_id": "query-parser-prompt",
+      "path": "prompts/semantic_parsing/query/v1.md",
+      "sha256": "14b64b0fc3bcc90c369962b0f62ae7f7f35e01ce7657e715c679150ac5eaa6eb"
+    },
+    {
+      "artifact_id": "semantic-parser-config",
+      "path": "experiments/configs/ollama-semantic-parser-phase9.yaml",
+      "sha256": "72ff6eeb2ba40a309720c99b3eedfd6af9e8f9fce059b8ccfd497a4011fbbb0b"
+    },
+    {
+      "artifact_id": "theory-correction-prompt",
+      "path": "prompts/semantic_correction/theory/v1.md",
+      "sha256": "8a88d0c05265d0e9ce705fa71dfdbfb0946eb001a32c9dad8f8fdb33effd29f7"
+    },
+    {
+      "artifact_id": "theory-correction-schema",
+      "path": "schemas/semantic-correction-theory.v1.schema.json",
+      "sha256": "08c77bb6a683ed901a7ad9c88fb94e66e61f9581ea70e752c46d349ca98dbead"
+    },
+    {
+      "artifact_id": "theory-critic-prompt",
+      "path": "prompts/semantic_critic/theory/v1.md",
+      "sha256": "92fe1eabd4dbcb5d202c1ecdbe3b8bb29e42e7196946d919be546d96953a275e"
+    },
+    {
+      "artifact_id": "theory-critic-schema",
+      "path": "schemas/semantic-critic-theory.v1.schema.json",
+      "sha256": "d10692f42600642f4b2f683054c741ae9ebe4356f4ce246fc0de2a80e341d1d7"
+    },
+    {
+      "artifact_id": "theory-output-schema",
+      "path": "schemas/neural-theory-output.v1.schema.json",
+      "sha256": "08c77bb6a683ed901a7ad9c88fb94e66e61f9581ea70e752c46d349ca98dbead"
+    },
+    {
+      "artifact_id": "theory-parser-prompt",
+      "path": "prompts/semantic_parsing/theory/v1.md",
+      "sha256": "c39f059cb0b62866272752157f1734c346acfc9c4b8c585b1c614a4910fdffb2"
+    },
+    {
+      "artifact_id": "training-demonstrations",
+      "path": "experiments/manifests/phase9-regenerated-train-demos.v1.json",
+      "sha256": "1c4efd0182c1ab9bcbc742b556d8a562c1bb0dbeb8b54bcfeb1c74cb47ce84b4"
+    },
+    {
+      "artifact_id": "validation-feedback-schema",
+      "path": "schemas/validation-feedback.v1.schema.json",
+      "sha256": "82076abe96c2f065df7cf1dbcfd00c01d2e1b3b2774000330906ee4d26a8ed56"
+    }
+  ],
+  "conditions": [
+    "direct",
+    "few_shot",
+    "p0_raw_neuro_symbolic",
+    "validation_only",
+    "p1_corrected_valid",
+    "p2_corrected_selective",
+    "oracle_structure_symbolic_ceiling"
+  ],
+  "dataset": "ProofWriter",
+  "dataset_version": "V2020.12.3",
+  "demonstration_manifest_hash": "214c2b46b81297a8a33891a76572aaf92ad90f95e240ee0db18cd4254d600a47",
+  "endpoint": "http://127.0.0.1:11434",
+  "freeze_hash": "c7039474c7f4522767a747deb384fa0ee9e05e450fb7a108d3b2001b36b4719e",
+  "model": "qwen3.5:4b-q4_K_M",
+  "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+  "parent_checkpoint": "53e2426b06402ffeed5c0c5c15753f29744703b2",
+  "protocol_label": "Phase 9 regenerated evidence under newly frozen protocol",
+  "provider": "ollama-local-only",
+  "provider_version": "0.32.1",
+  "sample_size": 30,
+  "schema_version": "1.0",
+  "seed": 20260818,
+  "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+  "split": "dev",
+  "temperature": 0,
+  "test_split_forbidden": true,
+  "think": false,
+  "variant": "depth-5",
+  "world_assumption": "OWA"
+}
+

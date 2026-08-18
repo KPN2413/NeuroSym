@@ -1,0 +1,226 @@
+{
+  "archive_sha256": "bbc5694901e8306d0bd659aa1ad53ccfd02c201864f4b320ffa3777827d1fc26",
+  "dataset_name": "ProofWriter",
+  "dataset_version": "V2020.12.3",
+  "entries": [
+    {
+      "content_sha256": "c1290825743363c2119a8b7e7c0da305deb2d163960e20194612da722c66f1bb",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-1096/Q6",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "ad3d46298aa01e3f2ea1ac7f6d72b1eb8e9bcb0486d147fac0aef34190475596",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-618/Q15",
+      "label": "UNKNOWN",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "53415bd9599a52650bea00f1456a99aaa9d301cf84fa864ce837d40a9a7f01f8",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-401/Q15",
+      "label": "UNKNOWN",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "c2c0d4adca3b46743659bcc9a0947cc8da16031ef2fba9af30a9708bb3dc1fc3",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-517/Q12",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 5,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "15cf995e0a08dc7eca1b8fe8826a72057472e2ca218d088193ee86eac34e2184",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-907/Q23",
+      "label": "UNKNOWN",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "c98204dae197ca5ed73fb85acf8c5101a50c81323cfe78dbbdcd74049b46741f",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-1258/Q1",
+      "label": "ENTAILED",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "b4a2f432da874df27812e8a47caa3cae4bba18659ca555724fb341a1ae4cfa68",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-902/Q8",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "4dea1fd582fc2e22d7d5f5dcbfb8dfb54ce18f0ed3f5857de463bace3f2213dc",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-346/Q22",
+      "label": "UNKNOWN",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "74d4aa4ed4f6604e69b7648bede6775f71ed0a8f203fb3e1d9fe735b57deb3ae",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-754/Q3",
+      "label": "ENTAILED",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "b0af37f86aad3c03830a9de714d256dcfe023c1414d6b5b9bc1da201a6d9682d",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-900/Q14",
+      "label": "UNKNOWN",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "1dc5af6cf83d56c6ee4092bdaabead616e3c2ec7c949f728479ee9d95eb31674",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-40/Q11",
+      "label": "ENTAILED",
+      "reasoning_depth": 5,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "829a25624a6c49353a2bfe42b6a4f7ab49ac4a4b24125d9283b68abaeb7ee202",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-1013/Q5",
+      "label": "ENTAILED",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "878c946b707a4ca8f8e01580d33357508c27b2277f26d72000e6f8b311e298d7",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-779/Q11",
+      "label": "ENTAILED",
+      "reasoning_depth": 5,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "bd584c9fc0edad5dc6b6401e2252eb10b4fa7d4ff68669a6f0a8069f608e71e3",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-322/Q15",
+      "label": "UNKNOWN",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "c3d7196e69b27a0cab67a1ac5bcfe6cd9c9069b9f7779b1a130fe75afeeb00de",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-1/Q1",
+      "label": "ENTAILED",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "8af357f26a6a98e634c805f4e92d934977789e6747fbe9783bd7408af44bc32b",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-923/Q2",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "9b5d21b8164fabf9e457d7097922689ba89e6b907524e0e5b42c3e4a8ee3d316",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-658/Q8",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "332a3e1a0afb9c4439b30c1feaf455ab29736a6f02da1baeee91b69cefca11c8",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-528/Q2",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 0,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "44a299cfec65fd35d7e0386f9cd73a2ec84631d273cb3dc3b2c08322aa1831f5",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-1036/Q17",
+      "label": "UNKNOWN",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "f9c1508c3921d9e68548988cc295eff82ed6e0e0f2c1ef26809b526414cf37cd",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-419/Q12",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 5,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "8f439845eb0976e5794879188efd67cf43779572726a493599ebeb2522b83263",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-284/Q6",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "83cae9aa6e2ff2ea19aef6bfade5525434fb282fa22e42213cf108d9aec5973e",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-83/Q3",
+      "label": "ENTAILED",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "e18856faa6df81e0a5728e1d7e5c4bb5e2a6839b6a2dab53431c639631cca547",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-406/Q4",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "0792da5b4ed37cd1166e76656e8171b939c5bf58b4d711d4d7cee5b43ac9e620",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-312/Q7",
+      "label": "ENTAILED",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "09bbf0d867fbc406d8216c7d08deb6557f84b2a73ed29a4109018a5e44c0a9b7",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-107/Q5",
+      "label": "ENTAILED",
+      "reasoning_depth": 2,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "5a9915c0d18063a5529d31e4a2129ed5ad8b7be35655f1ad0d59d831465e3092",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-445/Q7",
+      "label": "ENTAILED",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "20b952ff763331c14d6cd330cc36fc6c3a0297c5c94e277f75886fd6d52a0570",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-488/Q13",
+      "label": "UNKNOWN",
+      "reasoning_depth": 3,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "11c6153fc147739193078950961b3d444175325bf406bd6f1484cef90700ad66",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-718/Q4",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 1,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "ce6e1ca64089283e49a49490cb44a338204e5b18dad509df4ac588ed2d1f7f5d",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-1186/Q16",
+      "label": "UNKNOWN",
+      "reasoning_depth": 5,
+      "split": "dev"
+    },
+    {
+      "content_sha256": "4a83ab2f1c6a39979e090bbdd3438bfa98cad2a66ee62d0c7d2f74ff56589b3d",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-873/Q16",
+      "label": "UNKNOWN",
+      "reasoning_depth": 5,
+      "split": "dev"
+    }
+  ],
+  "manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+  "sampler_version": "phase3-v1",
+  "schema_version": "1.0",
+  "seed": 20260818,
+  "selection_kind": "pilot",
+  "split": "dev",
+  "variant": "depth-5",
+  "world_assumption": "OWA"
+}
+

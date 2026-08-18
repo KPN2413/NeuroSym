@@ -1,0 +1,15 @@
+{
+  "archive_filename": "proofwriter-dataset-V2020.12.3.zip",
+  "archive_size_bytes": 214185889,
+  "dataset_name": "ProofWriter",
+  "dataset_version": "V2020.12.3",
+  "download_date": "2026-08-18",
+  "observed_sha256": "bbc5694901e8306d0bd659aa1ad53ccfd02c201864f4b320ffa3777827d1fc26",
+  "observed_sha256_kind": "locally_observed_not_publisher_verified",
+  "retrieval_note": "Resumed the official public source after the project HTTP client stalled, then applied the project ZIP and checksum validation gates before atomic promotion.",
+  "schema_version": "1.0",
+  "source_url": "https://aristo-data-public.s3.amazonaws.com/proofwriter/proofwriter-dataset-V2020.12.3.zip",
+  "split_allowed": "dev",
+  "test_split_forbidden": true,
+  "world_assumption": "OWA"
+}

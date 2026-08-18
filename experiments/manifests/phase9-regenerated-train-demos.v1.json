@@ -1,0 +1,58 @@
+{
+  "archive_sha256": "bbc5694901e8306d0bd659aa1ad53ccfd02c201864f4b320ffa3777827d1fc26",
+  "dataset_name": "ProofWriter",
+  "dataset_version": "V2020.12.3",
+  "entries": [
+    {
+      "content_sha256": "3b5fbdf6e85b3c518447790aa908c7e7f5a33b047c3d0c51f0231cd3cd0a8643",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-464/Q16",
+      "label": "UNKNOWN",
+      "reasoning_depth": 2,
+      "split": "train"
+    },
+    {
+      "content_sha256": "56cfe78ae38fbb3027ccb65c6b73cca204f070ba7a86880a136370d9899a5370",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNoneg-OWA-D5-58/Q12",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 5,
+      "split": "train"
+    },
+    {
+      "content_sha256": "93d654a89569163bef2adcdfeeec8907526b7454845e8d2f6f370b7b3a42bda5",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNeg-OWA-D5-945/Q20",
+      "label": "UNKNOWN",
+      "reasoning_depth": 0,
+      "split": "train"
+    },
+    {
+      "content_sha256": "39a705bcf29f6745066b25f1b618ffa252df07cb0134088f499273a39f583cce",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-1012/Q1",
+      "label": "ENTAILED",
+      "reasoning_depth": 0,
+      "split": "train"
+    },
+    {
+      "content_sha256": "ed66f3edea866dd098ae09948c0c992978313252d5ff8b843b4c567823fa4e7b",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/AttNoneg-OWA-D5-249/Q11",
+      "label": "ENTAILED",
+      "reasoning_depth": 5,
+      "split": "train"
+    },
+    {
+      "content_sha256": "d30d7bfc9fa799cbec42c587d3d122f395b5eb38a6b06ac3df226053f0ce8b8d",
+      "example_id": "proofwriter/V2020.12.3/OWA/depth-5/RelNeg-OWA-D5-923/Q2",
+      "label": "CONTRADICTED",
+      "reasoning_depth": 0,
+      "split": "train"
+    }
+  ],
+  "manifest_hash": "214c2b46b81297a8a33891a76572aaf92ad90f95e240ee0db18cd4254d600a47",
+  "sampler_version": "phase3-v1",
+  "schema_version": "1.0",
+  "seed": 20260818,
+  "selection_kind": "demonstrations",
+  "split": "train",
+  "variant": "depth-5",
+  "world_assumption": "OWA"
+}
+
