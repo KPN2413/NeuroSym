@@ -92,9 +92,15 @@ shadcn/ui only when it materially improves the existing accessible interface.
 
 ## 9. Full experiments and ablations
 
+**Status:** completed on `phase/09-full-experiments-ablations` under the separately frozen Phase 9
+regenerated-evidence protocol.
+
 Freeze protocol/configurations, execute mandatory conditions and approved ablations, compute accuracy/proof/robustness/latency/cost metrics, and retain raw reproducible records.
 
-**Gate:** aggregates reproduce from raw JSONL, denominators and failures are reported, and no unmeasured claim appears.
+**Gate:** passed. Seven conditions account for the same 30 development records, all answered
+neuro-symbolic proofs independently verify, aggregate metrics reproduce from raw JSONL, strict
+replay makes zero inference calls with Ollama stopped, and the versioned catalogue exposes failures
+and unavailable telemetry honestly. See `PHASE9_VERIFICATION.md`.
 
 ## 10. Deployment, report and presentation
 

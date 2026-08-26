@@ -132,3 +132,18 @@ compatibility. Versioned JSON Schema and the generated TypeScript contract share
 The `/research` Next.js route reads only the sanitized API. Lightweight CSS charts, tables,
 filters and the synthetic AST inspector are client-side presentation. JSON/CSV/Markdown exporters
 derive from the same catalogue and bind deterministic bytes to a canonical content hash.
+
+### Phase 9 regenerated-evidence boundary
+
+`verilogic_ns_api.phase9` binds the frozen archive, selection, demonstrations, prompt/configuration
+hashes, model digest and seven conditions before execution. It composes the existing baseline,
+semantic-parser, correction and deterministic oracle paths without changing their historical
+contracts. Ignored per-example JSONL is the source of truth; the tracked aggregate is reproduced
+from those records, validates its own canonical fingerprint, requires proof counts for every
+answered neuro-symbolic condition, and keeps incomplete token telemetry unavailable.
+
+`research_frontend.phase9_catalogue` appends the sanitized Phase 9 evidence to the immutable
+historical seed. It does not rewrite the original catalogue. Registered comparison contracts carry
+paired outcome counts or an explicit different-representation ceiling warning. The read-only API
+and `/research` UI consume the resulting version 2 catalogue without touching raw results or a
+provider.

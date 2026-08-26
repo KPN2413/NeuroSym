@@ -21,7 +21,7 @@ python -m verilogic_ns_api.research_frontend export --format markdown
 
 The API accepts only enumerated formats and bounded optional phase, condition and policy filters.
 It does not accept a filesystem path. The CLI permits an output directory only beneath the current
-repository. Fixed filenames use `verilogic-ns-phase1-7-evidence.v1` plus the format extension.
+repository. Fixed filenames use `verilogic-ns-phase1-9-evidence.v2` plus the format extension.
 
 The canonical content hash covers catalogue version, sorted filters, selected experiments,
 registered comparisons, global limitations and the `NA` missing-value convention. The generation
@@ -33,3 +33,5 @@ CSV uses explicit `NA` for unavailable values and includes provenance, split, sa
 dimensions and limitations. JSON round-trips through its manifest and canonical evidence object.
 Markdown includes an exact aggregate table and comparison warnings. No export includes raw
 benchmark examples, prompts, model responses, caches, credentials, hidden reasoning or local paths.
+The Phase 9 rows remain explicitly labelled as regenerated evidence, preserve failure denominators,
+and export unavailable exact P1/P2 token totals as `NA` rather than zero.

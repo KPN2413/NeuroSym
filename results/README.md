@@ -71,3 +71,9 @@ Phase 8 does not read ignored result roots. Its canonical sanitized aggregate is
 `research/catalogues/phase1-7-evidence.v1.json`; deterministic local export files belong under
 ignored `results/research-exports/`. Exports contain only aggregate metrics and provenance, never
 raw prompts, responses, benchmark text, model thinking or absolute paths.
+
+Phase 9 live and replay evidence is isolated under `results/phase9/` and its content-addressed cache
+namespaces. These files remain ignored because they contain record-level benchmark/provider
+material. The tracked `research/evidence/phase9-regenerated-aggregate.v1.json` contains only
+sanitized metrics, counts, hashes and limitations. The active versioned catalogue is
+`research/catalogues/phase1-9-evidence.v2.json`; the Phase 8 catalogue above remains immutable.

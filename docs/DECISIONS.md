@@ -311,3 +311,27 @@ same-selection ablations, zero-call replay and sanitized aggregate publication. 
 
 **Reason:** Regeneration can support reproducible Phase 9 experiments, but it cannot restore or
 retroactively strengthen the provenance of missing historical cache evidence.
+
+## D-037: Publish one self-verifying Phase 9 aggregate
+
+**Status:** accepted after Phase 9 replay
+
+**Decision:** Reproduce all seven condition metrics and registered comparisons from ignored raw
+JSONL, publish one sanitized aggregate with raw-record hashes and a canonical self-fingerprint, and
+validate it against a generated JSON Schema. Exact token totals are present only when telemetry is
+complete; partial P1/P2 counts use separately named observed lower-bound fields.
+
+**Reason:** A tracked aggregate is useful only if failures, proof counts, pair denominators and
+missing telemetry cannot be silently altered or reinterpreted.
+
+## D-038: Extend, rather than replace, the research catalogue
+
+**Status:** accepted for Phase 9 publication
+
+**Decision:** Preserve `phase1-7-evidence.v1.json` unchanged and generate
+`phase1-9-evidence.v2.json` by appending seven separately labelled regenerated conditions and five
+registered comparisons. Phase 9 directly observed metrics cite the sanitized aggregate; historical
+documentation remains documented/derived/unavailable according to the Phase 8 contract.
+
+**Reason:** Versioned extension makes new evidence visible without presenting regenerated results
+as if they were part of the historical experiments.

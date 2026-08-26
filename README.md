@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-8
+## Current implementation: Phases 1-9
 
 The repository provides:
 
@@ -42,6 +42,9 @@ The repository provides:
 - a source-hash-validated research evidence catalogue, read-only research API, normalized AST
   inspector, filterable experiment history, compatibility-gated comparisons, exact charts and
   deterministic JSON/CSV/Markdown exports.
+- a separately frozen Phase 9 evidence regeneration covering Direct, few-shot, P0 raw,
+  validation-only, P1 corrected-valid, P2 corrected-selective and a same-selection symbolic
+  oracle ceiling, with retained failures and zero-call replay.
 
 A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
 were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
@@ -54,8 +57,9 @@ that history and represents permanent provider failures as typed replayable `ERR
 See `docs/PHASE6_PILOT_RESULTS.md`, `docs/PHASE6_RECOVERY_R2_RESULTS.md`, and
 `docs/PHASE6_R3_RESULTS.md`. Phase 7 has completed its formal, local-natural, replay, API, UI, and
 regression gates; its frozen natural canary was operationally valid but logically incorrect.
-The `/research` route reconstructs aggregate evidence with Ollama stopped and no provider call.
-There is no database, authentication, public deployment, or final benchmark result.
+The `/research` route reconstructs historical and separately labelled regenerated evidence with
+Ollama stopped and no provider call. Phase 9 used 30 development records and is not a final
+test-set result. There is no database, authentication, or public deployment.
 
 ## Prerequisites
 
@@ -90,7 +94,7 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-Open `http://localhost:3000` for the workbench or `http://localhost:3000/research` for the Phase 8
+Open `http://localhost:3000` for the workbench or `http://localhost:3000/research` for the research
 evidence dashboard. `NEXT_PUBLIC_API_BASE_URL` defaults to `http://localhost:8000`; copy
 `frontend/.env.example` to `frontend/.env.local` to override it. pnpm is the only supported frontend
 package manager.
@@ -103,11 +107,13 @@ With the backend environment active at the repository root:
 python -m verilogic_ns_api.research_frontend validate-catalogue
 python -m verilogic_ns_api.research_frontend catalogue-summary
 python -m verilogic_ns_api.research_frontend export-schemas --check
+python -m verilogic_ns_api.phase9 export-schema --check
 ```
 
 See `docs/RESEARCH_FRONTEND.md`, `docs/RESEARCH_EVIDENCE_CATALOGUE.md` and
 `docs/RESEARCH_EXPORTS.md`. Missing historical metrics remain `NA`; Phase 5 and Phase 6-R3 are
-explicitly incomparable; the Phase 4 oracle is not presented as natural-language performance.
+explicitly incomparable; and the Phase 9 oracle remains a different-representation ceiling. The
+Phase 9 completion evidence is in `docs/PHASE9_VERIFICATION.md`.
 
 ## Verification
 

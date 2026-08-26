@@ -83,6 +83,7 @@ python -m verilogic_ns_api.research_frontend catalogue-summary
 python -m verilogic_ns_api.research_frontend export-schemas --check
 python -m verilogic_ns_api.phase9 --help
 python -m verilogic_ns_api.phase9 validate-freeze --manifest experiments/manifests/phase9-recovery-freeze.v1.json
+python -m verilogic_ns_api.phase9 export-schema --check
 ```
 
 Dataset download, extraction, preparation, samples, and evaluation outputs are local generated artifacts and must remain ignored. Track only acquisition/normalization code, schemas, documentation, safe aggregate provenance, configurations, and small explicitly synthetic fixtures.

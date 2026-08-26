@@ -125,3 +125,17 @@ The formal cases are provider-free. The single natural P2 canary is an integrati
 benchmark or tuning set, and has a global ceiling of twelve local dispatches. Raw requests,
 accepted ASTs, proofs, traces, and cache entries remain ignored. The sanitized outcomes and replay
 evidence are recorded in `docs/PHASE7_VERIFICATION.md`.
+
+## Phase 9 regenerated evidence
+
+Phase 9 uses `manifests/phase9-recovery-freeze.v1.json` to bind the verified archive, balanced
+30-record OWA development selection, six train-only demonstrations, local model/digest, prompt and
+schema hashes, seven conditions and test-split prohibition. The Direct, few-shot, parser,
+validation/correction and oracle configs share that freeze. Historical experiment files are not
+rewritten.
+
+Raw condition JSONL, caches and replay outputs remain ignored under `results/phase9/`. The tracked
+sanitized aggregate is `research/evidence/phase9-regenerated-aggregate.v1.json`; it reproduces from
+the raw records and is validated by `schemas/phase9-aggregate-report.v1.schema.json`. The full
+commands, metrics, replay evidence and limitations are recorded in
+`docs/PHASE9_VERIFICATION.md`.

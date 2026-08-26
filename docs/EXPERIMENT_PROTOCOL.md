@@ -151,3 +151,22 @@ Only the registered direct/few-shot relationship is paired. Oracle/natural views
 comparisons, cross-phase views are descriptive, and Phase 5 versus R3 is explicitly incomparable.
 No dashboard interaction may create a new comparison or causal correction claim. Test-split data,
 ignored caches and raw benchmark records are outside the Phase 8 boundary.
+
+## Phase 9 regenerated-evidence protocol
+
+Phase 9 is separately labelled and does not restore missing historical evidence. The frozen
+protocol uses ProofWriter V2020.12.3 OWA depth-5 development data, seed 20260818, exactly two
+examples in every depth 0/1/2/3/5 × label cell, and six train-only demonstrations. All six
+natural-language conditions share the same 30 selections; the formal oracle uses those selections
+with dataset-provided formal structure and is a ceiling, not an end-to-end comparison.
+
+Every selected record remains in the denominator as answered, abstained or error. Proof attempts
+are mandatory and independently verified for every answered neuro-symbolic record. Live local
+requests use only the frozen loopback Ollama model/digest. Strict replay occurs with Ollama stopped
+and must reproduce scientific fields with zero provider dispatches. Hosted calls, external
+transfers, test-split access and API cost must remain zero.
+
+Raw JSONL and caches remain ignored. The sanitized aggregate records raw-record hashes, exact
+metrics, paired outcome counts, failure accounting, proof counts and explicit telemetry
+availability. Missing exact P1/P2 token totals remain null; partial observed lower bounds are named
+separately. The active catalogue appends Phase 9 without mutating the historical version.
