@@ -76,7 +76,7 @@ class MetricEvidence(StrictModel):
     benchmark_variant: str
     sample_size: int = Field(ge=0)
     selection_manifest: str | None
-    phase: str = Field(pattern=r"^Phase [3-7](?:-R[0-9]+)?$")
+    phase: str = Field(pattern=r"^Phase [3-9](?:-R[0-9]+)?$")
     condition: str
     policy_mode: str | None
     model_name: str | None
@@ -209,8 +209,8 @@ class ComparisonCompatibility(StrictModel):
 
 class ResearchCatalogue(StrictModel):
     schema_version: Literal["1.0"] = "1.0"
-    catalogue_id: Literal["phase1-7-evidence"] = "phase1-7-evidence"
-    catalogue_version: Literal["1.0.0"] = "1.0.0"
+    catalogue_id: str = Field(default="phase1-7-evidence", pattern=ID_PATTERN)
+    catalogue_version: str = Field(default="1.0.0", pattern=r"^[1-9][0-9]*\.[0-9]+\.[0-9]+$")
     source_checkpoint: str = Field(pattern=COMMIT_PATTERN)
     evidence_sources: tuple[SourceArtifact, ...] = Field(min_length=1)
     experiments: tuple[ExperimentDetail, ...] = Field(min_length=1)
@@ -218,6 +218,9 @@ class ResearchCatalogue(StrictModel):
     global_limitations: tuple[str, ...] = Field(min_length=1, max_length=30)
     zero_cost: Literal[True] = True
     provider_calls_during_phase8: Literal[0] = 0
+    local_provider_calls_during_phase9: int = Field(default=0, ge=0)
+    hosted_provider_calls_during_phase9: Literal[0] = 0
+    api_cost_usd_during_phase9: Literal[0.0] = 0.0
 
     @model_validator(mode="after")
     def catalogue_integrity(self) -> Self:
@@ -253,7 +256,14 @@ class ResearchCatalogue(StrictModel):
 
     @property
     def canonical_hash(self) -> str:
-        return sha256_json(self.model_dump(mode="json"))
+        payload = self.model_dump(mode="json")
+        if self.catalogue_id == "phase1-7-evidence" and self.catalogue_version == "1.0.0":
+            # Preserve the Phase 8 v1 canonical identity. These fields were introduced only by
+            # the Phase 9 extension and must not be projected into the historical document.
+            payload.pop("local_provider_calls_during_phase9", None)
+            payload.pop("hosted_provider_calls_during_phase9", None)
+            payload.pop("api_cost_usd_during_phase9", None)
+        return sha256_json(payload)
 
 
 class CatalogueOverview(StrictModel):
@@ -268,6 +278,9 @@ class CatalogueOverview(StrictModel):
     global_limitations: tuple[str, ...]
     zero_cost: bool
     provider_calls_during_phase8: int
+    local_provider_calls_during_phase9: int
+    hosted_provider_calls_during_phase9: int
+    api_cost_usd_during_phase9: float
 
 
 class ExperimentListResponse(StrictModel):

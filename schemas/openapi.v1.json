@@ -212,6 +212,10 @@
       "CatalogueOverview": {
         "additionalProperties": false,
         "properties": {
+          "api_cost_usd_during_phase9": {
+            "title": "Api Cost Usd During Phase9",
+            "type": "number"
+          },
           "catalogue_hash": {
             "pattern": "^[a-f0-9]{64}$",
             "title": "Catalogue Hash",
@@ -255,6 +259,14 @@
             "title": "Global Limitations",
             "type": "array"
           },
+          "hosted_provider_calls_during_phase9": {
+            "title": "Hosted Provider Calls During Phase9",
+            "type": "integer"
+          },
+          "local_provider_calls_during_phase9": {
+            "title": "Local Provider Calls During Phase9",
+            "type": "integer"
+          },
           "provider_calls_during_phase8": {
             "title": "Provider Calls During Phase8",
             "type": "integer"
@@ -279,7 +291,10 @@
           "experiments",
           "global_limitations",
           "zero_cost",
-          "provider_calls_during_phase8"
+          "provider_calls_during_phase8",
+          "local_provider_calls_during_phase9",
+          "hosted_provider_calls_during_phase9",
+          "api_cost_usd_during_phase9"
         ],
         "title": "CatalogueOverview",
         "type": "object"
@@ -1443,7 +1458,7 @@
             "title": "Numerator"
           },
           "phase": {
-            "pattern": "^Phase [3-7](?:-R[0-9]+)?$",
+            "pattern": "^Phase [3-9](?:-R[0-9]+)?$",
             "title": "Phase",
             "type": "string"
           },

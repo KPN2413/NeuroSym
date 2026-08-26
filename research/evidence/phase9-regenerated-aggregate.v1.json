@@ -1,0 +1,1180 @@
+{
+  "api_cost_usd": 0.0,
+  "archive_sha256": "bbc5694901e8306d0bd659aa1ad53ccfd02c201864f4b320ffa3777827d1fc26",
+  "comparisons": [
+    {
+      "accuracy_delta": 0.0,
+      "baseline_condition": "direct",
+      "changed_component": "six fixed training demonstrations",
+      "changed_condition": "few_shot",
+      "comparison_id": "phase9-direct-vs-few-shot",
+      "comparison_kind": "PAIRED_COMPONENT_ABLATION",
+      "coverage_delta": 0.0,
+      "outcome_counts": {
+        "baseline_only_correct": 2,
+        "both_correct": 14,
+        "both_incorrect": 12,
+        "changed_only_correct": 2
+      },
+      "paired": true,
+      "prediction_disagreement_matrix": {
+        "CONTRADICTED": {
+          "CONTRADICTED": 7,
+          "UNKNOWN": 7
+        },
+        "ENTAILED": {
+          "ENTAILED": 5
+        },
+        "UNKNOWN": {
+          "UNKNOWN": 11
+        }
+      },
+      "same_selection": true,
+      "warning": "Paired same-selection descriptive effect; no significance claim."
+    },
+    {
+      "accuracy_delta": 0.0,
+      "baseline_condition": "p0_raw_neuro_symbolic",
+      "changed_component": "deterministic validation rejection",
+      "changed_condition": "validation_only",
+      "comparison_id": "phase9-p0-raw-neuro-symbolic-vs-validation-only",
+      "comparison_kind": "PAIRED_COMPONENT_ABLATION",
+      "coverage_delta": 0.0,
+      "outcome_counts": {
+        "baseline_only_correct": 0,
+        "both_correct": 4,
+        "both_incorrect": 26,
+        "changed_only_correct": 0
+      },
+      "paired": true,
+      "prediction_disagreement_matrix": {
+        "CONTRADICTED": {
+          "CONTRADICTED": 1
+        },
+        "ENTAILED": {
+          "ENTAILED": 3
+        },
+        "ERROR": {
+          "ABSTAIN": 25
+        },
+        "UNKNOWN": {
+          "UNKNOWN": 1
+        }
+      },
+      "same_selection": true,
+      "warning": "Paired same-selection descriptive effect; no significance claim."
+    },
+    {
+      "accuracy_delta": -0.06666666666666667,
+      "baseline_condition": "p0_raw_neuro_symbolic",
+      "changed_component": "typed critic and one bounded correction",
+      "changed_condition": "p1_corrected_valid",
+      "comparison_id": "phase9-p0-raw-neuro-symbolic-vs-p1-corrected-valid",
+      "comparison_kind": "PAIRED_COMPONENT_ABLATION",
+      "coverage_delta": -0.06666666666666665,
+      "outcome_counts": {
+        "baseline_only_correct": 3,
+        "both_correct": 1,
+        "both_incorrect": 25,
+        "changed_only_correct": 1
+      },
+      "paired": true,
+      "prediction_disagreement_matrix": {
+        "CONTRADICTED": {
+          "ABSTAIN": 1
+        },
+        "ENTAILED": {
+          "ABSTAIN": 1,
+          "ENTAILED": 1,
+          "UNKNOWN": 1
+        },
+        "ERROR": {
+          "ABSTAIN": 20,
+          "CONTRADICTED": 1,
+          "ERROR": 4
+        },
+        "UNKNOWN": {
+          "ABSTAIN": 1
+        }
+      },
+      "same_selection": true,
+      "warning": "Paired same-selection descriptive effect; no significance claim."
+    },
+    {
+      "accuracy_delta": -0.03333333333333333,
+      "baseline_condition": "p1_corrected_valid",
+      "changed_component": "critic-acceptance abstention gate",
+      "changed_condition": "p2_corrected_selective",
+      "comparison_id": "phase9-p1-corrected-valid-vs-p2-corrected-selective",
+      "comparison_kind": "PAIRED_COMPONENT_ABLATION",
+      "coverage_delta": -0.06666666666666668,
+      "outcome_counts": {
+        "baseline_only_correct": 1,
+        "both_correct": 1,
+        "both_incorrect": 28,
+        "changed_only_correct": 0
+      },
+      "paired": true,
+      "prediction_disagreement_matrix": {
+        "ABSTAIN": {
+          "ABSTAIN": 23
+        },
+        "CONTRADICTED": {
+          "CONTRADICTED": 1
+        },
+        "ENTAILED": {
+          "ABSTAIN": 1
+        },
+        "ERROR": {
+          "ERROR": 4
+        },
+        "UNKNOWN": {
+          "ABSTAIN": 1
+        }
+      },
+      "same_selection": true,
+      "warning": "Paired same-selection descriptive effect; no significance claim."
+    },
+    {
+      "accuracy_delta": 0.9666666666666667,
+      "baseline_condition": "p2_corrected_selective",
+      "changed_component": "gold formal representation replaces natural-language parsing",
+      "changed_condition": "oracle_structure_symbolic_ceiling",
+      "comparison_id": "phase9-p2-corrected-selective-vs-oracle-structure-symbolic-ceiling",
+      "comparison_kind": "SAME_SELECTION_DIFFERENT_REPRESENTATION",
+      "coverage_delta": 0.9666666666666667,
+      "outcome_counts": {
+        "baseline_only_correct": 0,
+        "both_correct": 1,
+        "both_incorrect": 0,
+        "changed_only_correct": 29
+      },
+      "paired": false,
+      "prediction_disagreement_matrix": {
+        "ABSTAIN": {
+          "CONTRADICTED": 8,
+          "ENTAILED": 8,
+          "UNKNOWN": 9
+        },
+        "CONTRADICTED": {
+          "CONTRADICTED": 1
+        },
+        "ERROR": {
+          "CONTRADICTED": 1,
+          "ENTAILED": 2,
+          "UNKNOWN": 1
+        }
+      },
+      "same_selection": true,
+      "warning": "Ceiling comparison only; representations differ."
+    }
+  ],
+  "conditions": [
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "direct",
+      "config_hash": "8e9ddcc616ca34f874dc50de04846f4b6827979745c266611779f13f8ef78b97",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-direct",
+      "input_tokens": 10711,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 0,
+        "accuracy": 0.5333333333333333,
+        "answered_examples": 30,
+        "answered_only_accuracy": 0.5333333333333333,
+        "cache_hit_count": 0,
+        "cache_miss_count": 30,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 7,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 3
+          },
+          "ENTAILED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 3,
+            "ENTAILED": 4,
+            "ERROR": 0,
+            "UNKNOWN": 3
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 4,
+            "ENTAILED": 1,
+            "ERROR": 0,
+            "UNKNOWN": 5
+          }
+        },
+        "coverage": 1.0,
+        "errored_examples": 0,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": 6.6339826156391055,
+        "input_tokens": 10711,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.530952380952381,
+        "macro_precision": 0.5848484848484848,
+        "macro_recall": 0.5333333333333333,
+        "non_cache_median_latency_ms": 14618.861199998719,
+        "non_cache_total_latency_ms": 456329.27790000394,
+        "output_tokens": 351,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 0.8333333333333334,
+            "answered": 6,
+            "correct": 5,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.3333333333333333,
+            "answered": 6,
+            "correct": 2,
+            "coverage": 1.0,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.5833333333333334,
+            "precision": 0.5,
+            "predicted": 14,
+            "recall": 0.7,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.5333333333333333,
+            "precision": 0.8,
+            "predicted": 5,
+            "recall": 0.4,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.47619047619047616,
+            "precision": 0.45454545454545453,
+            "predicted": 11,
+            "recall": 0.5,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 52909.394,
+        "provider_load_duration_ms": 16395.4043,
+        "provider_prompt_eval_duration_ms": 383065.219,
+        "provider_total_duration_ms": 455013.5103,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.4666666666666667,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 10711,
+      "observed_output_tokens": 351,
+      "output_tokens": 351,
+      "policy_mode": null,
+      "proof_attempted": null,
+      "proof_verified": null,
+      "provider_call_count": 30,
+      "raw_records_sha256": "6e55bc6f164422a85e4066688e24800e08714b702fa9ae686e3aea84e4280fbd",
+      "runtime_seconds": 456.32927790000394,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": true
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "few_shot",
+      "config_hash": "50f56cbff5cce6daec67773c085929cd5945b617b875c69967ce7b7cea3ec779",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-few-shot",
+      "input_tokens": 48301,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 0,
+        "accuracy": 0.5333333333333333,
+        "answered_examples": 30,
+        "answered_only_accuracy": 0.5333333333333333,
+        "cache_hit_count": 0,
+        "cache_miss_count": 30,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 5,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 5
+          },
+          "ENTAILED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 0,
+            "ENTAILED": 4,
+            "ERROR": 0,
+            "UNKNOWN": 6
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 2,
+            "ENTAILED": 1,
+            "ERROR": 0,
+            "UNKNOWN": 7
+          }
+        },
+        "coverage": 1.0,
+        "errored_examples": 0,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": 8.87671362582117,
+        "input_tokens": 48301,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.5405228758169934,
+        "macro_precision": 0.6343915343915344,
+        "macro_recall": 0.5333333333333333,
+        "non_cache_median_latency_ms": 16183.065450000186,
+        "non_cache_total_latency_ms": 7016095.141,
+        "output_tokens": 243,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.5,
+            "answered": 6,
+            "correct": 3,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.16666666666666666,
+            "answered": 6,
+            "correct": 1,
+            "coverage": 1.0,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.5882352941176471,
+            "precision": 0.7142857142857143,
+            "predicted": 7,
+            "recall": 0.5,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.5333333333333333,
+            "precision": 0.8,
+            "predicted": 5,
+            "recall": 0.4,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.5,
+            "precision": 0.3888888888888889,
+            "predicted": 18,
+            "recall": 0.7,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 27374.996,
+        "provider_load_duration_ms": 63913.53309999999,
+        "provider_prompt_eval_duration_ms": 6918679.434,
+        "provider_total_duration_ms": 7014635.835299999,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.4666666666666667,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 48301,
+      "observed_output_tokens": 243,
+      "output_tokens": 243,
+      "policy_mode": null,
+      "proof_attempted": null,
+      "proof_verified": null,
+      "provider_call_count": 30,
+      "raw_records_sha256": "7734b508a2b29fb3b491f08b5c72dc6b24b54072c83641047782070026f14ea1",
+      "runtime_seconds": 7016.095141,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": true
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "p0_raw_neuro_symbolic",
+      "config_hash": "72ff6eeb2ba40a309720c99b3eedfd6af9e8f9fce059b8ccfd497a4011fbbb0b",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-p0-raw-neuro-symbolic",
+      "input_tokens": 39562,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 0,
+        "accuracy": 0.13333333333333333,
+        "answered_examples": 5,
+        "answered_only_accuracy": 0.8,
+        "cache_hit_count": 30,
+        "cache_miss_count": 0,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 1,
+            "ENTAILED": 0,
+            "ERROR": 8,
+            "UNKNOWN": 1
+          },
+          "ENTAILED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 0,
+            "ENTAILED": 3,
+            "ERROR": 7,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 10,
+            "UNKNOWN": 0
+          }
+        },
+        "coverage": 0.16666666666666666,
+        "errored_examples": 25,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": null,
+        "input_tokens": 0,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.21445221445221443,
+        "macro_precision": 0.6666666666666666,
+        "macro_recall": 0.13333333333333333,
+        "non_cache_median_latency_ms": null,
+        "non_cache_total_latency_ms": 0.0,
+        "output_tokens": 0,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.0,
+            "answered": 1,
+            "correct": 0,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.18181818181818182,
+            "precision": 1.0,
+            "predicted": 1,
+            "recall": 0.1,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.46153846153846156,
+            "precision": 1.0,
+            "predicted": 3,
+            "recall": 0.3,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "predicted": 1,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 0.0,
+        "provider_load_duration_ms": 0.0,
+        "provider_prompt_eval_duration_ms": 0.0,
+        "provider_total_duration_ms": 0.0,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.19999999999999996,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 39562,
+      "observed_output_tokens": 34277,
+      "output_tokens": 34277,
+      "policy_mode": "P0_RAW",
+      "proof_attempted": 5,
+      "proof_verified": 5,
+      "provider_call_count": 60,
+      "raw_records_sha256": "d7deffc1810116d81f50efa72c4abf911499b1c32628865a28013c61ed56623f",
+      "runtime_seconds": 5344.844745,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": true
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "validation_only",
+      "config_hash": "34c774c5f6abe74032a56c4e0207293ac07424ffe73fb48f4639fc4e00f51cd9",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-validation-only",
+      "input_tokens": 39562,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 25,
+        "accuracy": 0.13333333333333333,
+        "answered_examples": 5,
+        "answered_only_accuracy": 0.8,
+        "cache_hit_count": 30,
+        "cache_miss_count": 0,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 8,
+            "CONTRADICTED": 1,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 1
+          },
+          "ENTAILED": {
+            "ABSTAIN": 7,
+            "CONTRADICTED": 0,
+            "ENTAILED": 3,
+            "ERROR": 0,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 10,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 0
+          }
+        },
+        "coverage": 0.16666666666666666,
+        "errored_examples": 0,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": null,
+        "input_tokens": 0,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.21445221445221443,
+        "macro_precision": 0.6666666666666666,
+        "macro_recall": 0.13333333333333333,
+        "non_cache_median_latency_ms": null,
+        "non_cache_total_latency_ms": 0.0,
+        "output_tokens": 0,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.0,
+            "answered": 1,
+            "correct": 0,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.18181818181818182,
+            "precision": 1.0,
+            "predicted": 1,
+            "recall": 0.1,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.46153846153846156,
+            "precision": 1.0,
+            "predicted": 3,
+            "recall": 0.3,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "predicted": 1,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 0.0,
+        "provider_load_duration_ms": 0.0,
+        "provider_prompt_eval_duration_ms": 0.0,
+        "provider_total_duration_ms": 0.0,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.19999999999999996,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 39562,
+      "observed_output_tokens": 34277,
+      "output_tokens": 34277,
+      "policy_mode": "VALIDATION_ONLY",
+      "proof_attempted": 5,
+      "proof_verified": 5,
+      "provider_call_count": 60,
+      "raw_records_sha256": "315dcc8866674be55f9c3b956590db02e97f963ee16242e1844bbaf9a7803635",
+      "runtime_seconds": 5344.844745,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": true
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "p1_corrected_valid",
+      "config_hash": "34c774c5f6abe74032a56c4e0207293ac07424ffe73fb48f4639fc4e00f51cd9",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-p1-corrected-valid",
+      "input_tokens": null,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 23,
+        "accuracy": 0.06666666666666667,
+        "answered_examples": 3,
+        "answered_only_accuracy": 0.6666666666666666,
+        "cache_hit_count": 30,
+        "cache_miss_count": 0,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 8,
+            "CONTRADICTED": 1,
+            "ENTAILED": 0,
+            "ERROR": 1,
+            "UNKNOWN": 0
+          },
+          "ENTAILED": {
+            "ABSTAIN": 6,
+            "CONTRADICTED": 0,
+            "ENTAILED": 1,
+            "ERROR": 2,
+            "UNKNOWN": 1
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 9,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 1,
+            "UNKNOWN": 0
+          }
+        },
+        "coverage": 0.1,
+        "errored_examples": 4,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": null,
+        "input_tokens": 0,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.12121212121212122,
+        "macro_precision": 0.6666666666666666,
+        "macro_recall": 0.06666666666666667,
+        "non_cache_median_latency_ms": null,
+        "non_cache_total_latency_ms": 0.0,
+        "output_tokens": 0,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.0,
+            "answered": 1,
+            "correct": 0,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.18181818181818182,
+            "precision": 1.0,
+            "predicted": 1,
+            "recall": 0.1,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.18181818181818182,
+            "precision": 1.0,
+            "predicted": 1,
+            "recall": 0.1,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "predicted": 1,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 0.0,
+        "provider_load_duration_ms": 0.0,
+        "provider_prompt_eval_duration_ms": 0.0,
+        "provider_total_duration_ms": 0.0,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.33333333333333337,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 127252,
+      "observed_output_tokens": 62249,
+      "output_tokens": null,
+      "policy_mode": "P1_CORRECTED",
+      "proof_attempted": 3,
+      "proof_verified": 3,
+      "provider_call_count": 130,
+      "raw_records_sha256": "6af01790bc7ab13e384fa046892cb7ada41072a4e4ce4adce7f35ccc129dcfc3",
+      "runtime_seconds": 12472.0324613,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": false
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "live-local-with-content-addressed-cache",
+      "condition": "p2_corrected_selective",
+      "config_hash": "34c774c5f6abe74032a56c4e0207293ac07424ffe73fb48f4639fc4e00f51cd9",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-p2-corrected-selective",
+      "input_tokens": null,
+      "limitations": [
+        "Development-only 30-record regenerated evidence; no significance claim."
+      ],
+      "metrics": {
+        "abstained_examples": 25,
+        "accuracy": 0.03333333333333333,
+        "answered_examples": 1,
+        "answered_only_accuracy": 1.0,
+        "cache_hit_count": 30,
+        "cache_miss_count": 0,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 8,
+            "CONTRADICTED": 1,
+            "ENTAILED": 0,
+            "ERROR": 1,
+            "UNKNOWN": 0
+          },
+          "ENTAILED": {
+            "ABSTAIN": 8,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 2,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 9,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 1,
+            "UNKNOWN": 0
+          }
+        },
+        "coverage": 0.03333333333333333,
+        "errored_examples": 4,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": null,
+        "input_tokens": 0,
+        "invalid_prediction_count": 0,
+        "macro_f1": 0.06060606060606061,
+        "macro_precision": 0.3333333333333333,
+        "macro_recall": 0.03333333333333333,
+        "non_cache_median_latency_ms": null,
+        "non_cache_total_latency_ms": 0.0,
+        "output_tokens": 0,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 0.16666666666666666,
+            "answered": 1,
+            "correct": 1,
+            "coverage": 0.16666666666666666,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 0.0,
+            "answered": 0,
+            "correct": 0,
+            "coverage": 0.0,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 0.18181818181818182,
+            "precision": 1.0,
+            "predicted": 1,
+            "recall": 0.1,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "predicted": 0,
+            "recall": 0.0,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 0.0,
+            "precision": 0.0,
+            "predicted": 0,
+            "recall": 0.0,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 0.0,
+        "provider_load_duration_ms": 0.0,
+        "provider_prompt_eval_duration_ms": 0.0,
+        "provider_total_duration_ms": 0.0,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.0,
+        "total_examples": 30
+      },
+      "model": "qwen3.5:4b-q4_K_M",
+      "model_digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
+      "observed_input_tokens": 127252,
+      "observed_output_tokens": 62249,
+      "output_tokens": null,
+      "policy_mode": "P2_SELECTIVE",
+      "proof_attempted": 1,
+      "proof_verified": 1,
+      "provider_call_count": 130,
+      "raw_records_sha256": "bbd6bbc898bb20924d2088d5f316810710e0e678bc2005c10fee9be566db66e9",
+      "runtime_seconds": 12472.0324613,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": false
+    },
+    {
+      "api_cost_usd": 0.0,
+      "cache_mode": "not_applicable",
+      "condition": "oracle_structure_symbolic_ceiling",
+      "config_hash": "c7039474c7f4522767a747deb384fa0ee9e05e450fb7a108d3b2001b36b4719e",
+      "dataset": "ProofWriter",
+      "dataset_version": "V2020.12.3",
+      "experiment_id": "phase9-regenerated-oracle-structure-ceiling",
+      "input_tokens": 0,
+      "limitations": [
+        "Formal S-expression ceiling; not a natural-language end-to-end result."
+      ],
+      "metrics": {
+        "abstained_examples": 0,
+        "accuracy": 1.0,
+        "answered_examples": 30,
+        "answered_only_accuracy": 1.0,
+        "cache_hit_count": 0,
+        "cache_miss_count": 30,
+        "cached_input_tokens": 0,
+        "confusion_matrix": {
+          "CONTRADICTED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 10,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 0
+          },
+          "ENTAILED": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 0,
+            "ENTAILED": 10,
+            "ERROR": 0,
+            "UNKNOWN": 0
+          },
+          "UNKNOWN": {
+            "ABSTAIN": 0,
+            "CONTRADICTED": 0,
+            "ENTAILED": 0,
+            "ERROR": 0,
+            "UNKNOWN": 10
+          }
+        },
+        "coverage": 1.0,
+        "errored_examples": 0,
+        "estimated_cost_usd": 0.0,
+        "generation_tokens_per_second": null,
+        "input_tokens": 0,
+        "invalid_prediction_count": 0,
+        "macro_f1": 1.0,
+        "macro_precision": 1.0,
+        "macro_recall": 1.0,
+        "non_cache_median_latency_ms": 1.7480000005889451,
+        "non_cache_total_latency_ms": 64.26959999225801,
+        "output_tokens": 0,
+        "per_depth_metrics": {
+          "0": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "1": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "2": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "3": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          },
+          "5": {
+            "accuracy": 1.0,
+            "answered": 6,
+            "correct": 6,
+            "coverage": 1.0,
+            "total": 6
+          }
+        },
+        "per_label_metrics": {
+          "CONTRADICTED": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "predicted": 10,
+            "recall": 1.0,
+            "support": 10
+          },
+          "ENTAILED": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "predicted": 10,
+            "recall": 1.0,
+            "support": 10
+          },
+          "UNKNOWN": {
+            "f1": 1.0,
+            "precision": 1.0,
+            "predicted": 10,
+            "recall": 1.0,
+            "support": 10
+          }
+        },
+        "provider_generation_duration_ms": 0.0,
+        "provider_load_duration_ms": 0.0,
+        "provider_prompt_eval_duration_ms": 0.0,
+        "provider_total_duration_ms": 0.0,
+        "reasoning_tokens": 0,
+        "refusal_count": 0,
+        "schema_version": "1.0",
+        "selective_risk": 0.0,
+        "total_examples": 30
+      },
+      "model": null,
+      "model_digest": null,
+      "observed_input_tokens": 0,
+      "observed_output_tokens": 0,
+      "output_tokens": 0,
+      "policy_mode": "FORMAL_ORACLE",
+      "proof_attempted": 30,
+      "proof_verified": 30,
+      "provider_call_count": 0,
+      "raw_records_sha256": "e2bde84f955e61417b9b590bfa954127c1b30aa64ffb93e6d14027cd19ddcc39",
+      "runtime_seconds": 0.5644938999976148,
+      "sample_size": 30,
+      "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+      "split": "dev",
+      "telemetry_complete": true
+    }
+  ],
+  "execution_commit": "a7c3908b0ec12c0512a2a93e814271abe0604b38",
+  "external_transfers": 0,
+  "freeze_hash": "c7039474c7f4522767a747deb384fa0ee9e05e450fb7a108d3b2001b36b4719e",
+  "hosted_provider_calls": 0,
+  "limitations": [
+    "ProofWriter licence remains unverified.",
+    "The archive checksum is locally observed, not publisher verified.",
+    "The development-only sample contains 30 records and supports no significance claim.",
+    "Historical Phase 3-8 caches were not restored or reconstructed."
+  ],
+  "local_provider_dispatches": 190,
+  "protocol_label": "Phase 9 regenerated evidence under newly frozen protocol",
+  "replay_verified": true,
+  "report_fingerprint": "30146ca1a9cae630b18a96607c7c0a32173f6590631fc470c9c61cc22c5c26b1",
+  "schema_version": "1.0",
+  "selection_manifest_hash": "cbc6da95e679a3959b59a311cf5137792fce623f9e425361c6c8b5f35302a16c",
+  "status": "COMPLETE",
+  "test_split_access_count": 0,
+  "test_split_used": false
+}

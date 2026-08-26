@@ -1,0 +1,790 @@
+{
+  "$defs": {
+    "ComparisonKind": {
+      "enum": [
+        "PAIRED_COMPONENT_ABLATION",
+        "SAME_SELECTION_DIFFERENT_REPRESENTATION"
+      ],
+      "title": "ComparisonKind",
+      "type": "string"
+    },
+    "MetricReport": {
+      "additionalProperties": false,
+      "properties": {
+        "abstained_examples": {
+          "minimum": 0,
+          "title": "Abstained Examples",
+          "type": "integer"
+        },
+        "accuracy": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Accuracy",
+          "type": "number"
+        },
+        "answered_examples": {
+          "minimum": 0,
+          "title": "Answered Examples",
+          "type": "integer"
+        },
+        "answered_only_accuracy": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answered Only Accuracy"
+        },
+        "cache_hit_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Hit Count",
+          "type": "integer"
+        },
+        "cache_miss_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cache Miss Count",
+          "type": "integer"
+        },
+        "cached_input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Cached Input Tokens",
+          "type": "integer"
+        },
+        "confusion_matrix": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "title": "Confusion Matrix",
+          "type": "object"
+        },
+        "coverage": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Coverage",
+          "type": "number"
+        },
+        "errored_examples": {
+          "minimum": 0,
+          "title": "Errored Examples",
+          "type": "integer"
+        },
+        "estimated_cost_usd": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Estimated Cost Usd",
+          "type": "number"
+        },
+        "generation_tokens_per_second": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Generation Tokens Per Second"
+        },
+        "input_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Input Tokens",
+          "type": "integer"
+        },
+        "invalid_prediction_count": {
+          "minimum": 0,
+          "title": "Invalid Prediction Count",
+          "type": "integer"
+        },
+        "macro_f1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Macro F1",
+          "type": "number"
+        },
+        "macro_precision": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Macro Precision",
+          "type": "number"
+        },
+        "macro_recall": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Macro Recall",
+          "type": "number"
+        },
+        "non_cache_median_latency_ms": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Non Cache Median Latency Ms"
+        },
+        "non_cache_total_latency_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Non Cache Total Latency Ms",
+          "type": "number"
+        },
+        "output_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Output Tokens",
+          "type": "integer"
+        },
+        "per_depth_metrics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/PerDepthMetrics"
+          },
+          "title": "Per Depth Metrics",
+          "type": "object"
+        },
+        "per_label_metrics": {
+          "additionalProperties": {
+            "$ref": "#/$defs/PerLabelMetrics"
+          },
+          "title": "Per Label Metrics",
+          "type": "object"
+        },
+        "provider_generation_duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Provider Generation Duration Ms",
+          "type": "number"
+        },
+        "provider_load_duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Provider Load Duration Ms",
+          "type": "number"
+        },
+        "provider_prompt_eval_duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Provider Prompt Eval Duration Ms",
+          "type": "number"
+        },
+        "provider_total_duration_ms": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Provider Total Duration Ms",
+          "type": "number"
+        },
+        "reasoning_tokens": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Reasoning Tokens",
+          "type": "integer"
+        },
+        "refusal_count": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Refusal Count",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "selective_risk": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Selective Risk"
+        },
+        "total_examples": {
+          "minimum": 0,
+          "title": "Total Examples",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total_examples",
+        "answered_examples",
+        "abstained_examples",
+        "errored_examples",
+        "accuracy",
+        "coverage",
+        "macro_precision",
+        "macro_recall",
+        "macro_f1",
+        "confusion_matrix",
+        "per_label_metrics",
+        "per_depth_metrics",
+        "invalid_prediction_count"
+      ],
+      "title": "MetricReport",
+      "type": "object"
+    },
+    "PairOutcomeCounts": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_only_correct": {
+          "minimum": 0,
+          "title": "Baseline Only Correct",
+          "type": "integer"
+        },
+        "both_correct": {
+          "minimum": 0,
+          "title": "Both Correct",
+          "type": "integer"
+        },
+        "both_incorrect": {
+          "minimum": 0,
+          "title": "Both Incorrect",
+          "type": "integer"
+        },
+        "changed_only_correct": {
+          "minimum": 0,
+          "title": "Changed Only Correct",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "both_correct",
+        "baseline_only_correct",
+        "changed_only_correct",
+        "both_incorrect"
+      ],
+      "title": "PairOutcomeCounts",
+      "type": "object"
+    },
+    "PerDepthMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "accuracy": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Accuracy",
+          "type": "number"
+        },
+        "answered": {
+          "minimum": 0,
+          "title": "Answered",
+          "type": "integer"
+        },
+        "correct": {
+          "minimum": 0,
+          "title": "Correct",
+          "type": "integer"
+        },
+        "coverage": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Coverage",
+          "type": "number"
+        },
+        "total": {
+          "minimum": 0,
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "total",
+        "answered",
+        "correct",
+        "accuracy",
+        "coverage"
+      ],
+      "title": "PerDepthMetrics",
+      "type": "object"
+    },
+    "PerLabelMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "f1": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "F1",
+          "type": "number"
+        },
+        "precision": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Precision",
+          "type": "number"
+        },
+        "predicted": {
+          "minimum": 0,
+          "title": "Predicted",
+          "type": "integer"
+        },
+        "recall": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Recall",
+          "type": "number"
+        },
+        "support": {
+          "minimum": 0,
+          "title": "Support",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "precision",
+        "recall",
+        "f1",
+        "support",
+        "predicted"
+      ],
+      "title": "PerLabelMetrics",
+      "type": "object"
+    },
+    "Phase9Comparison": {
+      "additionalProperties": false,
+      "properties": {
+        "accuracy_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Accuracy Delta"
+        },
+        "baseline_condition": {
+          "title": "Baseline Condition",
+          "type": "string"
+        },
+        "changed_component": {
+          "title": "Changed Component",
+          "type": "string"
+        },
+        "changed_condition": {
+          "title": "Changed Condition",
+          "type": "string"
+        },
+        "comparison_id": {
+          "title": "Comparison Id",
+          "type": "string"
+        },
+        "comparison_kind": {
+          "$ref": "#/$defs/ComparisonKind"
+        },
+        "coverage_delta": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Coverage Delta"
+        },
+        "outcome_counts": {
+          "$ref": "#/$defs/PairOutcomeCounts"
+        },
+        "paired": {
+          "title": "Paired",
+          "type": "boolean"
+        },
+        "prediction_disagreement_matrix": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "title": "Prediction Disagreement Matrix",
+          "type": "object"
+        },
+        "same_selection": {
+          "const": true,
+          "default": true,
+          "title": "Same Selection",
+          "type": "boolean"
+        },
+        "warning": {
+          "title": "Warning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comparison_id",
+        "comparison_kind",
+        "baseline_condition",
+        "changed_condition",
+        "changed_component",
+        "paired",
+        "accuracy_delta",
+        "coverage_delta",
+        "outcome_counts",
+        "prediction_disagreement_matrix",
+        "warning"
+      ],
+      "title": "Phase9Comparison",
+      "type": "object"
+    },
+    "Phase9ConditionAggregate": {
+      "additionalProperties": false,
+      "properties": {
+        "api_cost_usd": {
+          "const": 0.0,
+          "default": 0.0,
+          "title": "Api Cost Usd",
+          "type": "number"
+        },
+        "cache_mode": {
+          "title": "Cache Mode",
+          "type": "string"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "config_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Config Hash",
+          "type": "string"
+        },
+        "dataset": {
+          "const": "ProofWriter",
+          "default": "ProofWriter",
+          "title": "Dataset",
+          "type": "string"
+        },
+        "dataset_version": {
+          "const": "V2020.12.3",
+          "default": "V2020.12.3",
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Input Tokens"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "metrics": {
+          "$ref": "#/$defs/MetricReport"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model"
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Digest"
+        },
+        "observed_input_tokens": {
+          "minimum": 0,
+          "title": "Observed Input Tokens",
+          "type": "integer"
+        },
+        "observed_output_tokens": {
+          "minimum": 0,
+          "title": "Observed Output Tokens",
+          "type": "integer"
+        },
+        "output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Output Tokens"
+        },
+        "policy_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Policy Mode"
+        },
+        "proof_attempted": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Attempted"
+        },
+        "proof_verified": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Verified"
+        },
+        "provider_call_count": {
+          "minimum": 0,
+          "title": "Provider Call Count",
+          "type": "integer"
+        },
+        "raw_records_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Raw Records Sha256",
+          "type": "string"
+        },
+        "runtime_seconds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Runtime Seconds"
+        },
+        "sample_size": {
+          "const": 30,
+          "default": 30,
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "selection_manifest_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Selection Manifest Hash",
+          "type": "string"
+        },
+        "split": {
+          "const": "dev",
+          "default": "dev",
+          "title": "Split",
+          "type": "string"
+        },
+        "telemetry_complete": {
+          "title": "Telemetry Complete",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "condition",
+        "policy_mode",
+        "selection_manifest_hash",
+        "model",
+        "config_hash",
+        "cache_mode",
+        "provider_call_count",
+        "telemetry_complete",
+        "input_tokens",
+        "output_tokens",
+        "observed_input_tokens",
+        "observed_output_tokens",
+        "metrics",
+        "raw_records_sha256"
+      ],
+      "title": "Phase9ConditionAggregate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "api_cost_usd": {
+      "const": 0.0,
+      "default": 0.0,
+      "title": "Api Cost Usd",
+      "type": "number"
+    },
+    "archive_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Archive Sha256",
+      "type": "string"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/Phase9Comparison"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "conditions": {
+      "items": {
+        "$ref": "#/$defs/Phase9ConditionAggregate"
+      },
+      "maxItems": 7,
+      "minItems": 7,
+      "title": "Conditions",
+      "type": "array"
+    },
+    "execution_commit": {
+      "pattern": "^[a-f0-9]{40}$",
+      "title": "Execution Commit",
+      "type": "string"
+    },
+    "external_transfers": {
+      "const": 0,
+      "default": 0,
+      "title": "External Transfers",
+      "type": "integer"
+    },
+    "freeze_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Freeze Hash",
+      "type": "string"
+    },
+    "hosted_provider_calls": {
+      "const": 0,
+      "default": 0,
+      "title": "Hosted Provider Calls",
+      "type": "integer"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "local_provider_dispatches": {
+      "minimum": 0,
+      "title": "Local Provider Dispatches",
+      "type": "integer"
+    },
+    "protocol_label": {
+      "const": "Phase 9 regenerated evidence under newly frozen protocol",
+      "title": "Protocol Label",
+      "type": "string"
+    },
+    "replay_verified": {
+      "const": true,
+      "title": "Replay Verified",
+      "type": "boolean"
+    },
+    "report_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Report Fingerprint",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selection_manifest_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Selection Manifest Hash",
+      "type": "string"
+    },
+    "status": {
+      "const": "COMPLETE",
+      "default": "COMPLETE",
+      "title": "Status",
+      "type": "string"
+    },
+    "test_split_access_count": {
+      "const": 0,
+      "default": 0,
+      "title": "Test Split Access Count",
+      "type": "integer"
+    },
+    "test_split_used": {
+      "const": false,
+      "default": false,
+      "title": "Test Split Used",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "protocol_label",
+    "execution_commit",
+    "freeze_hash",
+    "archive_sha256",
+    "selection_manifest_hash",
+    "local_provider_dispatches",
+    "conditions",
+    "comparisons",
+    "replay_verified",
+    "limitations",
+    "report_fingerprint"
+  ],
+  "title": "Phase9AggregateReport",
+  "type": "object"
+}

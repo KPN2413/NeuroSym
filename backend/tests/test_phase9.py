@@ -21,9 +21,13 @@ from verilogic_ns_api.phase9.freeze import (
 from verilogic_ns_api.phase9.models import (
     ComparisonKind,
     FrozenArtifact,
+    Phase9AggregateReport,
     Phase9Comparison,
+    Phase9ConditionAggregate,
     Phase9FreezeManifest,
 )
+from verilogic_ns_api.phase9.schema_export import export_aggregate_schema
+from verilogic_ns_api.research.models import MetricReport
 
 
 def _freeze_payload(root: Path) -> tuple[Path, Path]:
@@ -109,6 +113,81 @@ def test_phase9_oracle_comparison_cannot_be_paired() -> None:
         paired=False,
         accuracy_delta=None,
         coverage_delta=None,
+        outcome_counts={
+            "both_correct": 1,
+            "baseline_only_correct": 0,
+            "changed_only_correct": 29,
+            "both_incorrect": 0,
+        },
+        prediction_disagreement_matrix={"CONTRADICTED": {"CONTRADICTED": 30}},
         warning="Ceiling only.",
     )
     assert comparison.paired is False
+
+
+def test_phase9_neuro_symbolic_aggregate_requires_verified_proof_per_answer() -> None:
+    metrics = MetricReport(
+        total_examples=30,
+        answered_examples=1,
+        abstained_examples=25,
+        errored_examples=4,
+        accuracy=1 / 30,
+        answered_only_accuracy=1.0,
+        coverage=1 / 30,
+        selective_risk=0.0,
+        macro_precision=1 / 3,
+        macro_recall=1 / 30,
+        macro_f1=2 / 33,
+        confusion_matrix={},
+        per_label_metrics={},
+        per_depth_metrics={},
+        invalid_prediction_count=0,
+    )
+    payload = {
+        "experiment_id": "phase9-regenerated-p2",
+        "condition": "p2_corrected_selective",
+        "policy_mode": "P2_SELECTIVE",
+        "selection_manifest_hash": "a" * 64,
+        "model": "local-model",
+        "model_digest": "b" * 64,
+        "config_hash": "c" * 64,
+        "cache_mode": "live-local-with-content-addressed-cache",
+        "provider_call_count": 1,
+        "telemetry_complete": True,
+        "input_tokens": 1,
+        "output_tokens": 1,
+        "observed_input_tokens": 1,
+        "observed_output_tokens": 1,
+        "metrics": metrics,
+        "proof_attempted": 1,
+        "proof_verified": 1,
+        "raw_records_sha256": "d" * 64,
+    }
+    assert Phase9ConditionAggregate.model_validate(payload).proof_verified == 1
+    with pytest.raises(ValidationError, match="proof-verification counts"):
+        Phase9ConditionAggregate.model_validate(
+            {**payload, "proof_attempted": None, "proof_verified": None}
+        )
+    with pytest.raises(ValidationError, match="every answered"):
+        Phase9ConditionAggregate.model_validate(
+            {**payload, "proof_attempted": 0, "proof_verified": 0}
+        )
+    with pytest.raises(ValidationError, match="preserve exact token counts as unavailable"):
+        Phase9ConditionAggregate.model_validate({**payload, "telemetry_complete": False})
+
+
+def test_tracked_phase9_aggregate_rejects_fingerprint_tampering() -> None:
+    root = Path(__file__).parents[2]
+    path = root / "research/evidence/phase9-regenerated-aggregate.v1.json"
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    assert Phase9AggregateReport.model_validate(payload).replay_verified is True
+    payload["conditions"][0]["metrics"]["accuracy"] = 0.0
+    with pytest.raises(ValidationError, match="report fingerprint mismatch"):
+        Phase9AggregateReport.model_validate(payload)
+
+
+def test_phase9_aggregate_schema_is_current() -> None:
+    root = Path(__file__).parents[2]
+    assert export_aggregate_schema(root=root, check=True).name == (
+        "phase9-aggregate-report.v1.schema.json"
+    )

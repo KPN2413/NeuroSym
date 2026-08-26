@@ -12,7 +12,7 @@ from verilogic_ns_api.research_frontend.models import (
     ResearchCatalogue,
 )
 
-CATALOGUE_PATH = Path("research/catalogues/phase1-7-evidence.v1.json")
+CATALOGUE_PATH = Path("research/catalogues/phase1-9-evidence.v2.json")
 
 
 class CatalogueIntegrityError(ValueError):
@@ -92,6 +92,11 @@ class ResearchCatalogueService:
             global_limitations=self.catalogue.global_limitations,
             zero_cost=self.catalogue.zero_cost,
             provider_calls_during_phase8=self.catalogue.provider_calls_during_phase8,
+            local_provider_calls_during_phase9=self.catalogue.local_provider_calls_during_phase9,
+            hosted_provider_calls_during_phase9=(
+                self.catalogue.hosted_provider_calls_during_phase9
+            ),
+            api_cost_usd_during_phase9=self.catalogue.api_cost_usd_during_phase9,
         )
 
     def experiment(self, experiment_id: str) -> ExperimentDetail | None:
@@ -113,11 +118,18 @@ class ResearchCatalogueService:
 
 
 def write_seed_catalogue(root: Path | None = None, *, check: bool = False) -> Path:
-    from verilogic_ns_api.research_frontend.seed import build_catalogue
+    from verilogic_ns_api.research_frontend.phase9_catalogue import build_phase9_catalogue
 
     resolved = repository_root(root or Path.cwd())
     path = resolved / CATALOGUE_PATH
-    content = json.dumps(build_catalogue().model_dump(mode="json"), indent=2, sort_keys=True) + "\n"
+    content = (
+        json.dumps(
+            build_phase9_catalogue(resolved).model_dump(mode="json"),
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n"
+    )
     if check:
         if not path.exists() or path.read_text(encoding="utf-8") != content:
             raise CatalogueIntegrityError("tracked research catalogue is stale")

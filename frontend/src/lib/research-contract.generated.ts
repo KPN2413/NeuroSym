@@ -32,6 +32,8 @@ export interface CatalogueOverview {
   catalogue_hash: string; evidence_validation_status: "VERIFIED";
   experiment_count: number; comparison_count: number; experiments: ExperimentSummary[];
   global_limitations: string[]; zero_cost: boolean; provider_calls_during_phase8: number;
+  local_provider_calls_during_phase9: number; hosted_provider_calls_during_phase9: number;
+  api_cost_usd_during_phase9: number;
 }
 export interface ExperimentDetail extends Omit<ExperimentSummary, "primary_metrics" | "main_limitation"> {
   branch: string | null; model_digest: string | null; dataset_version: string;
@@ -69,10 +71,10 @@ export interface NormalizedAstInspection {
 export const RESEARCH_SCHEMA_HASHES = {
   "research-aggregate-export-manifest": "6eec4bb55d55ca8e839ce586698fe5a1c2645d91467ceaffe4850eafac9393d8",
   "research-api-error": "fbe25aed4fba1a5d2b1d01bc22ccde8b18d663207c3daec8575a5e2713fc15c5",
-  "research-catalogue": "ade7a71a4e71c13bc40e60a4b537ea9eadc23f871dbc63adb05086b7eb22d9d6",
+  "research-catalogue": "d93434e0ae29a3522f85f5355fcc65c9171bbc74615927300d1391709408b851",
   "research-comparison-compatibility": "46e5a4149c754e27e17a82e3ddec3c425b328ae0f8d7991b18e72e6707a232dc",
-  "research-experiment-detail": "6461eee680cb887e6f23d489983a723f76f54eea9affcec61cf9e635e5016191",
+  "research-experiment-detail": "1005529d70e6aec24cd89b124f868aa007cac178239ac34b79bca32535a5b38f",
   "research-experiment-summary": "d639073e2949126e3e08d736a3c84811901394c1d4952b5af710e4c24f4fc496",
-  "research-metric-evidence": "da2f7089fd045fe4dad4509a21c62b087ac5c65b51b9b4d71a1cb89ca3494d78",
+  "research-metric-evidence": "9a3c88d30b25d2edb717eb051b568e8acbf3e5028d07a2d230e4f0e980d09656",
   "research-normalized-ast-inspection": "ac7dfeaced4f41d27d0daa56836940848855f5c615191d45bacd39bc19faefc8"
 } as const;

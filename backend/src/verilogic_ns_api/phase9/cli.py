@@ -12,6 +12,7 @@ from verilogic_ns_api.phase9.aggregate import build_aggregate, write_aggregate
 from verilogic_ns_api.phase9.correction import run_phase9_correction
 from verilogic_ns_api.phase9.freeze import Phase9FreezeError, load_and_validate_freeze
 from verilogic_ns_api.phase9.oracle import run_oracle
+from verilogic_ns_api.phase9.schema_export import SCHEMA_PATH, export_aggregate_schema
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -19,6 +20,9 @@ def build_parser() -> argparse.ArgumentParser:
     commands = parser.add_subparsers(dest="command", required=True)
     validate = commands.add_parser("validate-freeze")
     validate.add_argument("--manifest", type=Path, required=True)
+    schema = commands.add_parser("export-schema")
+    schema.add_argument("--output", type=Path, default=SCHEMA_PATH)
+    schema.add_argument("--check", action="store_true")
     correction = commands.add_parser("run-correction")
     correction.add_argument("--freeze", type=Path, required=True)
     correction.add_argument("--config", type=Path, required=True)
@@ -51,6 +55,10 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "validate-freeze":
             freeze = load_and_validate_freeze(args.manifest)
             print(json.dumps({"status": "VERIFIED", "freeze_hash": freeze.freeze_hash}))
+            return 0
+        if args.command == "export-schema":
+            path = export_aggregate_schema(output=args.output, check=args.check)
+            print(path.as_posix())
             return 0
         freeze = load_and_validate_freeze(args.freeze)
         root = repository_root(args.freeze)

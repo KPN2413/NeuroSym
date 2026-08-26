@@ -138,7 +138,7 @@
       "title": "Numerator"
     },
     "phase": {
-      "pattern": "^Phase [3-7](?:-R[0-9]+)?$",
+      "pattern": "^Phase [3-9](?:-R[0-9]+)?$",
       "title": "Phase",
       "type": "string"
     },

@@ -101,6 +101,8 @@ export interface CatalogueOverview {{
   catalogue_hash: string; evidence_validation_status: "VERIFIED";
   experiment_count: number; comparison_count: number; experiments: ExperimentSummary[];
   global_limitations: string[]; zero_cost: boolean; provider_calls_during_phase8: number;
+  local_provider_calls_during_phase9: number; hosted_provider_calls_during_phase9: number;
+  api_cost_usd_during_phase9: number;
 }}
 export interface ExperimentDetail extends Omit<ExperimentSummary, "primary_metrics" | "main_limitation"> {{
   branch: string | null; model_digest: string | null; dataset_version: string;

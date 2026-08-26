@@ -482,7 +482,7 @@
           "title": "Numerator"
         },
         "phase": {
-          "pattern": "^Phase [3-7](?:-R[0-9]+)?$",
+          "pattern": "^Phase [3-9](?:-R[0-9]+)?$",
           "title": "Phase",
           "type": "string"
         },
@@ -658,15 +658,21 @@
   },
   "additionalProperties": false,
   "properties": {
+    "api_cost_usd_during_phase9": {
+      "const": 0.0,
+      "default": 0.0,
+      "title": "Api Cost Usd During Phase9",
+      "type": "number"
+    },
     "catalogue_id": {
-      "const": "phase1-7-evidence",
       "default": "phase1-7-evidence",
+      "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
       "title": "Catalogue Id",
       "type": "string"
     },
     "catalogue_version": {
-      "const": "1.0.0",
       "default": "1.0.0",
+      "pattern": "^[1-9][0-9]*\\.[0-9]+\\.[0-9]+$",
       "title": "Catalogue Version",
       "type": "string"
     },
@@ -702,6 +708,18 @@
       "minItems": 1,
       "title": "Global Limitations",
       "type": "array"
+    },
+    "hosted_provider_calls_during_phase9": {
+      "const": 0,
+      "default": 0,
+      "title": "Hosted Provider Calls During Phase9",
+      "type": "integer"
+    },
+    "local_provider_calls_during_phase9": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Local Provider Calls During Phase9",
+      "type": "integer"
     },
     "provider_calls_during_phase8": {
       "const": 0,

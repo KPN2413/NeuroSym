@@ -27,10 +27,13 @@ test("research surface includes required evidence and visualization sections", (
     "Coverage",
     "Comparison explorer",
     "Phase 5 acceptance funnel",
-    "Phase 6-R3 policy dispositions",
+    "Phase 9 policy dispositions",
     "Normalized AST inspector",
     "Proof and provenance",
     "Aggregate exports",
+    "Phase 9 · regenerated evidence catalogue",
+    "Phase 9 direct vs few-shot paired outcomes",
+    "historical and regenerated development evidence",
   ]) {
     assert.match(dashboard, new RegExp(text));
   }

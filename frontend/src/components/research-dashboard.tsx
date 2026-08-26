@@ -137,7 +137,7 @@ export function ResearchDashboard() {
       <section className="grid gap-8 border-b border-[#17201d]/15 pb-12 pt-10 lg:grid-cols-[1.45fr_0.55fr] lg:pt-16">
         <div>
           <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-[#9a5d2e]">
-            Phase 8 · evidence-backed research frontend
+            Phase 9 · regenerated evidence catalogue
           </p>
           <h1 className="mt-4 max-w-4xl text-5xl font-semibold tracking-[-0.06em] sm:text-6xl lg:text-7xl">
             Results that keep their caveats attached.
@@ -159,7 +159,7 @@ export function ResearchDashboard() {
         <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard label="Tracked conditions" value={String(overview.experiment_count)} note="Passes, negative results and blocked replications" />
           <StatCard label="Comparison contracts" value={String(overview.comparison_count)} note="Paired, descriptive and explicitly incomparable" />
-          <StatCard label="Phase 8 provider calls" value="0" note="Read-only reconstruction; API cost $0.00" />
+          <StatCard label="Phase 9 local calls" value={String(overview.local_provider_calls_during_phase9)} note="Hosted calls 0 · API cost $0.00" />
           <StatCard label="Catalogue status" value="Verified" note={overview.catalogue_hash.slice(0, 16)} mono />
         </div>
       </section>
@@ -268,7 +268,7 @@ function ResearchShell({ children }: { children: React.ReactNode }) {
       </header>
       <div className="mx-auto max-w-[1440px] px-5 lg:px-10">{children}</div>
       <footer className="border-t border-[#17201d]/15 px-5 py-8 text-center text-xs leading-5 text-[#66736f]">
-        Evidence through Phase 7 · development and synthetic canary results · not a final test-set claim
+        Evidence through Phase 9 · historical and regenerated development evidence · not a final test-set claim
       </footer>
     </main>
   );
@@ -287,7 +287,7 @@ function SectionHeading({ eyebrow, title, description }: { eyebrow: string; titl
 }
 
 function AuditCard({ overview }: { overview: CatalogueOverview }) {
-  return <aside className="self-end rounded-2xl border border-[#173d35]/20 bg-[#173d35] p-6 text-[#eef7f3]"><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a9c8be]">Evidence integrity</p><p className="mt-3 text-2xl font-semibold">{overview.evidence_validation_status}</p><dl className="mt-5 space-y-3 border-t border-white/15 pt-4 text-xs"><div><dt className="text-[#a9c8be]">Catalogue version</dt><dd className="mt-1 font-mono">{overview.catalogue_version}</dd></div><div><dt className="text-[#a9c8be]">Canonical SHA-256</dt><dd className="mt-1 break-all font-mono">{overview.catalogue_hash}</dd></div><div><dt className="text-[#a9c8be]">Cost added in Phase 8</dt><dd className="mt-1">$0.00</dd></div></dl></aside>;
+  return <aside className="self-end rounded-2xl border border-[#173d35]/20 bg-[#173d35] p-6 text-[#eef7f3]"><p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#a9c8be]">Evidence integrity</p><p className="mt-3 text-2xl font-semibold">{overview.evidence_validation_status}</p><dl className="mt-5 space-y-3 border-t border-white/15 pt-4 text-xs"><div><dt className="text-[#a9c8be]">Catalogue version</dt><dd className="mt-1 font-mono">{overview.catalogue_version}</dd></div><div><dt className="text-[#a9c8be]">Canonical SHA-256</dt><dd className="mt-1 break-all font-mono">{overview.catalogue_hash}</dd></div><div><dt className="text-[#a9c8be]">Cost added in Phase 9</dt><dd className="mt-1">$0.00</dd></div></dl></aside>;
 }
 
 function StatCard({ label, value, note, mono = false }: { label: string; value: string; note: string; mono?: boolean }) {
@@ -343,9 +343,10 @@ function ResearchVisualizations({ experiments, details, comparisons }: { experim
   const named = (id: string) => experiments.find((item) => item.experiment_id === id)?.name ?? id;
   const accuracyRow = (id: string): ExactRow => ({ label: named(id), value: metricValue(details[id], "accuracy"), unit: "ratio", denominator: 1 });
   const phase5 = details["phase5-hybrid"];
-  const paired = comparisons.find((item) => item.comparison_id === "phase3-direct-vs-few-shot");
-  const oracleGap = ["phase3-direct", "phase5-hybrid", "phase4-oracle-same30"].map(accuracyRow);
-  const dispositions = ["phase6-r3-p0", "phase6-r3-p1", "phase6-r3-p2"].flatMap((id) => [
+  const paired = comparisons.find((item) => item.comparison_id === "phase9-direct-vs-few-shot");
+  const oracleGap = ["phase9-regenerated-direct", "phase9-regenerated-p2-corrected-selective", "phase9-regenerated-oracle-structure-ceiling"].map(accuracyRow);
+  const phase9Policies = ["phase9-regenerated-p0-raw-neuro-symbolic", "phase9-regenerated-validation-only", "phase9-regenerated-p1-corrected-valid", "phase9-regenerated-p2-corrected-selective"];
+  const dispositions = phase9Policies.flatMap((id) => [
     { label: `${details[id]?.policy_mode} · answered`, value: metricValue(details[id], "answered"), denominator: 30 },
     { label: `${details[id]?.policy_mode} · abstained`, value: metricValue(details[id], "abstained"), denominator: 30 },
     { label: `${details[id]?.policy_mode} · errors`, value: metricValue(details[id], "errors"), denominator: 30 },
@@ -358,25 +359,31 @@ function ResearchVisualizations({ experiments, details, comparisons }: { experim
     value: metric.value,
     denominator: phase5?.sample_size,
   }));
-  const runtimeRows = ["phase3-direct", "phase3-few-shot", "phase5-hybrid"].map((id) => ({
-    label: named(id), value: metricValue(details[id], "inference_seconds"), unit: "seconds",
+  const runtimeRows = ["phase9-regenerated-direct", "phase9-regenerated-few-shot", ...phase9Policies].map((id) => ({
+    label: named(id), value: metricValue(details[id], "runtime_seconds"), unit: "seconds",
   }));
-  const tokenRows = ["phase3-direct", "phase3-few-shot", "phase5-hybrid"].flatMap((id) => [
+  const tokenRows = ["phase9-regenerated-direct", "phase9-regenerated-few-shot", ...phase9Policies].flatMap((id) => [
     { label: `${named(id)} · input`, value: metricValue(details[id], "input_tokens"), unit: "tokens" },
     { label: `${named(id)} · output`, value: metricValue(details[id], "output_tokens"), unit: "tokens" },
   ]);
-  const proofRows = ["phase4-oracle-same30", "phase5-hybrid", "phase6-r3-p0", "phase7-formal-canaries"].map((id) => ({
+  const proofRows = [...phase9Policies, "phase9-regenerated-oracle-structure-ceiling"].map((id) => ({
     label: named(id), value: metricValue(details[id], "proof_verification_rate"), unit: "ratio", denominator: 1,
   }));
   const depthRows = [0, 1, 2, 3, 5].flatMap((depth) => [
-    { label: `Oracle · depth ${depth}`, value: metricValue(details["phase4-oracle-300"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
-    { label: `R3 P0 · depth ${depth}`, value: metricValue(details["phase6-r3-p0"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
+    { label: `Direct · depth ${depth}`, value: metricValue(details["phase9-regenerated-direct"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
+    { label: `Few-shot · depth ${depth}`, value: metricValue(details["phase9-regenerated-few-shot"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
+    { label: `P0 · depth ${depth}`, value: metricValue(details["phase9-regenerated-p0-raw-neuro-symbolic"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
+    { label: `P2 · depth ${depth}`, value: metricValue(details["phase9-regenerated-p2-corrected-selective"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
+    { label: `Oracle · depth ${depth}`, value: metricValue(details["phase9-regenerated-oracle-structure-ceiling"], "accuracy", { depth: String(depth) }), unit: "ratio", denominator: 1 },
   ]);
   const labelRows = ["ENTAILED", "CONTRADICTED", "UNKNOWN"].flatMap((label) => [
-    { label: `Oracle · ${label}`, value: metricValue(details["phase4-oracle-300"], "accuracy", { label }), unit: "ratio", denominator: 1 },
-    { label: `R3 P0 · ${label}`, value: metricValue(details["phase6-r3-p0"], "accuracy", { label }), unit: "ratio", denominator: 1 },
+    { label: `Direct · ${label}`, value: metricValue(details["phase9-regenerated-direct"], "accuracy", { label }), unit: "ratio", denominator: 1 },
+    { label: `Few-shot · ${label}`, value: metricValue(details["phase9-regenerated-few-shot"], "accuracy", { label }), unit: "ratio", denominator: 1 },
+    { label: `P0 · ${label}`, value: metricValue(details["phase9-regenerated-p0-raw-neuro-symbolic"], "accuracy", { label }), unit: "ratio", denominator: 1 },
+    { label: `P2 · ${label}`, value: metricValue(details["phase9-regenerated-p2-corrected-selective"], "accuracy", { label }), unit: "ratio", denominator: 1 },
+    { label: `Oracle · ${label}`, value: metricValue(details["phase9-regenerated-oracle-structure-ceiling"], "accuracy", { label }), unit: "ratio", denominator: 1 },
   ]);
-  return <section className="py-12" aria-labelledby="visualisations-title"><SectionHeading eyebrow="Exact visualisations" title="Ten views, all generated from the catalogue" description="Each chart has an accompanying exact-value table. Bars begin at zero, absent metrics remain NA, and the labels distinguish unlike conditions." /><div className="mt-7 grid gap-5 lg:grid-cols-2"><ExactEvidencePanel title="Oracle symbolic vs natural-language gap" description="Same 30-example selection where recorded; representation differs, so this is a ceiling comparison rather than a paired system test." rows={oracleGap} /><ExactEvidencePanel title="Phase 6-R3 policy dispositions" description="Answered, abstained and error counts for the three terminal policies." rows={dispositions} /><ExactEvidencePanel title="Direct vs few-shot paired outcomes" description={paired?.warning ?? "Paired evidence unavailable."} rows={pairedRows} /><ExactEvidencePanel title="Phase 5 error categories" description="Terminal parser and source-validation failures before accepted symbolic reasoning." rows={errorRows} /><ExactEvidencePanel title="Runtime comparison" description="Local provider duration where documented; hardware and workload differ across phases." rows={runtimeRows} /><ExactEvidencePanel title="Input/output token comparison" description="Token counts are operational evidence, not an accuracy claim." rows={tokenRows} /><ExactEvidencePanel title="Proof-verification summary" description="Verification rate applies only to produced proof attempts; coverage must be read separately." rows={proofRows} /><ExactEvidencePanel title="Per-depth accuracy" description="Evidence exists for the Phase 4 symbolic oracle and Phase 6-R3 P0 policy." rows={depthRows} /><ExactEvidencePanel title="Per-label accuracy" description="Exact aggregate label slices where retained in tracked evidence." rows={labelRows} /><ExactEvidencePanel title="Accuracy and coverage interpretation" description="A selective system can reduce coverage; answered-only accuracy is not overall accuracy." rows={experiments.filter((item) => item.chart_eligible).flatMap((item) => [{ label: `${item.name} · accuracy`, value: primaryMetric(item, "accuracy"), unit: "ratio", denominator: 1 }, { label: `${item.name} · coverage`, value: primaryMetric(item, "coverage"), unit: "ratio", denominator: 1 }])} /></div></section>;
+  return <section className="py-12" aria-labelledby="visualisations-title"><SectionHeading eyebrow="Exact visualisations" title="Ten views, all generated from the catalogue" description="Each chart has an accompanying exact-value table. Bars begin at zero, absent metrics remain NA, and the labels distinguish unlike conditions." /><div className="mt-7 grid gap-5 lg:grid-cols-2"><ExactEvidencePanel title="Oracle symbolic vs natural-language gap" description="The Phase 9 oracle uses the same 30 selections but a different formal representation, so it is a ceiling rather than a paired superiority claim." rows={oracleGap} /><ExactEvidencePanel title="Phase 9 policy dispositions" description="Answered, abstained and error counts for all four regenerated neuro-symbolic policies." rows={dispositions} /><ExactEvidencePanel title="Phase 9 direct vs few-shot paired outcomes" description={paired?.warning ?? "Paired evidence unavailable."} rows={pairedRows} /><ExactEvidencePanel title="Phase 5 error categories" description="Historical terminal parser and source-validation failures before accepted symbolic reasoning." rows={errorRows} /><ExactEvidencePanel title="Phase 9 runtime comparison" description="Observed local runtime; workload differs between baseline, parser and correction conditions." rows={runtimeRows} /><ExactEvidencePanel title="Phase 9 input/output token comparison" description="P1/P2 exact totals are NA because two terminal cache outcomes lack usage telemetry; partial lower bounds remain separately available." rows={tokenRows} /><ExactEvidencePanel title="Phase 9 proof-verification summary" description="Verification rate applies only to answered records; coverage must be read separately." rows={proofRows} /><ExactEvidencePanel title="Phase 9 per-depth accuracy" description="Exact slices from the frozen balanced 30-record development selection." rows={depthRows} /><ExactEvidencePanel title="Phase 9 per-label accuracy" description="Exact label slices from the frozen balanced 30-record development selection." rows={labelRows} /><ExactEvidencePanel title="Accuracy and coverage interpretation" description="A selective system can reduce coverage; answered-only accuracy is not overall accuracy." rows={experiments.filter((item) => item.chart_eligible).flatMap((item) => [{ label: `${item.name} · accuracy`, value: primaryMetric(item, "accuracy"), unit: "ratio", denominator: 1 }, { label: `${item.name} · coverage`, value: primaryMetric(item, "coverage"), unit: "ratio", denominator: 1 }])} /></div></section>;
 }
 
 function ExactEvidencePanel({ title, description, rows }: { title: string; description: string; rows: ExactRow[] }) {

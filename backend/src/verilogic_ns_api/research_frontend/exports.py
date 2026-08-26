@@ -79,7 +79,8 @@ def render_export(
     }
     content_hash = sha256_json(canonical)
     extension = {"json": "json", "csv": "csv", "markdown": "md"}[export_format]
-    filename = f"verilogic-ns-phase1-7-evidence.v1.{extension}"
+    major = service.catalogue.catalogue_version.split(".", maxsplit=1)[0]
+    filename = f"verilogic-ns-{service.catalogue.catalogue_id}.v{major}.{extension}"
     manifest = AggregateExportManifest(
         catalogue_version=service.catalogue.catalogue_version,
         export_format=export_format,

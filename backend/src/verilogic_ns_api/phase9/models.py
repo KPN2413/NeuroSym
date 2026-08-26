@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import hashlib
+import json
 from enum import StrEnum
 from typing import Literal, Self
 
@@ -80,6 +82,19 @@ class ComparisonKind(StrEnum):
     SAME_SELECTION_DIFFERENT_REPRESENTATION = "SAME_SELECTION_DIFFERENT_REPRESENTATION"
 
 
+class PairOutcomeCounts(StrictModel):
+    both_correct: int = Field(ge=0)
+    baseline_only_correct: int = Field(ge=0)
+    changed_only_correct: int = Field(ge=0)
+    both_incorrect: int = Field(ge=0)
+
+    @model_validator(mode="after")
+    def frozen_denominator(self) -> Self:
+        if sum(self.model_dump().values()) != 30:
+            raise ValueError("paired outcome counts must cover all 30 selected records")
+        return self
+
+
 class Phase9Comparison(StrictModel):
     comparison_id: str
     comparison_kind: ComparisonKind
@@ -90,6 +105,8 @@ class Phase9Comparison(StrictModel):
     paired: bool
     accuracy_delta: float | None
     coverage_delta: float | None
+    outcome_counts: PairOutcomeCounts
+    prediction_disagreement_matrix: dict[str, dict[str, int]]
     warning: str
 
     @model_validator(mode="after")
@@ -101,6 +118,11 @@ class Phase9Comparison(StrictModel):
             and self.paired
         ):
             raise ValueError("different-representation comparisons cannot be paired")
+        matrix_total = sum(
+            count for row in self.prediction_disagreement_matrix.values() for count in row.values()
+        )
+        if matrix_total != 30:
+            raise ValueError("prediction disagreement matrix must cover all 30 selected records")
         return self
 
 
@@ -120,6 +142,11 @@ class Phase9ConditionAggregate(StrictModel):
     provider_call_count: int = Field(ge=0)
     api_cost_usd: Literal[0.0] = 0.0
     runtime_seconds: float | None = Field(default=None, ge=0)
+    telemetry_complete: bool
+    input_tokens: int | None = Field(ge=0)
+    output_tokens: int | None = Field(ge=0)
+    observed_input_tokens: int = Field(ge=0)
+    observed_output_tokens: int = Field(ge=0)
     metrics: MetricReport
     proof_attempted: int | None = Field(default=None, ge=0)
     proof_verified: int | None = Field(default=None, ge=0)
@@ -136,6 +163,30 @@ class Phase9ConditionAggregate(StrictModel):
             and self.proof_verified > self.proof_attempted
         ):
             raise ValueError("verified proof count cannot exceed attempted proofs")
+        proof_required = {
+            "p0_raw_neuro_symbolic",
+            "validation_only",
+            "p1_corrected_valid",
+            "p2_corrected_selective",
+            "oracle_structure_symbolic_ceiling",
+        }
+        if self.condition in proof_required:
+            if self.proof_attempted is None or self.proof_verified is None:
+                raise ValueError("neuro-symbolic conditions require proof-verification counts")
+            if self.proof_attempted != self.metrics.answered_examples:
+                raise ValueError("every answered neuro-symbolic record requires a proof attempt")
+            if self.proof_verified != self.proof_attempted:
+                raise ValueError("all published neuro-symbolic proof attempts must verify")
+        if self.telemetry_complete:
+            if self.input_tokens is None or self.output_tokens is None:
+                raise ValueError("complete telemetry requires exact token counts")
+            if (
+                self.input_tokens != self.observed_input_tokens
+                or self.output_tokens != self.observed_output_tokens
+            ):
+                raise ValueError("complete and observed token counts must agree")
+        elif self.input_tokens is not None or self.output_tokens is not None:
+            raise ValueError("incomplete telemetry must preserve exact token counts as unavailable")
         return self
 
 
@@ -148,11 +199,14 @@ class Phase9AggregateReport(StrictModel):
     archive_sha256: str = Field(pattern=SHA256_PATTERN)
     selection_manifest_hash: str = Field(pattern=SHA256_PATTERN)
     test_split_used: Literal[False] = False
+    test_split_access_count: Literal[0] = 0
     hosted_provider_calls: Literal[0] = 0
+    external_transfers: Literal[0] = 0
+    local_provider_dispatches: int = Field(ge=0)
     api_cost_usd: Literal[0.0] = 0.0
     conditions: tuple[Phase9ConditionAggregate, ...] = Field(min_length=7, max_length=7)
-    comparisons: tuple[Phase9Comparison, ...] = Field(min_length=5)
-    replay_verified: bool
+    comparisons: tuple[Phase9Comparison, ...] = Field(min_length=5, max_length=5)
+    replay_verified: Literal[True]
     limitations: tuple[str, ...] = Field(min_length=1)
     report_fingerprint: str = Field(pattern=SHA256_PATTERN)
 
@@ -161,4 +215,21 @@ class Phase9AggregateReport(StrictModel):
         names = [item.condition for item in self.conditions]
         if len(names) != len(set(names)):
             raise ValueError("aggregate conditions must be unique")
+        expected = {
+            "direct",
+            "few_shot",
+            "p0_raw_neuro_symbolic",
+            "validation_only",
+            "p1_corrected_valid",
+            "p2_corrected_selective",
+            "oracle_structure_symbolic_ceiling",
+        }
+        if set(names) != expected:
+            raise ValueError("aggregate conditions do not match the frozen Phase 9 protocol")
+        payload = self.model_dump(mode="json", exclude={"report_fingerprint"})
+        observed = hashlib.sha256(
+            json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+        if observed != self.report_fingerprint:
+            raise ValueError("Phase 9 aggregate report fingerprint mismatch")
         return self

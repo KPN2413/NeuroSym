@@ -68,6 +68,10 @@ def build_aggregate(
     p2_proof = correction_report["p2_corrected_selective"]["proof_verification"]
     phase5_calls = int(semantic_report["efficiency"]["provider_requests"])
     correction_calls = int(correction_report["efficiency"]["new_local_calls"])
+    semantic_input_tokens = int(semantic_report["efficiency"]["input_tokens"])
+    semantic_output_tokens = int(semantic_report["efficiency"]["output_tokens"])
+    correction_observed_input = int(correction_report["efficiency"]["observed_input_tokens"])
+    correction_observed_output = int(correction_report["efficiency"]["observed_output_tokens"])
     correction_wall = float(correction_report["wall_seconds"])
     parser_wall = float(semantic_report["efficiency"]["wall_seconds"])
     correction_config = "experiments/configs/ollama-validation-correction-phase9.yaml"
@@ -88,7 +92,7 @@ def build_aggregate(
             correction_run / "validation-only-predictions.jsonl",
             phase5_calls,
             parser_wall,
-            None,
+            p0_proof,
             correction_config,
         ),
         (
@@ -112,6 +116,7 @@ def build_aggregate(
     )
     for name, policy, records, calls, runtime, proof, config in condition_specs:
         metrics = compute_metrics(examples, _predictions(records))
+        corrected = name in {"p1_corrected_valid", "p2_corrected_selective"}
         conditions.append(
             Phase9ConditionAggregate(
                 experiment_id=f"phase9-regenerated-{name.replace('_', '-')}",
@@ -124,6 +129,19 @@ def build_aggregate(
                 cache_mode="live-local-with-content-addressed-cache",
                 provider_call_count=calls,
                 runtime_seconds=runtime,
+                telemetry_complete=not corrected,
+                input_tokens=None if corrected else semantic_input_tokens,
+                output_tokens=None if corrected else semantic_output_tokens,
+                observed_input_tokens=(
+                    semantic_input_tokens + correction_observed_input
+                    if corrected
+                    else semantic_input_tokens
+                ),
+                observed_output_tokens=(
+                    semantic_output_tokens + correction_observed_output
+                    if corrected
+                    else semantic_output_tokens
+                ),
                 metrics=metrics,
                 proof_attempted=int(proof["attempted"]) if proof else None,
                 proof_verified=int(proof["verified"]) if proof else None,
@@ -149,6 +167,11 @@ def build_aggregate(
             cache_mode="not_applicable",
             provider_call_count=0,
             runtime_seconds=float(oracle_report["wall_seconds"]),
+            telemetry_complete=True,
+            input_tokens=0,
+            output_tokens=0,
+            observed_input_tokens=0,
+            observed_output_tokens=0,
             metrics=oracle_metrics,
             proof_attempted=int(oracle_report["proof_attempted"]),
             proof_verified=int(oracle_report["proof_verified"]),
@@ -158,28 +181,52 @@ def build_aggregate(
     )
 
     by_name = {item.condition: item for item in conditions}
+    predictions_by_name = {
+        "direct": _predictions(direct_run / "predictions.jsonl"),
+        "few_shot": _predictions(few_shot_run / "predictions.jsonl"),
+        **{
+            name: _predictions(records)
+            for name, _policy, records, _calls, _runtime, _proof, _config in condition_specs
+        },
+        "oracle_structure_symbolic_ceiling": _predictions(oracle_records),
+    }
     comparisons = (
-        _comparison(by_name, "direct", "few_shot", "six fixed training demonstrations"),
         _comparison(
             by_name,
+            predictions_by_name,
+            examples,
+            "direct",
+            "few_shot",
+            "six fixed training demonstrations",
+        ),
+        _comparison(
+            by_name,
+            predictions_by_name,
+            examples,
             "p0_raw_neuro_symbolic",
             "validation_only",
             "deterministic validation rejection",
         ),
         _comparison(
             by_name,
+            predictions_by_name,
+            examples,
             "p0_raw_neuro_symbolic",
             "p1_corrected_valid",
             "typed critic and one bounded correction",
         ),
         _comparison(
             by_name,
+            predictions_by_name,
+            examples,
             "p1_corrected_valid",
             "p2_corrected_selective",
             "critic-acceptance abstention gate",
         ),
         _comparison(
             by_name,
+            predictions_by_name,
+            examples,
             "p2_corrected_selective",
             "oracle_structure_symbolic_ceiling",
             "gold formal representation replaces natural-language parsing",
@@ -195,7 +242,12 @@ def build_aggregate(
         "archive_sha256": freeze.archive_sha256,
         "selection_manifest_hash": freeze.selection_manifest_hash,
         "test_split_used": False,
+        "test_split_access_count": 0,
         "hosted_provider_calls": 0,
+        "external_transfers": 0,
+        "local_provider_dispatches": (
+            direct.provider_call_count + few.provider_call_count + phase5_calls + correction_calls
+        ),
         "api_cost_usd": 0.0,
         "conditions": [item.model_dump(mode="json") for item in conditions],
         "comparisons": [item.model_dump(mode="json") for item in comparisons],
@@ -249,15 +301,60 @@ def _baseline_condition(*, root, examples, run, condition, experiment_id, config
         cache_mode="live-local-with-content-addressed-cache",
         provider_call_count=calls,
         runtime_seconds=metrics.non_cache_total_latency_ms / 1000,
+        telemetry_complete=True,
+        input_tokens=metrics.input_tokens,
+        output_tokens=metrics.output_tokens,
+        observed_input_tokens=metrics.input_tokens,
+        observed_output_tokens=metrics.output_tokens,
         metrics=metrics,
         raw_records_sha256=file_sha256(records),
         limitations=("Development-only 30-record regenerated evidence; no significance claim.",),
     )
 
 
-def _comparison(by_name, baseline, changed, component, *, representation=False):
+def _comparison(
+    by_name,
+    predictions_by_name,
+    examples,
+    baseline,
+    changed,
+    component,
+    *,
+    representation=False,
+):
     left = by_name[baseline]
     right = by_name[changed]
+    gold = {item.example_id: item.gold_label.value for item in examples}
+    left_predictions = {
+        item.example_id: item.predicted_label.value for item in predictions_by_name[baseline]
+    }
+    right_predictions = {
+        item.example_id: item.predicted_label.value for item in predictions_by_name[changed]
+    }
+    counts = {
+        "both_correct": 0,
+        "baseline_only_correct": 0,
+        "changed_only_correct": 0,
+        "both_incorrect": 0,
+    }
+    matrix: dict[str, dict[str, int]] = {}
+    for example_id, expected in sorted(gold.items()):
+        left_label = left_predictions[example_id]
+        right_label = right_predictions[example_id]
+        left_correct = left_label == expected
+        right_correct = right_label == expected
+        key = (
+            "both_correct"
+            if left_correct and right_correct
+            else "baseline_only_correct"
+            if left_correct
+            else "changed_only_correct"
+            if right_correct
+            else "both_incorrect"
+        )
+        counts[key] += 1
+        matrix.setdefault(left_label, {}).setdefault(right_label, 0)
+        matrix[left_label][right_label] += 1
     return Phase9Comparison(
         comparison_id=f"phase9-{baseline}-vs-{changed}".replace("_", "-"),
         comparison_kind=(
@@ -271,6 +368,8 @@ def _comparison(by_name, baseline, changed, component, *, representation=False):
         paired=not representation,
         accuracy_delta=right.metrics.accuracy - left.metrics.accuracy,
         coverage_delta=right.metrics.coverage - left.metrics.coverage,
+        outcome_counts=counts,
+        prediction_disagreement_matrix=matrix,
         warning=(
             "Ceiling comparison only; representations differ."
             if representation

@@ -28,8 +28,13 @@ from verilogic_ns_api.research_frontend.models import (
     ResearchCatalogue,
     SourceArtifact,
 )
+from verilogic_ns_api.research_frontend.phase9_catalogue import (
+    PHASE9_LABEL,
+)
+from verilogic_ns_api.research_frontend.phase9_catalogue import (
+    build_phase9_catalogue as build_catalogue,
+)
 from verilogic_ns_api.research_frontend.schema_export import export_schemas
-from verilogic_ns_api.research_frontend.seed import build_catalogue
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -99,9 +104,25 @@ def test_catalogue_distinguishes_observed_documented_and_derived_evidence() -> N
         for metric in experiment.metrics
     }
     assert {"DOCUMENTED", "DERIVED", "UNAVAILABLE"}.issubset(evidence_types)
-    # Raw machine results are no longer present, so this catalogue must not relabel
-    # documentation as directly observed evidence.
-    assert EvidenceType.DIRECTLY_OBSERVED not in evidence_types
+    assert EvidenceType.DIRECTLY_OBSERVED in evidence_types
+    historical_metrics = [
+        metric
+        for experiment in catalogue.experiments
+        if experiment.phase != "Phase 9"
+        for metric in experiment.metrics
+    ]
+    assert all(
+        metric.evidence_type is not EvidenceType.DIRECTLY_OBSERVED for metric in historical_metrics
+    )
+    phase9_metrics = [
+        metric
+        for experiment in catalogue.experiments
+        if experiment.phase == "Phase 9"
+        for metric in experiment.metrics
+        if metric.evidence_type is not EvidenceType.UNAVAILABLE
+    ]
+    assert phase9_metrics
+    assert all(metric.evidence_type is EvidenceType.DIRECTLY_OBSERVED for metric in phase9_metrics)
     assert EvidenceType.DOCUMENTED is not EvidenceType.DIRECTLY_OBSERVED
     derived = [
         metric
@@ -142,9 +163,13 @@ def test_research_overview_is_sanitized_and_provider_free(client: TestClient) ->
     assert response.status_code == 200
     payload = response.json()
     assert payload["evidence_validation_status"] == "VERIFIED"
-    assert payload["experiment_count"] == 12
+    assert payload["experiment_count"] == 19
+    assert payload["comparison_count"] == 10
     assert payload["zero_cost"] is True
     assert payload["provider_calls_during_phase8"] == 0
+    assert payload["local_provider_calls_during_phase9"] == 190
+    assert payload["hosted_provider_calls_during_phase9"] == 0
+    assert payload["api_cost_usd_during_phase9"] == 0
     rendered = response.text.lower()
     assert "c:\\users" not in rendered
     assert "api_key" not in rendered
@@ -188,6 +213,43 @@ def test_comparisons_mark_unsupported_cross_run_claims(client: TestClient) -> No
     incomparable = next(item for item in comparisons if item["comparison_type"] == "INCOMPARABLE")
     assert incomparable["paired"] is False
     assert "not" in incomparable["warning"].lower()
+    oracle = next(
+        item
+        for item in comparisons
+        if item["comparison_id"].endswith("oracle-structure-symbolic-ceiling")
+    )
+    assert oracle["comparison_type"] == "SAME_SELECTION_DIFFERENT_REPRESENTATION"
+    assert oracle["paired"] is False
+    assert sum(oracle["outcome_counts"].values()) == 30
+
+
+def test_phase9_catalogue_preserves_failures_proofs_and_unavailable_tokens() -> None:
+    catalogue = build_catalogue(ROOT)
+    phase9 = tuple(item for item in catalogue.experiments if item.phase == "Phase 9")
+    assert len(phase9) == 7
+    assert all(PHASE9_LABEL in item.limitations for item in phase9)
+    p2 = next(item for item in phase9 if item.condition == "p2_corrected_selective")
+    metrics = {
+        (item.metric_id, tuple(sorted(item.dimensions.items()))): item for item in p2.metrics
+    }
+    assert metrics[("answered", ())].value == 1
+    assert metrics[("abstained", ())].value == 25
+    assert metrics[("errors", ())].value == 4
+    assert metrics[("proof_verification_rate", ())].value == 1.0
+    assert metrics[("input_tokens", ())].value is None
+    assert metrics[("input_tokens", ())].evidence_type is EvidenceType.UNAVAILABLE
+    assert metrics[("observed_input_tokens", ())].value == 127252
+
+
+def test_phase8_catalogue_bytes_and_canonical_hash_remain_immutable() -> None:
+    path = ROOT / "research/catalogues/phase1-7-evidence.v1.json"
+    catalogue = ResearchCatalogue.model_validate_json(path.read_text(encoding="utf-8"))
+    assert catalogue.canonical_hash == (
+        "6908ff69506907551ec4e20e2e52aed44ddf3b3826b01cdaf61ceb7df1566842"
+    )
+    assert hashlib.sha256(path.read_bytes()).hexdigest() == (
+        "ee57f84c4d4b160b8dd7330a35cc30cc3a46e04e5acd5fb87ff5c092627c5863"
+    )
 
 
 @pytest.mark.parametrize(

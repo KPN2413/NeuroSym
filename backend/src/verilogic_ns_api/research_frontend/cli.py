@@ -17,7 +17,9 @@ from verilogic_ns_api.research_frontend.schema_export import export_schemas, sch
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="verilogic-research-frontend",
-        description="Validate and export the evidence-backed Phase 8 research catalogue.",
+        description=(
+            "Validate and export the historical and Phase 9 regenerated research catalogue."
+        ),
     )
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("validate-catalogue", help="Validate catalogue models and source hashes")
