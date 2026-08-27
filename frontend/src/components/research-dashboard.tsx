@@ -143,7 +143,7 @@ export function ResearchDashboard() {
             Results that keep their caveats attached.
           </h1>
           <p className="mt-6 max-w-3xl text-base leading-7 text-[#53625d]">
-            This dashboard reconstructs tracked aggregate evidence from Phases 1–7. Every metric
+            This dashboard reconstructs tracked aggregate evidence from Phases 1–9. Every metric
             carries its dataset, split, sample size, source hash, commit and comparison boundary.
           </p>
         </div>
@@ -347,16 +347,17 @@ function ResearchVisualizations({ experiments, details, comparisons }: { experim
   const oracleGap = ["phase9-regenerated-direct", "phase9-regenerated-p2-corrected-selective", "phase9-regenerated-oracle-structure-ceiling"].map(accuracyRow);
   const phase9Policies = ["phase9-regenerated-p0-raw-neuro-symbolic", "phase9-regenerated-validation-only", "phase9-regenerated-p1-corrected-valid", "phase9-regenerated-p2-corrected-selective"];
   const dispositions = phase9Policies.flatMap((id) => [
-    { label: `${details[id]?.policy_mode} · answered`, value: metricValue(details[id], "answered"), denominator: 30 },
-    { label: `${details[id]?.policy_mode} · abstained`, value: metricValue(details[id], "abstained"), denominator: 30 },
-    { label: `${details[id]?.policy_mode} · errors`, value: metricValue(details[id], "errors"), denominator: 30 },
+    { label: `${details[id]?.policy_mode} · answered`, value: metricValue(details[id], "answered"), unit: "count", denominator: 30 },
+    { label: `${details[id]?.policy_mode} · abstained`, value: metricValue(details[id], "abstained"), unit: "count", denominator: 30 },
+    { label: `${details[id]?.policy_mode} · errors`, value: metricValue(details[id], "errors"), unit: "count", denominator: 30 },
   ]);
   const pairedRows = Object.entries(paired?.outcome_counts ?? {}).map(([label, value]) => ({
-    label: label.replaceAll("_", " "), value, denominator: 30,
+    label: label.replaceAll("_", " "), value, unit: "count", denominator: 30,
   }));
   const errorRows = (phase5?.metrics ?? []).filter((metric) => metric.metric_id === "error_count").map((metric) => ({
     label: metric.dimensions.error?.replaceAll("_", " ") ?? metric.display_name,
     value: metric.value,
+    unit: "count",
     denominator: phase5?.sample_size,
   }));
   const runtimeRows = ["phase9-regenerated-direct", "phase9-regenerated-few-shot", ...phase9Policies].map((id) => ({

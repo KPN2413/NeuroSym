@@ -23,6 +23,8 @@ test("research values preserve unavailable evidence as NA", () => {
   assert.equal(formatMetric(undefined), "NA");
   assert.equal(formatMetric(0.5), "50.0%");
   assert.equal(formatMetric(0, "count"), "0");
+  assert.equal(formatMetric(5, "count"), "5");
+  assert.equal(formatMetric(25, "count"), "25");
 });
 
 test("research filters combine without rewriting evidence", () => {

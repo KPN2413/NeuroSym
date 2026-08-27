@@ -39,6 +39,14 @@ test("research surface includes required evidence and visualization sections", (
   }
 });
 
+test("count-backed research charts declare count units", () => {
+  assert.match(dashboard, /policy_mode} · answered`[^\n]+unit: "count"/);
+  assert.match(dashboard, /policy_mode} · abstained`[^\n]+unit: "count"/);
+  assert.match(dashboard, /policy_mode} · errors`[^\n]+unit: "count"/);
+  assert.match(dashboard, /label: label\.replaceAll\("_", " "\), value, unit: "count"/);
+  assert.match(dashboard, /value: metric\.value,\s+unit: "count"/);
+});
+
 test("research surface exposes all export formats and keyboard-native controls", () => {
   assert.match(dashboard, /\["json", "csv", "markdown"\]/);
   assert.match(dashboard, /<button/);
