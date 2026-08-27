@@ -216,7 +216,7 @@ export function NeuroSymbolicWorkbench() {
             />
             <span>{backendError ? "Backend offline" : "Local system"}</span>
             <span className="hidden rounded-full border border-[#17201d]/15 px-3 py-1.5 sm:inline">
-              Phase 7
+              Final prototype
             </span>
           </div>
         </div>

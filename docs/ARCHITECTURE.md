@@ -147,3 +147,17 @@ historical seed. It does not rewrite the original catalogue. Registered comparis
 paired outcome counts or an explicit different-representation ceiling warning. The read-only API
 and `/research` UI consume the resulting version 2 catalogue without touching raw results or a
 provider.
+
+### Phase 10 deployment and deliverable boundary
+
+`verilogic_ns_api.phase10` derives one strict final-evidence package from the tracked Phase 9
+aggregate, freeze manifest, and validated research catalogues. Its fingerprint is recomputed from
+the complete payload, so final report and presentation claims fail validation if tracked evidence
+changes. This package contains sanitized aggregate counts and hashes only—never raw benchmark or
+provider payloads.
+
+The production demonstration remains two services: a non-root FastAPI backend on loopback port
+8000 and a non-root Next.js frontend on loopback port 3000. The default backend provider mode is
+`cache_only`; Ollama is optional and is neither published nor mounted by Compose. The Phase 10 smoke
+command checks health, capabilities, research catalogue/export hashes, both frontend routes, CORS,
+and an `ENTAILED` formal-AST run with an independently verified proof and zero provider dispatches.

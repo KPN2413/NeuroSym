@@ -1,0 +1,403 @@
+{
+  "$defs": {
+    "FinalComparisonEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "baseline_condition": {
+          "title": "Baseline Condition",
+          "type": "string"
+        },
+        "baseline_only_correct": {
+          "minimum": 0,
+          "title": "Baseline Only Correct",
+          "type": "integer"
+        },
+        "both_correct": {
+          "minimum": 0,
+          "title": "Both Correct",
+          "type": "integer"
+        },
+        "both_incorrect": {
+          "minimum": 0,
+          "title": "Both Incorrect",
+          "type": "integer"
+        },
+        "changed_condition": {
+          "title": "Changed Condition",
+          "type": "string"
+        },
+        "changed_only_correct": {
+          "minimum": 0,
+          "title": "Changed Only Correct",
+          "type": "integer"
+        },
+        "comparison_id": {
+          "title": "Comparison Id",
+          "type": "string"
+        },
+        "interpretation": {
+          "enum": [
+            "paired_descriptive",
+            "different_representation_ceiling"
+          ],
+          "title": "Interpretation",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comparison_id",
+        "baseline_condition",
+        "changed_condition",
+        "both_correct",
+        "baseline_only_correct",
+        "changed_only_correct",
+        "both_incorrect",
+        "interpretation"
+      ],
+      "title": "FinalComparisonEvidence",
+      "type": "object"
+    },
+    "FinalConditionEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "abstained": {
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Abstained",
+          "type": "integer"
+        },
+        "answered": {
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Answered",
+          "type": "integer"
+        },
+        "answered_only_accuracy": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Answered Only Accuracy"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "correct": {
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Correct",
+          "type": "integer"
+        },
+        "coverage": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Coverage",
+          "type": "number"
+        },
+        "errors": {
+          "maximum": 30,
+          "minimum": 0,
+          "title": "Errors",
+          "type": "integer"
+        },
+        "exact_input_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exact Input Tokens"
+        },
+        "exact_output_tokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exact Output Tokens"
+        },
+        "observed_input_tokens": {
+          "minimum": 0,
+          "title": "Observed Input Tokens",
+          "type": "integer"
+        },
+        "observed_output_tokens": {
+          "minimum": 0,
+          "title": "Observed Output Tokens",
+          "type": "integer"
+        },
+        "proof_attempted": {
+          "anyOf": [
+            {
+              "maximum": 30,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Attempted"
+        },
+        "proof_verified": {
+          "anyOf": [
+            {
+              "maximum": 30,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Proof Verified"
+        },
+        "representation": {
+          "enum": [
+            "natural_language",
+            "formal_symbolic_ceiling"
+          ],
+          "title": "Representation",
+          "type": "string"
+        },
+        "total": {
+          "const": 30,
+          "default": 30,
+          "title": "Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "condition",
+        "correct",
+        "answered",
+        "abstained",
+        "errors",
+        "coverage",
+        "observed_input_tokens",
+        "observed_output_tokens",
+        "representation"
+      ],
+      "title": "FinalConditionEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "api_cost_usd": {
+      "const": 0.0,
+      "default": 0.0,
+      "title": "Api Cost Usd",
+      "type": "number"
+    },
+    "archive_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Archive Sha256",
+      "type": "string"
+    },
+    "catalogue_comparisons": {
+      "const": 10,
+      "default": 10,
+      "title": "Catalogue Comparisons",
+      "type": "integer"
+    },
+    "catalogue_experiments": {
+      "const": 19,
+      "default": 19,
+      "title": "Catalogue Experiments",
+      "type": "integer"
+    },
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/FinalComparisonEvidence"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "conditions": {
+      "items": {
+        "$ref": "#/$defs/FinalConditionEvidence"
+      },
+      "maxItems": 7,
+      "minItems": 7,
+      "title": "Conditions",
+      "type": "array"
+    },
+    "dataset": {
+      "const": "ProofWriter",
+      "default": "ProofWriter",
+      "title": "Dataset",
+      "type": "string"
+    },
+    "dataset_version": {
+      "const": "V2020.12.3",
+      "default": "V2020.12.3",
+      "title": "Dataset Version",
+      "type": "string"
+    },
+    "evaluation_records": {
+      "const": 30,
+      "default": 30,
+      "title": "Evaluation Records",
+      "type": "integer"
+    },
+    "external_transfers": {
+      "const": 0,
+      "default": 0,
+      "title": "External Transfers",
+      "type": "integer"
+    },
+    "few_shot_demonstrations": {
+      "const": 6,
+      "default": 6,
+      "title": "Few Shot Demonstrations",
+      "type": "integer"
+    },
+    "freeze_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Freeze Hash",
+      "type": "string"
+    },
+    "hosted_provider_calls": {
+      "const": 0,
+      "default": 0,
+      "title": "Hosted Provider Calls",
+      "type": "integer"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 7,
+      "title": "Limitations",
+      "type": "array"
+    },
+    "local_model_dispatches": {
+      "const": 190,
+      "default": 190,
+      "title": "Local Model Dispatches",
+      "type": "integer"
+    },
+    "model": {
+      "const": "qwen3.5:4b-q4_K_M",
+      "default": "qwen3.5:4b-q4_K_M",
+      "title": "Model",
+      "type": "string"
+    },
+    "model_digest": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Model Digest",
+      "type": "string"
+    },
+    "package_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Package Fingerprint",
+      "type": "string"
+    },
+    "phase8_catalogue_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Phase8 Catalogue Hash",
+      "type": "string"
+    },
+    "phase9_aggregate_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Phase9 Aggregate Fingerprint",
+      "type": "string"
+    },
+    "phase9_catalogue_hash": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Phase9 Catalogue Hash",
+      "type": "string"
+    },
+    "replay_verified_with_ollama_stopped": {
+      "const": true,
+      "default": true,
+      "title": "Replay Verified With Ollama Stopped",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selection_seed": {
+      "const": 20260818,
+      "default": 20260818,
+      "title": "Selection Seed",
+      "type": "integer"
+    },
+    "split": {
+      "const": "development",
+      "default": "development",
+      "title": "Split",
+      "type": "string"
+    },
+    "terminal_correction_cache_failures": {
+      "const": 3,
+      "default": 3,
+      "title": "Terminal Correction Cache Failures",
+      "type": "integer"
+    },
+    "test_split_access_count": {
+      "const": 0,
+      "default": 0,
+      "title": "Test Split Access Count",
+      "type": "integer"
+    },
+    "train_development_overlap": {
+      "const": 0,
+      "default": 0,
+      "title": "Train Development Overlap",
+      "type": "integer"
+    },
+    "variant": {
+      "const": "depth-5",
+      "default": "depth-5",
+      "title": "Variant",
+      "type": "string"
+    },
+    "world_assumption": {
+      "const": "OWA",
+      "default": "OWA",
+      "title": "World Assumption",
+      "type": "string"
+    }
+  },
+  "required": [
+    "phase9_aggregate_fingerprint",
+    "phase9_catalogue_hash",
+    "phase8_catalogue_hash",
+    "archive_sha256",
+    "freeze_hash",
+    "model_digest",
+    "conditions",
+    "comparisons",
+    "limitations",
+    "package_fingerprint"
+  ],
+  "title": "FinalEvidencePackage",
+  "type": "object"
+}

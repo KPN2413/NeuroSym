@@ -335,3 +335,26 @@ documentation remains documented/derived/unavailable according to the Phase 8 co
 
 **Reason:** Versioned extension makes new evidence visible without presenting regenerated results
 as if they were part of the historical experiments.
+
+## D-039: Derive final claims from one self-verifying evidence package
+
+**Status:** accepted for Phase 10
+
+**Decision:** Generate `phase10-final-evidence.v1.json` exclusively from the immutable Phase 9
+aggregate, freeze manifest, and validated catalogue. Bind the final report, presentation source,
+and deliverable validator to its canonical fingerprint and required caveats.
+
+**Reason:** A single derived boundary prevents final prose, slides, and demo claims from drifting
+away from denominators, coverage, missing telemetry, failure counts, or representation warnings.
+
+## D-040: Ship a provider-free local deployment, not a public service
+
+**Status:** accepted for Phase 10
+
+**Decision:** Treat the production build as a local single-user capstone demonstration. Run the
+backend in explicit `cache_only` mode; keep Ollama, credentials, raw datasets, caches, and model
+weights outside Compose; verify a formal-AST proof flow and read-only research evidence without
+rerunning Phase 9.
+
+**Reason:** This is the smallest deployable boundary supported by the evidence and security model.
+Authentication, public hardening, durable job storage, and hosted inference remain out of scope.
