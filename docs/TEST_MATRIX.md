@@ -25,11 +25,12 @@ The matrix grows with the implementation. Every behavior change requires corresp
 | Phase 3 fairness | balanced 30-record dev manifest, six train-only demos, hashes, non-overlap, local direct/few config equality, distinct rendering, and paired deltas | final test protocol remains deferred | `python -m pytest` |
 | Phase 7 orchestration | formal zero-provider path; natural P0/P1/P2; parser, critic, correction, abstention and terminal errors; source coverage; limits; proof failure; exact eleven-stage traces; deterministic explanations; replay provenance | scale and final experiment integration | `python -m pytest` |
 | Phase 7 API/jobs | request/result contracts, 202/poll/cancel/capabilities, bounded queue, one worker, expiry, stable polling, model unavailable, sanitized errors, CORS, schema/OpenAPI freshness | durable multi-process execution is out of current scope | `python -m pytest` |
-| Research catalogue/API | source hashes, provenance, null/derived/direct evidence, duplicate rejection, comparison compatibility, filters/pagination, deterministic exports, AST views, Phase 9 extension and sanitized errors | deployment-scale monitoring remains Phase 10 | `python -m pytest` |
+| Research catalogue/API | source hashes, provenance, null/derived/direct evidence, duplicate rejection, comparison compatibility, filters/pagination, deterministic exports, AST views, Phase 9 extension and sanitized errors | public deployment-scale monitoring is out of scope | `python -m pytest` |
 | Phase 9 evidence | frozen protocol/artifact hashes, balanced selection, train/dev disjointness, test prohibition, complete condition sets, proof accounting, paired outcomes, fingerprint tampering, aggregate/schema freshness and catalogue publication | larger or test-set evaluation requires a new frozen protocol | `python -m pytest` plus explicit aggregate/replay checks |
-| Research frontend | loading/error/empty states, history, missing values, comparisons, attrition, R3 dispositions, AST inspector, exports, navigation, lint, TypeScript and production build | deployment browser matrix remains Phase 10 | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
-| Frontend | component state helpers, contract-driven inputs, loading/terminal states, lint, TypeScript, production compilation, HTTP smoke | deployment browser matrix remains Phase 10 | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
-| Containers | Compose parse/config validation | service health and end-to-end smoke test | `docker compose config` |
+| Phase 10 finalization | derived evidence fingerprint/tamper rejection, schema freshness, deployment secret/model boundary, non-root images, deliverable claim binding, editable 20-slide PPTX, loopback-only demo and atomic smoke report | public-cloud hardening is out of scope | `python -m pytest` plus `python -m verilogic_ns_api.phase10 ...` |
+| Research frontend | loading/error/empty states, history, missing values, comparisons, count/ratio units, attrition, R3 dispositions, AST inspector, exports, navigation, lint, TypeScript, production build and browser smoke | public multi-browser deployment is out of scope | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
+| Frontend | component state helpers, contract-driven inputs, loading/terminal states, lint, TypeScript, production compilation, hydration and HTTP smoke | public multi-browser deployment is out of scope | `pnpm test && pnpm lint && pnpm type-check && pnpm build` |
+| Containers | static Compose/Dockerfile validation | runtime execution skipped when Docker is unavailable | `docker compose config` when Docker is installed |
 | Security | unsafe identifiers and unsupported fields rejected | injection payloads, limits, secret scanning, error redaction, CORS negatives | component suites |
 
 ## Test levels
@@ -79,3 +80,8 @@ Phase 9 adds freeze and archive bindings, exact seven-condition aggregate contra
 denominator preservation, proof-per-answer requirements, paired outcome/disagreement accounting,
 self-fingerprint tamper rejection, generated JSON Schema freshness, immutable historical-catalogue
 extension, zero-call replay verification and UI regression checks for regenerated evidence.
+
+Phase 10 adds a final derived evidence contract, strict report/presentation claim checks, static
+Compose and Dockerfile safety validation, loopback-only production smoke, editable deck structure
+checks, slide rendering/overflow inspection, and browser verification of both product surfaces plus
+the formal provider-free proof flow.

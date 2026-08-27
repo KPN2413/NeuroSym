@@ -4,7 +4,7 @@ VeriLogic-NS is an explainable neuro-symbolic research framework that will combi
 
 The project answers whether a conclusion follows from supplied premises. It does **not** establish that those premises are factually true.
 
-## Current implementation: Phases 1-9
+## Current implementation: Phases 1-10
 
 The repository provides:
 
@@ -45,6 +45,8 @@ The repository provides:
 - a separately frozen Phase 9 evidence regeneration covering Direct, few-shot, P0 raw,
   validation-only, P1 corrected-valid, P2 corrected-selective and a same-selection symbolic
   oracle ceiling, with retained failures and zero-call replay.
+- a provider-free local production profile, a self-verifying final evidence package, a deployment
+  smoke verifier, the final technical report, demo guide, and an editable 20-slide presentation.
 
 A zero-cost local Ollama baseline pilot and a correction-free semantic-parser pilot have completed and
 were replayed from cache. Generated records, caches, and raw metrics remain ignored local artifacts;
@@ -59,7 +61,9 @@ See `docs/PHASE6_PILOT_RESULTS.md`, `docs/PHASE6_RECOVERY_R2_RESULTS.md`, and
 regression gates; its frozen natural canary was operationally valid but logically incorrect.
 The `/research` route reconstructs historical and separately labelled regenerated evidence with
 Ollama stopped and no provider call. Phase 9 used 30 development records and is not a final
-test-set result. There is no database, authentication, or public deployment.
+test-set result. Phase 10 packages that evidence without rerunning the experiment. The supported
+deployment is a local single-user demonstration; there is no database, authentication, or public
+deployment.
 
 ## Prerequisites
 
@@ -108,12 +112,20 @@ python -m verilogic_ns_api.research_frontend validate-catalogue
 python -m verilogic_ns_api.research_frontend catalogue-summary
 python -m verilogic_ns_api.research_frontend export-schemas --check
 python -m verilogic_ns_api.phase9 export-schema --check
+python -m verilogic_ns_api.phase10 export-evidence --check
+python -m verilogic_ns_api.phase10 export-schema --check
+python -m verilogic_ns_api.phase10 validate-deployment
+python -m verilogic_ns_api.phase10 validate-deliverables
 ```
 
 See `docs/RESEARCH_FRONTEND.md`, `docs/RESEARCH_EVIDENCE_CATALOGUE.md` and
 `docs/RESEARCH_EXPORTS.md`. Missing historical metrics remain `NA`; Phase 5 and Phase 6-R3 are
 explicitly incomparable; and the Phase 9 oracle remains a different-representation ceiling. The
 Phase 9 completion evidence is in `docs/PHASE9_VERIFICATION.md`.
+
+The final evidence package is `research/evidence/phase10-final-evidence.v1.json`. It is derived from
+the immutable Phase 9 aggregate and catalogue, preserves unavailable values as unavailable, and
+binds the final report and presentation to one SHA-256 fingerprint.
 
 ## Verification
 
@@ -272,6 +284,23 @@ docker compose up --build
 
 The frontend is exposed on port 3000 and the backend on port 8000 by default. Values in the root `.env.example` document safe local overrides.
 
+The default backend provider mode is `cache_only`; Ollama, provider credentials, model weights,
+raw benchmark records, and ignored caches are not mounted into the containers. For the complete
+production-style local startup, smoke verification, troubleshooting, and stop commands, see
+`docs/DEPLOYMENT_GUIDE.md`.
+
+## Final capstone deliverables
+
+- Technical and research report: `docs/FINAL_REPORT.md`
+- Local deployment guide: `docs/DEPLOYMENT_GUIDE.md`
+- Provider-free demonstration script: `docs/FINAL_DEMO_GUIDE.md`
+- Editable final presentation: `presentations/VeriLogic-NS-Final-Presentation.pptx`
+- Presentation evidence/source notes: `presentations/VeriLogic-NS-Final-Presentation.md`
+- Final evidence package: `research/evidence/phase10-final-evidence.v1.json`
+
+The demonstration intentionally uses a small formal AST example and tracked research catalogue.
+It does not rerun the 30-record experiment, use the test split, or make a hosted provider call.
+
 ## Structure
 
 ```text
@@ -301,4 +330,6 @@ The frontend is exposed on port 3000 and the backend on port 8000 by default. Va
 9. Full experiments and ablations
 10. Deployment, report and presentation
 
-See `docs/PHASE_PLAN.md` for phase gates and `docs/PROJECT_CHARTER.md` for scope.
+**Final status:** PASS. The approved VeriLogic-NS implementation roadmap is complete through
+Phase 10. See `docs/PHASE10_VERIFICATION.md` for exact final evidence, `docs/PHASE_PLAN.md` for
+phase gates, and `docs/PROJECT_CHARTER.md` for scope.

@@ -104,6 +104,17 @@ and unavailable telemetry honestly. See `PHASE9_VERIFICATION.md`.
 
 ## 10. Deployment, report and presentation
 
+**Status:** completed on `phase/10-deployment-report-presentation` with a provider-free local
+production profile, final evidence package, report, demo guide, and editable presentation.
+
 Harden and deploy the separate frontend/backend, finalize operational documentation, capstone report, limitations, reproducibility package, and presentation artifacts.
 
-**Gate:** deployment smoke tests, security checks, clean-room setup instructions, report figures, and presentation claims agree with recorded evidence.
+**Gate:** passed when deployment and deliverable validators, production HTTP/browser smoke,
+presentation render inspection, backend/frontend regressions, schema/catalogue freshness, and
+security scans all agree with the immutable Phase 9 evidence. No Phase 9 experiment or test split
+is rerun.
+
+## Final roadmap status
+
+**PASS.** The approved VeriLogic-NS implementation roadmap is complete through Phase 10. Exact
+final verification evidence is recorded in `PHASE10_VERIFICATION.md`; no Phase 11 is defined.
