@@ -35,6 +35,10 @@ export interface CatalogueOverview {
   local_provider_calls_during_phase9: number; hosted_provider_calls_during_phase9: number;
   api_cost_usd_during_phase9: number;
 }
+export interface ResearchDashboardSnapshot {
+  schema_version: "1.0"; overview: CatalogueOverview;
+  comparisons: ComparisonCompatibility[]; experiments: ExperimentDetail[];
+}
 export interface ExperimentDetail extends Omit<ExperimentSummary, "primary_metrics" | "main_limitation"> {
   branch: string | null; model_digest: string | null; dataset_version: string;
   benchmark_variant: string; selection_manifest: string | null; run_id: string | null;
@@ -73,6 +77,7 @@ export const RESEARCH_SCHEMA_HASHES = {
   "research-api-error": "fbe25aed4fba1a5d2b1d01bc22ccde8b18d663207c3daec8575a5e2713fc15c5",
   "research-catalogue": "d93434e0ae29a3522f85f5355fcc65c9171bbc74615927300d1391709408b851",
   "research-comparison-compatibility": "46e5a4149c754e27e17a82e3ddec3c425b328ae0f8d7991b18e72e6707a232dc",
+  "research-dashboard-snapshot": "92557e5f93b2ccddce726a3c43be9ef84117ea578dff1547d244869d51594421",
   "research-experiment-detail": "1005529d70e6aec24cd89b124f868aa007cac178239ac34b79bca32535a5b38f",
   "research-experiment-summary": "d639073e2949126e3e08d736a3c84811901394c1d4952b5af710e4c24f4fc496",
   "research-metric-evidence": "9a3c88d30b25d2edb717eb051b568e8acbf3e5028d07a2d230e4f0e980d09656",

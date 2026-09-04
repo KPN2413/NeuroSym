@@ -13,6 +13,7 @@ from verilogic_ns_api.research_frontend.models import (
     NormalizedAstInspection,
     ResearchApiError,
     ResearchCatalogue,
+    ResearchDashboardSnapshot,
     sha256_json,
 )
 
@@ -25,6 +26,7 @@ SCHEMAS: dict[str, type] = {
     "research-normalized-ast-inspection.v1.schema.json": NormalizedAstInspection,
     "research-aggregate-export-manifest.v1.schema.json": AggregateExportManifest,
     "research-api-error.v1.schema.json": ResearchApiError,
+    "research-dashboard-snapshot.v1.schema.json": ResearchDashboardSnapshot,
 }
 
 
@@ -103,6 +105,10 @@ export interface CatalogueOverview {{
   global_limitations: string[]; zero_cost: boolean; provider_calls_during_phase8: number;
   local_provider_calls_during_phase9: number; hosted_provider_calls_during_phase9: number;
   api_cost_usd_during_phase9: number;
+}}
+export interface ResearchDashboardSnapshot {{
+  schema_version: "1.0"; overview: CatalogueOverview;
+  comparisons: ComparisonCompatibility[]; experiments: ExperimentDetail[];
 }}
 export interface ExperimentDetail extends Omit<ExperimentSummary, "primary_metrics" | "main_limitation"> {{
   branch: string | null; model_digest: string | null; dataset_version: string;

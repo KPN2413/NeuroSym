@@ -1,0 +1,903 @@
+{
+  "$defs": {
+    "CatalogueOverview": {
+      "additionalProperties": false,
+      "properties": {
+        "api_cost_usd_during_phase9": {
+          "title": "Api Cost Usd During Phase9",
+          "type": "number"
+        },
+        "catalogue_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Catalogue Hash",
+          "type": "string"
+        },
+        "catalogue_id": {
+          "title": "Catalogue Id",
+          "type": "string"
+        },
+        "catalogue_version": {
+          "title": "Catalogue Version",
+          "type": "string"
+        },
+        "comparison_count": {
+          "minimum": 0,
+          "title": "Comparison Count",
+          "type": "integer"
+        },
+        "evidence_validation_status": {
+          "const": "VERIFIED",
+          "default": "VERIFIED",
+          "title": "Evidence Validation Status",
+          "type": "string"
+        },
+        "experiment_count": {
+          "minimum": 0,
+          "title": "Experiment Count",
+          "type": "integer"
+        },
+        "experiments": {
+          "items": {
+            "$ref": "#/$defs/ExperimentSummary"
+          },
+          "title": "Experiments",
+          "type": "array"
+        },
+        "global_limitations": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Global Limitations",
+          "type": "array"
+        },
+        "hosted_provider_calls_during_phase9": {
+          "title": "Hosted Provider Calls During Phase9",
+          "type": "integer"
+        },
+        "local_provider_calls_during_phase9": {
+          "title": "Local Provider Calls During Phase9",
+          "type": "integer"
+        },
+        "provider_calls_during_phase8": {
+          "title": "Provider Calls During Phase8",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "zero_cost": {
+          "title": "Zero Cost",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "catalogue_id",
+        "catalogue_version",
+        "catalogue_hash",
+        "experiment_count",
+        "comparison_count",
+        "experiments",
+        "global_limitations",
+        "zero_cost",
+        "provider_calls_during_phase8",
+        "local_provider_calls_during_phase9",
+        "hosted_provider_calls_during_phase9",
+        "api_cost_usd_during_phase9"
+      ],
+      "title": "CatalogueOverview",
+      "type": "object"
+    },
+    "ComparisonCompatibility": {
+      "additionalProperties": false,
+      "properties": {
+        "comparison_id": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+          "title": "Comparison Id",
+          "type": "string"
+        },
+        "comparison_type": {
+          "$ref": "#/$defs/ComparisonType"
+        },
+        "evidence_sources": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Evidence Sources",
+          "type": "array"
+        },
+        "experiment_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 2,
+          "title": "Experiment Ids",
+          "type": "array"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "outcome_counts": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Outcome Counts",
+          "type": "object"
+        },
+        "paired": {
+          "title": "Paired",
+          "type": "boolean"
+        },
+        "same_selection": {
+          "title": "Same Selection",
+          "type": "boolean"
+        },
+        "supported_metrics": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Supported Metrics",
+          "type": "array"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        },
+        "warning": {
+          "title": "Warning",
+          "type": "string"
+        }
+      },
+      "required": [
+        "comparison_id",
+        "title",
+        "comparison_type",
+        "experiment_ids",
+        "paired",
+        "same_selection",
+        "supported_metrics",
+        "warning",
+        "evidence_sources"
+      ],
+      "title": "ComparisonCompatibility",
+      "type": "object"
+    },
+    "ComparisonType": {
+      "enum": [
+        "PAIRED",
+        "SAME_SELECTION_DIFFERENT_REPRESENTATION",
+        "DESCRIPTIVE_ONLY",
+        "INCOMPARABLE"
+      ],
+      "title": "ComparisonType",
+      "type": "string"
+    },
+    "EvidenceType": {
+      "enum": [
+        "DIRECTLY_OBSERVED",
+        "DERIVED",
+        "DOCUMENTED",
+        "UNAVAILABLE"
+      ],
+      "title": "EvidenceType",
+      "type": "string"
+    },
+    "EvidenceVerification": {
+      "enum": [
+        "HASH_VERIFIED",
+        "CROSS_CHECKED",
+        "SOURCE_HASH_RECORDED",
+        "UNAVAILABLE"
+      ],
+      "title": "EvidenceVerification",
+      "type": "string"
+    },
+    "ExperimentDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "api_cost_usd": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Api Cost Usd"
+        },
+        "benchmark_variant": {
+          "title": "Benchmark Variant",
+          "type": "string"
+        },
+        "branch": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Branch"
+        },
+        "chart_eligible": {
+          "default": true,
+          "title": "Chart Eligible",
+          "type": "boolean"
+        },
+        "commit": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Commit"
+        },
+        "comparability_groups": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Comparability Groups",
+          "type": "array"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "dataset": {
+          "title": "Dataset",
+          "type": "string"
+        },
+        "dataset_version": {
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "evidence_sources": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Sources",
+          "type": "array"
+        },
+        "evidence_verification_status": {
+          "$ref": "#/$defs/EvidenceVerification"
+        },
+        "experiment_id": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 30,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "metrics": {
+          "items": {
+            "$ref": "#/$defs/MetricEvidence"
+          },
+          "title": "Metrics",
+          "type": "array"
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Digest"
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Name"
+        },
+        "name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "phase": {
+          "title": "Phase",
+          "type": "string"
+        },
+        "policy_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Policy Mode"
+        },
+        "provider_call_count": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Call Count"
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recorded At"
+        },
+        "replay_status": {
+          "title": "Replay Status",
+          "type": "string"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Run Id"
+        },
+        "sample_size": {
+          "minimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "selection_manifest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Selection Manifest"
+        },
+        "split": {
+          "title": "Split",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ExperimentStatus"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "name",
+        "phase",
+        "condition",
+        "policy_mode",
+        "status",
+        "recorded_at",
+        "branch",
+        "model_name",
+        "dataset",
+        "dataset_version",
+        "split",
+        "benchmark_variant",
+        "sample_size",
+        "selection_manifest",
+        "run_id",
+        "replay_status",
+        "metrics",
+        "evidence_sources",
+        "evidence_verification_status"
+      ],
+      "title": "ExperimentDetail",
+      "type": "object"
+    },
+    "ExperimentStatus": {
+      "enum": [
+        "PASS",
+        "BLOCKED",
+        "INVALIDATED",
+        "COMPLETE_WITH_NEGATIVE_RESULT"
+      ],
+      "title": "ExperimentStatus",
+      "type": "string"
+    },
+    "ExperimentSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "api_cost_usd": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Api Cost Usd"
+        },
+        "chart_eligible": {
+          "title": "Chart Eligible",
+          "type": "boolean"
+        },
+        "commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Commit"
+        },
+        "comparability_groups": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Comparability Groups",
+          "type": "array"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "dataset": {
+          "title": "Dataset",
+          "type": "string"
+        },
+        "evidence_verification_status": {
+          "$ref": "#/$defs/EvidenceVerification"
+        },
+        "experiment_id": {
+          "title": "Experiment Id",
+          "type": "string"
+        },
+        "main_limitation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Main Limitation"
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Name"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "phase": {
+          "title": "Phase",
+          "type": "string"
+        },
+        "policy_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Policy Mode"
+        },
+        "primary_metrics": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Primary Metrics",
+          "type": "object"
+        },
+        "provider_call_count": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Provider Call Count"
+        },
+        "recorded_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Recorded At"
+        },
+        "replay_status": {
+          "title": "Replay Status",
+          "type": "string"
+        },
+        "sample_size": {
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "split": {
+          "title": "Split",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ExperimentStatus"
+        }
+      },
+      "required": [
+        "experiment_id",
+        "name",
+        "phase",
+        "condition",
+        "policy_mode",
+        "status",
+        "recorded_at",
+        "commit",
+        "model_name",
+        "dataset",
+        "split",
+        "sample_size",
+        "replay_status",
+        "provider_call_count",
+        "api_cost_usd",
+        "primary_metrics",
+        "main_limitation",
+        "comparability_groups",
+        "chart_eligible",
+        "evidence_verification_status"
+      ],
+      "title": "ExperimentSummary",
+      "type": "object"
+    },
+    "MetricEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "benchmark_variant": {
+          "title": "Benchmark Variant",
+          "type": "string"
+        },
+        "comparability_group": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+          "title": "Comparability Group",
+          "type": "string"
+        },
+        "condition": {
+          "title": "Condition",
+          "type": "string"
+        },
+        "dataset": {
+          "title": "Dataset",
+          "type": "string"
+        },
+        "dataset_version": {
+          "title": "Dataset Version",
+          "type": "string"
+        },
+        "denominator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Denominator"
+        },
+        "derivation_formula": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Derivation Formula"
+        },
+        "dimensions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Dimensions",
+          "type": "object"
+        },
+        "display_name": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Display Name",
+          "type": "string"
+        },
+        "evidence_type": {
+          "$ref": "#/$defs/EvidenceType"
+        },
+        "limitations": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Limitations",
+          "type": "array"
+        },
+        "metric_id": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+          "title": "Metric Id",
+          "type": "string"
+        },
+        "model_digest": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Model Digest"
+        },
+        "model_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model Name"
+        },
+        "numerator": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Numerator"
+        },
+        "phase": {
+          "pattern": "^Phase [3-9](?:-R[0-9]+)?$",
+          "title": "Phase",
+          "type": "string"
+        },
+        "policy_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Policy Mode"
+        },
+        "run_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Run Id"
+        },
+        "sample_size": {
+          "minimum": 0,
+          "title": "Sample Size",
+          "type": "integer"
+        },
+        "selection_manifest": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Selection Manifest"
+        },
+        "source_artifact": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,127}$",
+          "title": "Source Artifact",
+          "type": "string"
+        },
+        "source_artifact_hash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Source Artifact Hash",
+          "type": "string"
+        },
+        "source_commit": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Commit"
+        },
+        "split": {
+          "title": "Split",
+          "type": "string"
+        },
+        "unit": {
+          "pattern": "^[a-z][a-z0-9_.-]{0,63}$",
+          "title": "Unit",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        },
+        "verification_status": {
+          "$ref": "#/$defs/EvidenceVerification"
+        }
+      },
+      "required": [
+        "metric_id",
+        "display_name",
+        "value",
+        "unit",
+        "numerator",
+        "denominator",
+        "dataset",
+        "dataset_version",
+        "split",
+        "benchmark_variant",
+        "sample_size",
+        "selection_manifest",
+        "phase",
+        "condition",
+        "policy_mode",
+        "model_name",
+        "run_id",
+        "source_artifact",
+        "source_artifact_hash",
+        "evidence_type",
+        "derivation_formula",
+        "comparability_group",
+        "verification_status"
+      ],
+      "title": "MetricEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One validated payload for the read-only research dashboard.",
+  "properties": {
+    "comparisons": {
+      "items": {
+        "$ref": "#/$defs/ComparisonCompatibility"
+      },
+      "title": "Comparisons",
+      "type": "array"
+    },
+    "experiments": {
+      "items": {
+        "$ref": "#/$defs/ExperimentDetail"
+      },
+      "title": "Experiments",
+      "type": "array"
+    },
+    "overview": {
+      "$ref": "#/$defs/CatalogueOverview"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "overview",
+    "comparisons",
+    "experiments"
+  ],
+  "title": "ResearchDashboardSnapshot",
+  "type": "object"
+}

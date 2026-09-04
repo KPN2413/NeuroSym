@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import threading
+import time
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -46,10 +49,22 @@ class OrchestrationFactory:
         root: Path | None = None,
         provider_mode: ProviderMode = ProviderMode.CACHE_ONLY,
         dispatch_limit: int = 12,
+        readiness_ttl_seconds: float = 5.0,
+        readiness_transport: httpx.BaseTransport | None = None,
+        readiness_clock: Callable[[], float] = time.monotonic,
     ) -> None:
+        if readiness_ttl_seconds <= 0:
+            raise ValueError("readiness_ttl_seconds must be positive")
         self.frozen = load_frozen_orchestration_config(root)
         self.provider_mode = provider_mode
         self.dispatch_limit = dispatch_limit
+        self.readiness_ttl_seconds = readiness_ttl_seconds
+        self._readiness_transport = readiness_transport
+        self._readiness_clock = readiness_clock
+        self._readiness_lock = threading.Lock()
+        self._readiness_client: httpx.Client | None = None
+        self._readiness_cached_at: float | None = None
+        self._readiness_cached_value = False
 
     def create(self) -> PipelineRuntime:
         frozen = self.frozen
@@ -118,17 +133,43 @@ class OrchestrationFactory:
         )
 
     def model_ready(self) -> bool:
+        with self._readiness_lock:
+            checked_at = self._readiness_clock()
+            if (
+                self._readiness_cached_at is not None
+                and checked_at - self._readiness_cached_at < self.readiness_ttl_seconds
+            ):
+                return self._readiness_cached_value
+            ready = self._check_model_ready()
+            self._readiness_cached_value = ready
+            self._readiness_cached_at = self._readiness_clock()
+            return ready
+
+    def _check_model_ready(self) -> bool:
         config = self.frozen.parser_config.runtime
         try:
-            with httpx.Client(
-                base_url=config.endpoint,
-                timeout=2,
-                trust_env=False,
-            ) as client:
-                version = OllamaVersionResponse.model_validate(client.get("/api/version").json())
-                tags = OllamaTagsResponse.model_validate(client.get("/api/tags").json())
+            if self._readiness_client is None:
+                self._readiness_client = httpx.Client(
+                    base_url=config.endpoint,
+                    timeout=2,
+                    transport=self._readiness_transport,
+                    trust_env=False,
+                    headers={"User-Agent": "VeriLogic-NS/0.1 readiness"},
+                )
+            version_response = self._readiness_client.get("/api/version")
+            version_response.raise_for_status()
+            tags_response = self._readiness_client.get("/api/tags")
+            tags_response.raise_for_status()
+            version = OllamaVersionResponse.model_validate(version_response.json())
+            tags = OllamaTagsResponse.model_validate(tags_response.json())
         except (httpx.HTTPError, ValueError, ValidationError):
             return False
         return version.version == config.provider_version and any(
             item.name == config.model and item.digest == config.model_digest for item in tags.models
         )
+
+    def close(self) -> None:
+        with self._readiness_lock:
+            if self._readiness_client is not None:
+                self._readiness_client.close()
+                self._readiness_client = None

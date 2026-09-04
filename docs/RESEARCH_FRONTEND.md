@@ -24,6 +24,9 @@ with coverage. The Phase 7 natural canary remains a synthetic integration miss, 
 Start the FastAPI service on `127.0.0.1:8000`, then run `pnpm dev` from `frontend/` and open
 `http://127.0.0.1:3000/research`. `NEXT_PUBLIC_API_BASE_URL` may select another explicit local API
 origin. No Ollama process, model weight, API key or dataset archive is required for the dashboard.
+The initial page load uses the additive `GET /api/v1/research/dashboard` snapshot so the overview,
+registered comparisons, and 19 experiment details cross the same validated evidence boundary in a
+single request. The existing catalogue, list, detail, and comparison endpoints remain available.
 
 ## Failure states
 

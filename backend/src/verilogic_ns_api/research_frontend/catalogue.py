@@ -2,7 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from collections.abc import Mapping
 from pathlib import Path
+from types import MappingProxyType
 
 from verilogic_ns_api.baselines.configuration import repository_root
 from verilogic_ns_api.research_frontend.models import (
@@ -10,6 +12,7 @@ from verilogic_ns_api.research_frontend.models import (
     ExperimentDetail,
     ExperimentSummary,
     ResearchCatalogue,
+    ResearchDashboardSnapshot,
 )
 
 CATALOGUE_PATH = Path("research/catalogues/phase1-9-evidence.v2.json")
@@ -25,6 +28,20 @@ class ResearchCatalogueService:
         self.path = self.root / CATALOGUE_PATH
         self.catalogue = self._load()
         self.validate_sources()
+        summaries = tuple(self._build_summary(item) for item in self.catalogue.experiments)
+        self._summary_by_id: Mapping[str, ExperimentSummary] = MappingProxyType(
+            {item.experiment_id: item for item in summaries}
+        )
+        self._experiment_by_id: Mapping[str, ExperimentDetail] = MappingProxyType(
+            {item.experiment_id: item for item in self.catalogue.experiments}
+        )
+        self._overview = self._build_overview(summaries)
+        self._dashboard = ResearchDashboardSnapshot(
+            overview=self._overview,
+            comparisons=self.catalogue.comparisons,
+            experiments=self.catalogue.experiments,
+        )
+        self._canonical_bytes: bytes | None = None
 
     def _load(self) -> ResearchCatalogue:
         try:
@@ -48,7 +65,7 @@ class ResearchCatalogueService:
                     f"tracked source {source.artifact_id!r} hash mismatch"
                 )
 
-    def summary(self, experiment: ExperimentDetail) -> ExperimentSummary:
+    def _build_summary(self, experiment: ExperimentDetail) -> ExperimentSummary:
         primary: dict[str, float | int | None] = {}
         for metric in experiment.metrics:
             if not metric.dimensions and metric.metric_id in {
@@ -81,14 +98,17 @@ class ResearchCatalogueService:
             evidence_verification_status=experiment.evidence_verification_status,
         )
 
-    def overview(self) -> CatalogueOverview:
+    def summary(self, experiment: ExperimentDetail) -> ExperimentSummary:
+        return self._summary_by_id[experiment.experiment_id]
+
+    def _build_overview(self, summaries: tuple[ExperimentSummary, ...]) -> CatalogueOverview:
         return CatalogueOverview(
             catalogue_id=self.catalogue.catalogue_id,
             catalogue_version=self.catalogue.catalogue_version,
             catalogue_hash=self.catalogue.canonical_hash,
             experiment_count=len(self.catalogue.experiments),
             comparison_count=len(self.catalogue.comparisons),
-            experiments=tuple(self.summary(item) for item in self.catalogue.experiments),
+            experiments=summaries,
             global_limitations=self.catalogue.global_limitations,
             zero_cost=self.catalogue.zero_cost,
             provider_calls_during_phase8=self.catalogue.provider_calls_during_phase8,
@@ -99,22 +119,27 @@ class ResearchCatalogueService:
             api_cost_usd_during_phase9=self.catalogue.api_cost_usd_during_phase9,
         )
 
+    def overview(self) -> CatalogueOverview:
+        return self._overview
+
+    def dashboard(self) -> ResearchDashboardSnapshot:
+        return self._dashboard
+
     def experiment(self, experiment_id: str) -> ExperimentDetail | None:
-        return next(
-            (item for item in self.catalogue.experiments if item.experiment_id == experiment_id),
-            None,
-        )
+        return self._experiment_by_id.get(experiment_id)
 
     def canonical_bytes(self) -> bytes:
-        return (
-            json.dumps(
-                self.catalogue.model_dump(mode="json"),
-                indent=2,
-                sort_keys=True,
-                ensure_ascii=False,
-            )
-            + "\n"
-        ).encode("utf-8")
+        if self._canonical_bytes is None:
+            self._canonical_bytes = (
+                json.dumps(
+                    self.catalogue.model_dump(mode="json"),
+                    indent=2,
+                    sort_keys=True,
+                    ensure_ascii=False,
+                )
+                + "\n"
+            ).encode("utf-8")
+        return self._canonical_bytes
 
 
 def write_seed_catalogue(root: Path | None = None, *, check: bool = False) -> Path:

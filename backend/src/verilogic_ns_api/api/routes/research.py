@@ -16,6 +16,7 @@ from verilogic_ns_api.research_frontend.models import (
     ExperimentListResponse,
     NormalizedAstInspection,
     ResearchApiError,
+    ResearchDashboardSnapshot,
 )
 
 router = APIRouter(prefix="/api/v1/research", tags=["research"])
@@ -38,6 +39,12 @@ def _not_found(message: str) -> HTTPException:
 def catalogue(request: Request) -> CatalogueOverview:
     """Return the validated, aggregate catalogue overview."""
     return _service(request).overview()
+
+
+@router.get("/dashboard", response_model=ResearchDashboardSnapshot)
+def dashboard(request: Request) -> ResearchDashboardSnapshot:
+    """Return the complete validated dashboard bootstrap in one request."""
+    return _service(request).dashboard()
 
 
 @router.get("/experiments", response_model=ExperimentListResponse)

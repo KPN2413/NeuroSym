@@ -14,6 +14,7 @@ contract is generated from the same source and must pass the schema freshness ch
 | `GET /api/v1/neurosymbolic/capabilities` | `200` | Report modes, policies, model readiness, limits, and schema hashes |
 | `GET /health` | `200` | Preserve the existing service health contract |
 | `GET /api/v1/research/catalogue` | `200` | Return the validated aggregate evidence overview |
+| `GET /api/v1/research/dashboard` | `200` | Return the overview, registered comparisons, and all experiment details as one validated dashboard snapshot |
 | `GET /api/v1/research/experiments` | `200` | Filter and page sanitized experiment summaries |
 | `GET /api/v1/research/experiments/{experiment_id}` | `200` | Return one experiment with metric provenance |
 | `GET /api/v1/research/comparisons` | `200` | Return only registered comparison relationships |

@@ -9,6 +9,7 @@ import type {
   ExperimentDetail,
   ExperimentSummary,
   NormalizedAstInspection,
+  ResearchDashboardSnapshot,
 } from "@/lib/research-contract.generated";
 import {
   attritionStages,
@@ -56,35 +57,19 @@ export function ResearchDashboard() {
     async function load() {
       try {
         setLoading(true);
-        const [catalogueResponse, comparisonsResponse] = await Promise.all([
-          fetch(`${API_BASE_URL}/api/v1/research/catalogue`, {
-            cache: "no-store",
-            signal: controller.signal,
-          }),
-          fetch(`${API_BASE_URL}/api/v1/research/comparisons`, {
-            cache: "no-store",
-            signal: controller.signal,
-          }),
-        ]);
-        if (!catalogueResponse.ok || !comparisonsResponse.ok) {
+        const response = await fetch(`${API_BASE_URL}/api/v1/research/dashboard`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        if (!response.ok) {
           throw new Error("The evidence API returned an invalid response.");
         }
-        const catalogue = (await catalogueResponse.json()) as CatalogueOverview;
-        const comparisonItems =
-          (await comparisonsResponse.json()) as ComparisonCompatibility[];
-        const detailEntries = await Promise.all(
-          catalogue.experiments.map(async (experiment) => {
-            const response = await fetch(
-              `${API_BASE_URL}/api/v1/research/experiments/${experiment.experiment_id}`,
-              { cache: "no-store", signal: controller.signal },
-            );
-            if (!response.ok) throw new Error("An experiment record could not be verified.");
-            return [experiment.experiment_id, (await response.json()) as ExperimentDetail] as const;
-          }),
+        const snapshot = (await response.json()) as ResearchDashboardSnapshot;
+        setOverview(snapshot.overview);
+        setComparisons(snapshot.comparisons);
+        setDetails(
+          Object.fromEntries(snapshot.experiments.map((item) => [item.experiment_id, item])),
         );
-        setOverview(catalogue);
-        setComparisons(comparisonItems);
-        setDetails(Object.fromEntries(detailEntries));
         setError(null);
       } catch (caught) {
         if ((caught as Error).name !== "AbortError") {

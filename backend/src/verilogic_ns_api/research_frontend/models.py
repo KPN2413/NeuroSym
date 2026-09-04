@@ -283,6 +283,27 @@ class CatalogueOverview(StrictModel):
     api_cost_usd_during_phase9: float
 
 
+class ResearchDashboardSnapshot(StrictModel):
+    """One validated payload for the read-only research dashboard."""
+
+    schema_version: Literal["1.0"] = "1.0"
+    overview: CatalogueOverview
+    comparisons: tuple[ComparisonCompatibility, ...]
+    experiments: tuple[ExperimentDetail, ...]
+
+    @model_validator(mode="after")
+    def matches_overview(self) -> Self:
+        if len(self.experiments) != self.overview.experiment_count:
+            raise ValueError("dashboard experiments must match the overview count")
+        if len(self.comparisons) != self.overview.comparison_count:
+            raise ValueError("dashboard comparisons must match the overview count")
+        if tuple(item.experiment_id for item in self.experiments) != tuple(
+            item.experiment_id for item in self.overview.experiments
+        ):
+            raise ValueError("dashboard experiments must match the overview order")
+        return self
+
+
 class ExperimentListResponse(StrictModel):
     schema_version: Literal["1.0"] = "1.0"
     items: tuple[ExperimentSummary, ...]

@@ -14,6 +14,15 @@ export function isTerminalRun(status: RunStatus) {
   return TERMINAL_RUN_STATES.has(status);
 }
 
+export function pollDelayMs(unchangedPolls: number, consecutiveFailures = 0) {
+  if (consecutiveFailures > 0) {
+    return Math.min(8_000, 2_000 * 2 ** (consecutiveFailures - 1));
+  }
+  if (unchangedPolls < 3) return 900;
+  if (unchangedPolls < 8) return 1_500;
+  return 2_000;
+}
+
 export function validateNaturalInput(statements: NaturalLanguageStatement[], query: string) {
   if (statements.length === 0) return "Add at least one theory statement.";
   if (statements.some((item) => !item.text.trim())) return "Every statement needs text.";

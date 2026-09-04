@@ -37,6 +37,7 @@ def create_app(
     async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
         yield
         resolved_jobs.shutdown()
+        resolved_factory.close()
 
     app = FastAPI(
         title=resolved_settings.service_name,

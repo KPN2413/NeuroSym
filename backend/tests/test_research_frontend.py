@@ -176,6 +176,36 @@ def test_research_overview_is_sanitized_and_provider_free(client: TestClient) ->
     assert "proofwriter context" not in rendered
 
 
+def test_dashboard_snapshot_batches_all_verified_research_evidence(client: TestClient) -> None:
+    response = client.get("/api/v1/research/dashboard")
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["schema_version"] == "1.0"
+    assert payload["overview"]["experiment_count"] == 19
+    assert payload["overview"]["comparison_count"] == 10
+    assert len(payload["experiments"]) == 19
+    assert len(payload["comparisons"]) == 10
+    assert [item["experiment_id"] for item in payload["experiments"]] == [
+        item["experiment_id"] for item in payload["overview"]["experiments"]
+    ]
+    assert payload["overview"] == client.get("/api/v1/research/catalogue").json()
+    assert payload["comparisons"] == client.get("/api/v1/research/comparisons").json()
+    for experiment in payload["experiments"]:
+        detail = client.get(f"/api/v1/research/experiments/{experiment['experiment_id']}")
+        assert detail.json() == experiment
+    assert "c:\\users" not in response.text.lower()
+
+
+def test_catalogue_service_reuses_immutable_derived_views() -> None:
+    service = ResearchCatalogueService(ROOT)
+    assert service.overview() is service.overview()
+    assert service.dashboard() is service.dashboard()
+    experiment = service.catalogue.experiments[0]
+    assert service.experiment(experiment.experiment_id) is experiment
+    assert service.summary(experiment) is service.overview().experiments[0]
+    assert service.canonical_bytes() is service.canonical_bytes()
+
+
 def test_experiment_filters_and_pagination_are_bounded(client: TestClient) -> None:
     response = client.get(
         "/api/v1/research/experiments", params={"phase": "Phase 6-R3", "page_size": 2}

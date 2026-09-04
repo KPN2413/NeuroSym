@@ -21,6 +21,12 @@ test("research route declares loading, error, empty, history, and blocked states
   assert.match(dashboard, /BLOCKED/);
 });
 
+test("research dashboard bootstraps from one batch endpoint", () => {
+  assert.match(dashboard, /\/api\/v1\/research\/dashboard/);
+  assert.doesNotMatch(dashboard, /experiments\/\$\{experiment\.experiment_id\}/);
+  assert.doesNotMatch(dashboard, /\/api\/v1\/research\/comparisons/);
+});
+
 test("research surface includes required evidence and visualization sections", () => {
   for (const text of [
     "Accuracy",
@@ -58,4 +64,11 @@ test("research surface exposes all export formats and keyboard-native controls",
 test("phase 7 workbench retains a research navigation path", () => {
   assert.match(workbench, /href="\/research"/);
   assert.match(workbench, /Research evidence/);
+});
+
+test("workbench polling recovers safely without duplicate submission", () => {
+  assert.match(workbench, /if \(submitting \|\| activeRunRef\.current\) return/);
+  assert.match(workbench, /response\.status === 404[\s\S]+setRun\(null\)/);
+  assert.match(workbench, /schedule\(pollDelayMs\(unchangedPolls, consecutiveFailures\)\)/);
+  assert.match(workbench, /if \(isTerminalRun\(next\.status\)\)[\s\S]+return/);
 });
