@@ -64,6 +64,8 @@ from verified proof nodes and source links.
 The API queue is deliberately process-local: one active worker, bounded waiting capacity, finite
 retention, cooperative cancellation, and read-only polling. It adds no database or durable-job
 claim. Generated OpenAPI, JSON Schema, and TypeScript contracts share the same Pydantic source.
+The client polls responsively at first, then backs off to a two-second interval while state remains
+unchanged; transient failures retry with a bounded delay and cannot submit duplicate work.
 
 ### Semantic parser port
 
@@ -128,6 +130,13 @@ every tracked source artifact hash before serving data. The research routes are 
 not construct a provider, access ignored run/cache roots, execute reasoning, or accept local paths.
 Pydantic models normalize metric provenance, null evidence, experiment history and comparison
 compatibility. Versioned JSON Schema and the generated TypeScript contract share those models.
+Application startup validates source hashes once and precomputes immutable summaries, lookups,
+canonical bytes, and the dashboard snapshot for reuse throughout the process lifetime.
+
+Ollama readiness uses one application-scoped loopback HTTP client and a five-second, instance-local
+cache. Provider construction still validates the exact version, tag, and digest before inference,
+so a cached readiness result cannot bypass execution-time safeguards. The client is closed during
+FastAPI shutdown.
 
 The `/research` Next.js route reads only the sanitized API. Lightweight CSS charts, tables,
 filters and the synthetic AST inspector are client-side presentation. JSON/CSV/Markdown exporters

@@ -4,6 +4,7 @@ import json
 import time
 from pathlib import Path
 
+import httpx
 from fastapi.testclient import TestClient
 
 from verilogic_ns_api.main import create_app
@@ -127,3 +128,104 @@ def test_live_natural_submission_returns_503_when_exact_model_is_unavailable() -
         )
         assert response.status_code == 503
         assert response.json()["code"] == "LOCAL_MODEL_UNAVAILABLE"
+
+
+def test_model_readiness_reuses_result_and_connection_until_ttl_expires() -> None:
+    now = [10.0]
+    requests: list[str] = []
+    available = [True]
+    factory: OrchestrationFactory
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        requests.append(request.url.path)
+        runtime = factory.frozen.parser_config.runtime
+        if request.url.path == "/api/version":
+            return httpx.Response(200, json={"version": runtime.provider_version})
+        models = []
+        if available[0]:
+            models.append(
+                {
+                    "name": runtime.model,
+                    "model": runtime.model,
+                    "modified_at": "2026-01-01T00:00:00Z",
+                    "size": 1,
+                    "digest": runtime.model_digest,
+                    "details": {},
+                }
+            )
+        return httpx.Response(200, json={"models": models})
+
+    factory = OrchestrationFactory(
+        provider_mode=ProviderMode.LIVE,
+        readiness_ttl_seconds=5,
+        readiness_transport=httpx.MockTransport(handler),
+        readiness_clock=lambda: now[0],
+    )
+    try:
+        assert factory.model_ready() is True
+        assert factory.model_ready() is True
+        assert requests == ["/api/version", "/api/tags"]
+
+        available[0] = False
+        now[0] = 14.99
+        assert factory.model_ready() is True
+        assert requests == ["/api/version", "/api/tags"]
+
+        now[0] = 15.0
+        assert factory.model_ready() is False
+        assert requests == ["/api/version", "/api/tags", "/api/version", "/api/tags"]
+
+        now[0] = 20.0
+        assert factory.model_ready() is False
+        assert requests == [
+            "/api/version",
+            "/api/tags",
+            "/api/version",
+            "/api/tags",
+            "/api/version",
+            "/api/tags",
+        ]
+    finally:
+        factory.close()
+
+
+def test_model_readiness_rejects_wrong_digest_and_http_failures() -> None:
+    responses = ["wrong-digest", "http-error"]
+    factory: OrchestrationFactory
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        runtime = factory.frozen.parser_config.runtime
+        if responses[0] == "http-error":
+            return httpx.Response(503)
+        if request.url.path == "/api/version":
+            return httpx.Response(200, json={"version": runtime.provider_version})
+        return httpx.Response(
+            200,
+            json={
+                "models": [
+                    {
+                        "name": runtime.model,
+                        "model": runtime.model,
+                        "modified_at": "2026-01-01T00:00:00Z",
+                        "size": 1,
+                        "digest": "0" * 64,
+                        "details": {},
+                    }
+                ]
+            },
+        )
+
+    now = [0.0]
+    factory = OrchestrationFactory(
+        provider_mode=ProviderMode.LIVE,
+        readiness_ttl_seconds=1,
+        readiness_transport=httpx.MockTransport(handler),
+        readiness_clock=lambda: now[0],
+    )
+    try:
+        assert factory.model_ready() is False
+        responses[0] = "http-error"
+        now[0] = 1.0
+        assert factory.model_ready() is False
+    finally:
+        factory.close()

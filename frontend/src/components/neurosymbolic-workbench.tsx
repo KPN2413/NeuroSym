@@ -12,7 +12,12 @@ import type {
   PolicyMode,
   StageName,
 } from "@/lib/neurosymbolic-contract.generated";
-import { isTerminalRun, resultTone, validateNaturalInput } from "@/lib/pipeline-ui";
+import {
+  isTerminalRun,
+  pollDelayMs,
+  resultTone,
+  validateNaturalInput,
+} from "@/lib/pipeline-ui";
 import { FORMAL_PRESETS, NATURAL_PRESET } from "@/lib/presets";
 
 const API_BASE_URL = (process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000").replace(
@@ -76,35 +81,61 @@ export function NeuroSymbolicWorkbench() {
     };
   }, []);
 
+  const pollingRunId = run && !isTerminalRun(run.status) ? run.run_id : null;
+
   useEffect(() => {
-    if (!run || isTerminalRun(run.status)) return;
+    if (!pollingRunId) return;
     const controller = new AbortController();
-    const timer = window.setTimeout(async () => {
+    let timer: number | undefined;
+    let unchangedPolls = 0;
+    let consecutiveFailures = 0;
+    let previousSignature = "";
+
+    const schedule = (delay: number) => {
+      timer = window.setTimeout(poll, delay);
+    };
+    const poll = async () => {
       try {
         const response = await fetch(
-          `${API_BASE_URL}/api/v1/neurosymbolic/runs/${run.run_id}`,
+          `${API_BASE_URL}/api/v1/neurosymbolic/runs/${pollingRunId}`,
           { signal: controller.signal, cache: "no-store" },
         );
         if (response.status === 404) {
           setMessage("This run expired or the backend restarted. Submit it again.");
           activeRunRef.current = null;
+          setRun(null);
+          setBackendError(false);
           return;
         }
         if (!response.ok) throw new Error("poll failed");
         const next = (await response.json()) as PipelineRunState;
+        const signature = `${next.status}:${next.current_stage ?? ""}`;
+        unchangedPolls = signature === previousSignature ? unchangedPolls + 1 : 0;
+        previousSignature = signature;
+        consecutiveFailures = 0;
         setRun(next);
-        if (isTerminalRun(next.status)) activeRunRef.current = null;
+        setBackendError(false);
+        setMessage(null);
+        if (isTerminalRun(next.status)) {
+          activeRunRef.current = null;
+          return;
+        }
+        schedule(pollDelayMs(unchangedPolls));
       } catch (error) {
         if ((error as Error).name !== "AbortError") {
-          setMessage("The backend became unavailable while polling.");
+          consecutiveFailures += 1;
+          setBackendError(true);
+          setMessage("The backend became unavailable while polling. Retrying safely…");
+          schedule(pollDelayMs(unchangedPolls, consecutiveFailures));
         }
       }
-    }, 900);
+    };
+    schedule(pollDelayMs(0));
     return () => {
       controller.abort();
-      window.clearTimeout(timer);
+      if (timer !== undefined) window.clearTimeout(timer);
     };
-  }, [run]);
+  }, [pollingRunId]);
 
   async function submit(event: FormEvent) {
     event.preventDefault();

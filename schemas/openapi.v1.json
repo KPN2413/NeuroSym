@@ -2612,6 +2612,42 @@
         "title": "ResearchApiError",
         "type": "object"
       },
+      "ResearchDashboardSnapshot": {
+        "additionalProperties": false,
+        "description": "One validated payload for the read-only research dashboard.",
+        "properties": {
+          "comparisons": {
+            "items": {
+              "$ref": "#/components/schemas/ComparisonCompatibility"
+            },
+            "title": "Comparisons",
+            "type": "array"
+          },
+          "experiments": {
+            "items": {
+              "$ref": "#/components/schemas/ExperimentDetail"
+            },
+            "title": "Experiments",
+            "type": "array"
+          },
+          "overview": {
+            "$ref": "#/components/schemas/CatalogueOverview"
+          },
+          "schema_version": {
+            "const": "1.0",
+            "default": "1.0",
+            "title": "Schema Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "overview",
+          "comparisons",
+          "experiments"
+        ],
+        "title": "ResearchDashboardSnapshot",
+        "type": "object"
+      },
       "Rule": {
         "additionalProperties": false,
         "properties": {
@@ -3506,6 +3542,28 @@
           }
         },
         "summary": "Comparisons",
+        "tags": [
+          "research"
+        ]
+      }
+    },
+    "/api/v1/research/dashboard": {
+      "get": {
+        "description": "Return the complete validated dashboard bootstrap in one request.",
+        "operationId": "dashboard_api_v1_research_dashboard_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResearchDashboardSnapshot"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Dashboard",
         "tags": [
           "research"
         ]

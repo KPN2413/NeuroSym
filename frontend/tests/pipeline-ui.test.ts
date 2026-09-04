@@ -1,7 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { isTerminalRun, resultTone, validateNaturalInput } from "../src/lib/pipeline-ui";
+import {
+  isTerminalRun,
+  pollDelayMs,
+  resultTone,
+  validateNaturalInput,
+} from "../src/lib/pipeline-ui";
 
 test("natural input validation covers empty, incomplete, duplicate, and valid forms", () => {
   assert.equal(validateNaturalInput([], "query"), "Add at least one theory statement.");
@@ -36,6 +41,16 @@ test("polling stops for every terminal run state", () => {
   assert.equal(isTerminalRun("COMPLETED"), true);
   assert.equal(isTerminalRun("FAILED"), true);
   assert.equal(isTerminalRun("CANCELLED"), true);
+});
+
+test("polling backs off for unchanged work and transient failures", () => {
+  assert.equal(pollDelayMs(0), 900);
+  assert.equal(pollDelayMs(2), 900);
+  assert.equal(pollDelayMs(3), 1_500);
+  assert.equal(pollDelayMs(8), 2_000);
+  assert.equal(pollDelayMs(0, 1), 2_000);
+  assert.equal(pollDelayMs(0, 2), 4_000);
+  assert.equal(pollDelayMs(0, 10), 8_000);
 });
 
 test("result tones distinguish logical, abstention, and error outcomes", () => {
